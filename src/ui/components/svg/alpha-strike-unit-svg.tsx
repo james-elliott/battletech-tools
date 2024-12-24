@@ -12,6 +12,9 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
     buttonRadius = 15;
 
     activeDotColor = "rgb(200,0,0)";
+    movementFill = "rgb(255,255,255)";
+    movementStroke = "rgb(0,0,0)";
+    movementText = "rgb(0,0,0)";
 
     critLineHeight = 50;
 
@@ -19,6 +22,7 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
         super(props);
         this.state = {
             showTakeDamage: false,
+            showMovementOptions: true
         }
         if( this.props.height ) {
             this.height = this.props.height;
@@ -232,6 +236,102 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
         return dots;
     }
 
+    private _movementOptions = (
+
+    ): JSX.Element[] => {
+        let options: JSX.Element[] = []
+
+        let moveOptions = this.props.inPlay && this.props.asUnit ? this.props.asUnit.move : [];
+        if (this.props.asUnit?.isAerospace == false) {
+            // console.log(this.props.asUnit.name);
+            // console.log(moveOptions);
+
+            // console.log("Movement type: " + this.props.asUnit.movementType);
+
+            options.push(
+                <React.Fragment
+                    key="standstill"
+                >
+                    <rect className="cursor-pointer" onClick={() => this._setMovement("Standstill", "rgb(102,102,102)", "rgb(255,255,255)")} x="680" y="0" width="170" height="44" fill="rgb(102,102,102)"></rect>
+                    <text className="cursor-pointer" onClick={() => this._setMovement("Standstill", "rgb(102,102,102)", "rgb(255,255,255)")} x="765" y="35" textAnchor="middle" width="150" style={{fill: "rgb(255,255,255)"}} fontFamily="sans-serif" fontSize={30}>Standstill</text>
+
+                </React.Fragment>
+            )
+            if (moveOptions[0].currentMove > 0) {
+                options.push(
+                    <React.Fragment
+                        key="standard"
+                    >
+                        <rect className="cursor-pointer" onClick={() => this._setMovement("Standard", "rgb(255,255,255)", "rgb(0,0,0)", "rgb(0,0,0)")} x="680" y="45" width="170" height="44" fill="rgb(0,0,0)"></rect>
+                        <rect className="cursor-pointer" onClick={() => this._setMovement("Standard", "rgb(255,255,255)", "rgb(0,0,0)", "rgb(0,0,0)")} x="681" y="46" width="168" height="42" fill="rgb(255,255,255)"></rect>
+                        <text className="cursor-pointer" onClick={() => this._setMovement("Standard", "rgb(255,255,255)", "rgb(0,0,0)", "rgb(0,0,0)")} x="765" y="80" textAnchor="middle" width="150" style={{fill: "rgb(0,0,0)"}} fontFamily="sans-serif" fontSize={30}>Standard</text>
+
+                    </React.Fragment>
+                )
+                options.push(
+                    <React.Fragment
+                        key="sprint"
+                    >
+                        <rect className="cursor-pointer" onClick={() => this._setMovement("Sprint", "rgb(204,187,0)", "rgb(0,0,0)")} x="680" y="90" width="170" height="44" fill="rgb(204, 187, 0)"></rect>
+                        <text className="cursor-pointer" onClick={() => this._setMovement("Sprint", "rgb(204,187,0)", "rgb(0,0,0)")} x="765" y="125" textAnchor="middle" width="150" style={{fill: "rgb(0,0,0)"}} fontFamily="sans-serif" fontSize={30}>Sprint</text>
+
+                    </React.Fragment>
+                )
+            }
+
+            let immobilized = true;
+            for( let currentMove = 0; moveOptions.length > currentMove; currentMove++ ) {
+
+                if (moveOptions[currentMove].currentMove > 1) {
+                    immobilized = false;
+                }
+
+                // Add a jump option where applicable
+                if (moveOptions[currentMove].type == 'j') {
+                    options.push(
+                        <React.Fragment
+                            key="jump"
+                        >
+                            <rect className="cursor-pointer" onClick={() => this._setMovement("Jump", "rgb(200,0,0)", "rgb(255,255,255)")} x="680" y="136" width="170" height="44" fill="rgb(200,0,0)"></rect>
+                            <text className="cursor-pointer" onClick={() => this._setMovement("Jump", "rgb(200,0,0)", "rgb(255,255,255)")} x="765" y="171" textAnchor="middle" width="150" style={{fill: "rgb(255,255,255)"}} fontFamily="sans-serif" fontSize={30}>Jump</text>
+    
+                        </React.Fragment>
+                    )
+                }
+
+                
+            }
+            if (immobilized) {
+                console.log(this.props.asUnit.name + " is immobilized!!!");
+                
+                options = [];
+
+                options.push(
+                    <React.Fragment
+                        key="immobilized"
+                    >
+                        <rect className="cursor-pointer" x="680" y="0" width="170" height="44" fill="rgb(236,87,16)"></rect>
+                        <text className="cursor-pointer" x="765" y="35" textAnchor="middle" width="150" style={{fill: "rgb(255,255,255)"}} fontFamily="sans-serif" fontSize={30}>Immobilized</text>
+
+                    </React.Fragment>
+                )
+            }
+        }
+
+        return options;
+    }
+
+    private _setMovement = (type: string, fill: string = "rgb(255,255,255)", text: string = "rgb(0,0,0)", stroke: string = "rgb(0,0,0)" ): void => {
+        if( this.props.inPlay && this.props.asUnit ) {
+            this.props.asUnit.movementType = type;
+            this.movementFill = fill;
+            this.movementStroke = stroke;
+            this.movementText = text;
+            this.props.asUnit.calcCurrentValues();
+            this.props.appGlobals.saveCurrentASForce( this.props.appGlobals.currentASForce );
+        }
+    }
+
     private _splitAbilities = ( val: string ): string[][] => {
         val = val.trim();
         let words = val.split(",");
@@ -274,7 +374,7 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
         let abilitiesSplit: string[][] = this._splitAbilities(this.props.asUnit.abilities.join( ", "));
 
         let pilotAbilitiesList = this.props.asUnit.getPilotAbilityList();
-
+        // console.log("This is " + this.props.asUnit.name);
         return (
 
             <>
@@ -336,6 +436,8 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
                     </text>
                 ) : null}
 
+
+                // Point value box
                 <rect x="850" y="9" width="150" height="35" fill="rgb(0,0,0)"></rect>
                 <text x="990" y="35" textAnchor="end" fill="rgb(255,255,255)" stroke="rgb(255,255,255)" fontFamily="sans-serif" fontSize="33">PV: {this.props.asUnit.currentPoints}</text>
                 {this.props.asUnit.currentPoints !== this.props.asUnit.basePoints ? (
@@ -344,6 +446,24 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
                 {this.props.asUnit.currentPilotAbility ? (
                     <text x="988" y={this.props.asUnit.currentPoints !== this.props.asUnit.basePoints ? "80" : "60"} textAnchor="end" fontFamily="sans-serif" fontSize="20">SPA Total: {this.props.asUnit.getTotalPilotAbilityPoints()}</text>
                 ) : null}
+
+                // This Round Movement
+                {this.props.asUnit.movementType == "" ? (
+                    // PUT MOVEMENT OPTIONS HERE!!!
+                    <> 
+                    {this._movementOptions()}
+                    </>
+                ) : (
+                    // RENDER ONLY THE SELECTED MOVEMENT OPTION
+                    <>
+                        <rect className="cursor-pointer" onClick={() => this._setMovement("")} x="680" y="0" width="170" height="44" fill={this.movementStroke}></rect>
+                        <rect className="cursor-pointer" onClick={() => this._setMovement("")} x="681" y="1" width="168" height="42" fill={this.movementFill}></rect>
+                        <text className="cursor-pointer" onClick={() => this._setMovement("")} x="765" y="35" textAnchor="middle" width="150" style={{fill: this.movementText}} fontFamily="sans-serif" fontSize={30}>{this.props.asUnit.movementType}</text>
+                    </>
+                )}
+
+
+                // Info panel with Type, Movement, Role, Skill
                 <rect x="20" y="100" width="550" height="105" fill="rgb(0,0,0)" rx="18" ry="18"></rect>
                 <rect x="25" y="105" width="540" height="95" fill="rgba( 255,255,255,.8)" rx="15" ry="15"></rect>
                 <text x="30" y="140" fontFamily="sans-serif" fontSize="25">TP: {this.props.asUnit.type}</text>
@@ -372,6 +492,8 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
 
                 <text x="30" y="180" fontFamily="sans-serif" fontSize="25">ROLE: {this.props.asUnit.role.toUpperCase()}</text>
                 <text x="540" y="180" fontFamily="sans-serif" textAnchor="end" fontSize="25">SKILL: {this.props.asUnit.currentSkill}</text>
+
+                // Attack Panel
                 <rect x="20" y="210" width="550" height="100" fill="rgb(0,0,0)" rx="18" ry="18"></rect>
                 <rect x="25" y="215" width="540" height="90" fill="rgba( 255,255,255,.8)" rx="15" ry="15"></rect>
                 <text x="55" y="250" fontFamily="sans-serif" textAnchor="middle" fontSize="15" transform="rotate(270, 58, 250)">DAMAGE</text>
@@ -432,9 +554,9 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
                 </>
                 ) : null}
 
+                // Heat Scale Box
                 <rect x="20" y="315" width="550" height="80" fill="rgb(0,0,0)" rx="18" ry="18"></rect>
 
-                {/* Heat Scale Box */}
                 <rect x="25" y="320" width="540" height="70" fill="rgba( 255,255,255,.8)" rx="15" ry="15"></rect>
                 <text x="40" y="365" fontFamily="sans-serif" fontSize={35}>OV: {this.props.asUnit.overheat}</text>
                 <text x="240" y="363" textAnchor="end" fontFamily="sans-serif" fontSize="15">HEAT SCALE</text>
@@ -906,5 +1028,5 @@ interface IAlphaStrikeUnitSVGProps {
 
 interface IAlphaStrikeUnitSVGState {
     showTakeDamage: boolean;
-
+    showMovementOptions: boolean;
 }

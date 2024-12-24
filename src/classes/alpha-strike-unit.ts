@@ -123,6 +123,7 @@ export interface IAlphaStrikeUnitExport {
     imageURL: string;
 
     move: IMoveNumber[];
+    movementType: string;
     jumpMove: number;
     structure: number;
     armor: number;
@@ -175,6 +176,7 @@ export class AlphaStrikeUnit {
     public currentMoveSprint: string = "";
     public currentMoveHexesSprint: string = "";
     public currentTMM: string = "";
+    public movementType: string = "";
 
     public armor: number = 0;
     public structure: number = 1;
@@ -796,6 +798,7 @@ export class AlphaStrikeUnit {
         this.vehicleMotive11 = [];
         this.vehicleMotive12 = false;
         this.calcCurrentValues();
+        this.movementType = "";
     }
 
     public calcCurrentValues() {
@@ -1055,9 +1058,21 @@ export class AlphaStrikeUnit {
             extremeMinimal: this.damage.extremeMinimal ? true : false,
         };
 
+        // Consider Speed-Demon from pilot skills
+        let speedDemon = false;
+        for ( let ability = 0; ability < this._pilot.alphaStrikeAbilities.length; ability++) {
+            if (this._pilot.alphaStrikeAbilities[ability] == 46) {
+                speedDemon = true;
+            }
+        }
 
         for( let moveC = 0; moveC < this.move.length; moveC++ ) {
             this.move[moveC].currentMove = this.move[moveC].move;
+
+            if (this.move[moveC].type == '' && speedDemon) {
+                this.move[moveC].currentMove = this.move[moveC].move + 2;
+            }
+            
         }
 
         // Calculate Critical Movement
@@ -1220,7 +1235,11 @@ export class AlphaStrikeUnit {
 
             }
 
-            this.currentMoveSprint = "" + (+this.move[0].currentMove * 1.5 ) + "\"";
+            // Consider Speed Demon
+            let sprintBase = !speedDemon? this.move[0].currentMove : this.move[0].currentMove - 2;
+            let sprintBonus = speedDemon? 4 : 0;
+
+            this.currentMoveSprint = "" + (sprintBase * 1.5 + sprintBonus) + "\"";
             this.currentMoveHexesSprint = "" + ( Math.ceil(( +this.move[0].currentMove / 2) * 1.5) )+ "⬣";
 
             this.currentMove += this.move[moveC].currentMove.toString() + "\"" + this.move[moveC].type;
@@ -1327,15 +1346,38 @@ export class AlphaStrikeUnit {
                 this.currentMoveHexes += "/";
             }
 
+            if(this.movementType == "Standstill") {
+                this.currentTMM = "0";
+            }
+    
+            if(this.movementType == "Jump") {
+                tmpTMM++;
+                this.currentTMM = tmpTMM.toString() + "j";
+            }
+    
+
         }
         if( this.currentTMM.endsWith("/"))
             this.currentTMM = this.currentTMM.substring( 0, this.currentTMM.length - 1);
 
+        // Update To-Hit with movement
+        let movementToHit = 0;
+        if (this.movementType == "Standstill") {
+            movementToHit = -1;
+        } else if (this.movementType == "Jump" && this.type && this.type.toLowerCase() !== "ba") {
+            movementToHit = 2;
+            for ( let ability = 0; ability < this._pilot.alphaStrikeAbilities.length; ability++) {
+                if (this._pilot.alphaStrikeAbilities[ability] == 26) {
+                    movementToHit = 1;
+                }
+            }
+        }
+
         // Calculate To-Hits with Criticals
-        this.currentToHitShort = this.currentSkill + this.currentHeat + currentFCHits * 2; // + currentEngineHits;
-        this.currentToHitMedium = this.currentSkill + 2 + this.currentHeat + currentFCHits * 2; // + currentEngineHits;
-        this.currentToHitLong = this.currentSkill + 4 + this.currentHeat + currentFCHits * 2; // + currentEngineHits;
-        this.currentToHitExtreme = this.currentSkill + 6 + this.currentHeat + currentFCHits * 2; // + currentEngineHits;
+        this.currentToHitShort = this.currentSkill + this.currentHeat + currentFCHits * 2 + movementToHit; // + currentEngineHits;
+        this.currentToHitMedium = this.currentSkill + 2 + this.currentHeat + currentFCHits * 2 + movementToHit; // + currentEngineHits;
+        this.currentToHitLong = this.currentSkill + 4 + this.currentHeat + currentFCHits * 2 + movementToHit; // + currentEngineHits;
+        this.currentToHitExtreme = this.currentSkill + 6 + this.currentHeat + currentFCHits * 2 + movementToHit; // + currentEngineHits;
 
         this.currentHeat = this.currentHeat / 1;
 
@@ -1564,6 +1606,7 @@ export class AlphaStrikeUnit {
             basePoints:  this.basePoints,
             currentSkill:  this.currentSkill,
             uuid: this.uuid,
+            movementType: this.movementType,
         };
 
         return rv;
