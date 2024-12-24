@@ -2,32 +2,26 @@ import * as React from 'react';
 import { Route, Routes } from "react-router-dom";
 import { IAppGlobals } from '../../app-router';
 import Error404 from "../error404";
-import AlphaStrikeHome from './home';
-import AlphaStrikeRosterRouter from './roster/_router';
-import AlphaStrikeUnitCreatorRouter from './unit-creator/_router';
+import GameManagementHome from './home';
+import MatchPlayRouter from './match-play/_router';
 
-export default class AlphaStrikeRouter extends React.Component<IAlphaStrikeRouterProps, IAlphaStrikeRouterState> {
+export default class GameManagementRouter extends React.Component<IGameManagementRouterProps, IGameManagementRouterState> {
 
     render = (): JSX.Element => {
         return(
             <Routes>
 
                 <Route path={``} element={
-                    <AlphaStrikeHome
+                    <GameManagementHome
                         appGlobals={this.props.appGlobals}
                     />
                 }/>
-                <Route path={`roster/*`} element={
-                    <AlphaStrikeRosterRouter
+                <Route path={`match-play/*`} element={
+                    <MatchPlayRouter
                         appGlobals={this.props.appGlobals}
                     />
                 }/>
-                <Route path={`unit-creator/*`} element={
-                    <AlphaStrikeUnitCreatorRouter
-                        appGlobals={this.props.appGlobals}
-                    />
-                }/>
-
+               
                 <Route path="*" element={
                     <Error404
                         appGlobals={this.props.appGlobals}
@@ -38,10 +32,10 @@ export default class AlphaStrikeRouter extends React.Component<IAlphaStrikeRoute
     }
 }
 
-interface IAlphaStrikeRouterProps {
+interface IGameManagementRouterProps {
     appGlobals: IAppGlobals;
 }
 
-interface IAlphaStrikeRouterState {
+interface IGameManagementRouterState {
 
 }

@@ -5,27 +5,27 @@ import TextSection from '../../components/text-section';
 import UIPage from '../../components/ui-page';
 import { MdTableView } from "react-icons/md";
 
-export default class AlphaStrikeHome extends React.Component<IAlphaStrikeHomeProps, IAlphaStrikeHomeState> {
-    constructor(props: IAlphaStrikeHomeProps) {
+export default class GameManagementHome extends React.Component<IGameManagementHomeProps, IGameManagementHomeState> {
+    constructor(props: IGameManagementHomeProps) {
         super(props);
         this.state = {
             updated: false,
         }
 
-        this.props.appGlobals.makeDocumentTitle("AlphaStrikeHome");
+        this.props.appGlobals.makeDocumentTitle("GameManagementHome");
     }
 
     render = (): JSX.Element => {
       return (
-        <UIPage current="alpha-strike-home" appGlobals={this.props.appGlobals}>
+        <UIPage current="game-management-home" appGlobals={this.props.appGlobals}>
 
           <TextSection
-            label="Alpha Strike"
+            label="Game Management"
           >
               <div className="icon-links">
-                <Link  to={`${process.env.PUBLIC_URL}/alpha-strike/roster`}>
+                <Link  to={`${process.env.PUBLIC_URL}/game-management/match-play`}>
                   <MdTableView />
-                  Alpha Strike Roster
+                  Alpha Strike Match Play
                 </Link>
               </div>
            </TextSection>
@@ -35,11 +35,11 @@ export default class AlphaStrikeHome extends React.Component<IAlphaStrikeHomePro
     }
 }
 
-interface IAlphaStrikeHomeProps {
+interface IGameManagementHomeProps {
   appGlobals: IAppGlobals;
 }
 
-interface IAlphaStrikeHomeState {
+interface IGameManagementHomeState {
     updated: boolean;
 
 }
