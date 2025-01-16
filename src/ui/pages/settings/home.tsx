@@ -37,6 +37,12 @@ export default class SettingsHome extends React.Component<ISettingsHomeProps, IS
       this.props.appGlobals.saveAppSettings( appSettingsHome );
     }
 
+    setAIMode = ( event: React.FormEvent<HTMLInputElement>): void => {
+      let appSettingsHome = this.props.appGlobals.appSettings;
+      appSettingsHome.aiMode = event.currentTarget.checked;
+      this.props.appGlobals.saveAppSettings( appSettingsHome );
+    }
+
     setStorageTarget = ( event: React.FormEvent<HTMLSelectElement>): void => {
       this.setState({
         selectedStorageTarget: +event.currentTarget.value,
@@ -74,6 +80,12 @@ export default class SettingsHome extends React.Component<ISettingsHomeProps, IS
                   label='Alpha Strike Roster: Display Measurements in Hexes'
                   checked={this.props.appGlobals.appSettings.alphaStrikeMeasurementsInHexes}
                   onChange={this.setAlphaStrikeMeasurementsInHexes}
+                />
+
+              <InputCheckbox
+                  label='Alpha Strike Roster: Display AI Behaviors'
+                  checked={this.props.appGlobals.appSettings.aiMode}
+                  onChange={this.setAIMode}
                 />
 
                 </fieldset>

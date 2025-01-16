@@ -4,6 +4,8 @@ import { IASPilotAbility } from '../../../data/alpha-strike-pilot-abilities';
 import { IASSpecialAbility } from '../../../data/alpha-strike-special-abilities';
 import { IAppGlobals } from '../../app-router';
 import BattleTechLogo from '../battletech-logo';
+import { OpForBehavior } from '../../../data/bryms-opfor-behaviors';
+import { FaDiceD6 } from "react-icons/fa";
 
 export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnitSVGProps, IAlphaStrikeUnitSVGState> {
     height: string = "100%";
@@ -32,7 +34,6 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
         if( this.props.inPlay ) {
             this.damageLeftBase = 40;
         }
-
     }
 
     private _toggleTakeDamage = () => {
@@ -259,6 +260,48 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
         return rv;
     }
 
+    private _GetBehavior = (
+        
+    ): JSX.Element => {
+        let behavior = this.props.asUnit ? this.props.asUnit.getOpForBehavior() : null;
+        let name = behavior ? behavior.name : "";
+
+        let fragment = 
+            <React.Fragment>
+                <text className="cursor-pointer behavior" onClick={(e) => this._showOpForBehavior(e, behavior)} x={112} y={195} textAnchor="left" width="150" fontFamily="sans-serif" fontSize={20} fill='rgb(200,0,0)'>{name}</text>
+                {behavior?.reroll ? (<FaDiceD6 className="cursor-pointer behavior" onClick={(e) => this._rerollBehavior(e)} x={80} y={176} fontSize={24} fill='rgb(100,100,100)' />) : null }
+            </React.Fragment>
+        ;
+
+        return fragment;
+    }
+
+    private _showOpForBehavior = (
+        e: React.MouseEvent<SVGTextElement, MouseEvent>,
+        behavior: OpForBehavior | null,
+    ) => {
+        if( e && e.preventDefault ) e.preventDefault();
+        if( this.props.showOpForBehavior && behavior ) {
+            this.props.showOpForBehavior(e, behavior );
+        }
+    }
+
+    private _rerollBehavior = (
+        e: React.MouseEvent<SVGElement, MouseEvent>
+    ) => {
+        if( e && e.preventDefault ) e.preventDefault();
+        if (this.props.asUnit) {
+            this.props.asUnit.currentBehavior = {
+                name: "",
+                quarry: "",
+                movement: "",
+                attack: "",
+                reroll: false
+            };
+            this.setState(this.state);
+        }
+    }
+
     render = (): JSX.Element => {
         if( !this.props.asUnit ) {
             return <></>
@@ -370,7 +413,13 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
                 )  : null}
 
 
-                <text x="30" y="180" fontFamily="sans-serif" fontSize="25">ROLE: {this.props.asUnit.role.toUpperCase()}</text>
+                <text x="30" y="175" fontFamily="sans-serif" fontSize="25">ROLE: {this.props.asUnit.role.toUpperCase()}</text>
+
+                {/* Brym's OpFor Label Goes Here */}
+                
+                {this.props.inPlay && this.props.aiMode ? this._GetBehavior() : null}
+                
+
                 <text x="540" y="180" fontFamily="sans-serif" textAnchor="end" fontSize="25">SKILL: {this.props.asUnit.currentSkill}</text>
                 <rect x="20" y="210" width="550" height="100" fill="rgb(0,0,0)" rx="18" ry="18"></rect>
                 <rect x="25" y="215" width="540" height="90" fill="rgba( 255,255,255,.8)" rx="15" ry="15"></rect>
@@ -901,10 +950,11 @@ interface IAlphaStrikeUnitSVGProps {
     showSpecialAbility?(
         e: React.FormEvent<HTMLAnchorElement>,
         ability: IASSpecialAbility
-      ): void
+      ): void;
+    showOpForBehavior?(e: React.FormEvent<SVGTextElement>, behavior: OpForBehavior): void;
+    aiMode?: boolean;
 }
 
 interface IAlphaStrikeUnitSVGState {
     showTakeDamage: boolean;
-
 }
