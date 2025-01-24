@@ -264,11 +264,10 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
         
     ): JSX.Element => {
         let behavior = this.props.asUnit ? this.props.asUnit.getOpForBehavior() : null;
-        let name = behavior ? behavior.name : "";
 
         let fragment = 
             <React.Fragment>
-                <text className="cursor-pointer behavior" onClick={(e) => this._showOpForBehavior(e, behavior)} x={112} y={195} textAnchor="left" width="150" fontFamily="sans-serif" fontSize={20} fill='rgb(200,0,0)'>{name}</text>
+                <text className="cursor-pointer behavior" onClick={(e) => this._showOpForBehavior(e, behavior)} x={112} y={195} textAnchor="left" width="150" fontFamily="sans-serif" fontSize={20} fill='rgb(200,0,0)'>{behavior ? behavior.name : ""}</text>
                 {behavior?.reroll ? (<FaDiceD6 className="cursor-pointer behavior" onClick={(e) => this._rerollBehavior(e)} x={80} y={176} fontSize={24} fill='rgb(100,100,100)' />) : null }
             </React.Fragment>
         ;
@@ -291,13 +290,7 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
     ) => {
         if( e && e.preventDefault ) e.preventDefault();
         if (this.props.asUnit) {
-            this.props.asUnit.currentBehavior = {
-                name: "",
-                quarry: "",
-                movement: "",
-                attack: "",
-                reroll: false
-            };
+            this.props.asUnit.getOpForBehavior(true);
             this.setState(this.state);
         }
     }

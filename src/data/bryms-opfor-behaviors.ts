@@ -13,7 +13,7 @@ export const CONST_AS_OPFOR_BEHAVIORS: OpForBehavior[] = [
         name: "Forced Withdrawal",
         quarry: "Nearest enemy",
         movement: "Expend full MV to move towards home edge",
-        attack: "Nearest enemy",
+        attack: "If heat is 0 attack nearest enemy.",
         reroll: false
     },
     {

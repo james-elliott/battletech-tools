@@ -618,8 +618,17 @@ export class AlphaStrikeUnit {
         return rv;
     }
 
-    getOpForBehavior(): OpForBehavior {
-        if (this.currentBehavior.name === "" && this.behaviors.length > 0) {
+    getOpForBehavior(rollNew: boolean = false): OpForBehavior {
+        let behavior = this.currentBehavior ? this.currentBehavior : {
+            name: "",
+            quarry: "",
+            movement: "",
+            attack: "",
+            reroll: false
+        };
+
+        // Roll a new behavior based on a d8 roll
+        if (rollNew && this.behaviors.length > 0) {
             let index = Math.floor(Math.random() * 8);
             let IF = false;
             // Automatically reroll Indirect Fire behavior for Sniper and Missile Boat without IF#
@@ -636,17 +645,44 @@ export class AlphaStrikeUnit {
                         index = Math.floor(Math.random() * 8);
                     }
                 }
-                
             }
 
-            for (let action of CONST_AS_OPFOR_BEHAVIORS) {
-                if (action.name == this.behaviors[index]) {
-                    this.currentBehavior = action;
-                }
+            // Save the behavior rolled so it can be reverted from heat and retreat overrides.
+            this.currentBehavior = this.getBehavior(this.behaviors[index]);
+            behavior = this.currentBehavior;
+        }
+
+        // Override default behavior when heat is 2 or more.
+        behavior = this.currentHeat > 1 ? this.getBehavior("Overheat Protocol") : behavior;
+
+        // Check forced withdrawal rules and override all other behavior.
+        let fleeing = this.immobile;
+        if (this.structure == 1) {
+            fleeing = this.getCurrentArmor() == 0;
+        }
+        if (this.structure > 1 && this.getCurrentStructure() <= this.structure*.5) {
+            fleeing = true;
+        }
+        behavior = fleeing ? this.getBehavior("Forced Withdrawal") : behavior;
+
+        return behavior;
+    }
+
+    private getBehavior(behaviorName: String = ""): OpForBehavior {
+        let behavior = {
+            name: "",
+            quarry: "",
+            movement: "",
+            attack: "",
+            reroll: false
+        };
+        for (let action of CONST_AS_OPFOR_BEHAVIORS) {
+            if (action.name == behaviorName) {
+                behavior = action;
             }
         }
 
-        return this.currentBehavior;
+        return behavior;
     }
 
     public getTotalPilotAbilityPoints(): number {
@@ -843,13 +879,6 @@ export class AlphaStrikeUnit {
         this.vehicleMotive910 = [];
         this.vehicleMotive11 = [];
         this.vehicleMotive12 = false;
-        this.currentBehavior = {
-            name: "",
-            quarry: "",
-            movement: "",
-            attack: "",
-            reroll: false
-        };
         this.calcCurrentValues();
     }
 
