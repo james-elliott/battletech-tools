@@ -126,8 +126,6 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
               unit.movementType = '';
             }
 
-            // TODO: Figure out how to apply temp damage
-
           }
         }
 

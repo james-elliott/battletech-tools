@@ -27,9 +27,11 @@
         &.extreme {
             fill: rgb(200,0,0);
         }
+        &.grounded {
+            fill: rgb(210,210,210);
+        }
         &.big {
             filter: drop-shadow(black 0 .5rem 1rem);
         }
     }
-    
 }

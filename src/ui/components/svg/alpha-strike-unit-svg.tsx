@@ -4,7 +4,7 @@ import { IASPilotAbility } from '../../../data/alpha-strike-pilot-abilities';
 import { IASSpecialAbility } from '../../../data/alpha-strike-special-abilities';
 import { IAppGlobals } from '../../app-router';
 import BattleTechLogo from '../battletech-logo';
-import './alpha-strike-unit.scss';
+import './alpha-strike-unit-svg.scss';
 
 export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnitSVGProps, IAlphaStrikeUnitSVGState> {
     height: string = "100%";
@@ -351,10 +351,13 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
                 this._movementCounter(430,70,280,'middle',false)
             )
             options.push(
-                this._movementCounter(750,70,280,'high',false)
+                this._movementCounter(740,70,280,'high',false)
             )
             options.push(
-                this._movementCounter(430,340,280,'extreme',false)
+                this._movementCounter(270,340,280,'extreme',false)
+            )
+            options.push(
+                this._movementCounter(590,340,280,'grounded',false)
             )
         }
 
@@ -477,7 +480,7 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
                 ) : null}
 
 
-                // Point value box
+                {/* Point value box */}
                 <rect x="850" y="9" width="150" height="35" fill="rgb(0,0,0)"></rect>
                 <text x="990" y="35" textAnchor="end" fill="rgb(255,255,255)" stroke="rgb(255,255,255)" fontFamily="sans-serif" fontSize="33">PV: {this.props.asUnit.currentPoints}</text>
                 {this.props.asUnit.currentPoints !== this.props.asUnit.basePoints ? (
@@ -489,7 +492,7 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
 
 
 
-                // Info panel with Type, Movement, Role, Skill
+                {/* Info panel with Type, Movement, Role, Skill */}
                 <rect x="20" y="100" width="550" height="105" fill="rgb(0,0,0)" rx="18" ry="18"></rect>
                 <rect x="25" y="105" width="540" height="95" fill="rgba( 255,255,255,.8)" rx="15" ry="15"></rect>
                 <text x="30" y="140" fontFamily="sans-serif" fontSize="25">TP: {this.props.asUnit.type}</text>
@@ -515,7 +518,7 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
                     </>
                 )  : null}
 
-                // Movement Token
+                {/* Movement Token */}
                 <> 
                     {this.props.inPlay ? this._movementCounter() : null}
                 </>
@@ -525,7 +528,7 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
                 <text x="30" y="180" fontFamily="sans-serif" fontSize="25">ROLE: {this.props.asUnit.role.toUpperCase()}</text>
                 <text x="540" y="180" fontFamily="sans-serif" textAnchor="end" fontSize="25">SKILL: {this.props.asUnit.currentSkill}</text>
 
-                // Attack Panel
+                {/* Attack Panel */}
                 <rect x="20" y="210" width="550" height="100" fill="rgb(0,0,0)" rx="18" ry="18"></rect>
                 <rect x="25" y="215" width="540" height="90" fill="rgba( 255,255,255,.8)" rx="15" ry="15"></rect>
                 <text x="55" y="250" fontFamily="sans-serif" textAnchor="middle" fontSize="15" transform="rotate(270, 58, 250)">DAMAGE</text>
@@ -586,7 +589,7 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
                 </>
                 ) : null}
 
-                // Heat Scale Box
+                {/* Heat Scale Box */}
                 <rect x="20" y="315" width="550" height="80" fill="rgb(0,0,0)" rx="18" ry="18"></rect>
 
                 <rect x="25" y="320" width="540" height="70" fill="rgba( 255,255,255,.8)" rx="15" ry="15"></rect>
