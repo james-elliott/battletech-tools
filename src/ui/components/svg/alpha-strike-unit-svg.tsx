@@ -10,7 +10,7 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
     height: string = "100%";
     width: string = "auto";
     damageLeftBase = 0;
-    buttonRadius = 15;
+    buttonRadius = 11;
 
     critLineHeight = 50;
 
@@ -178,7 +178,7 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
         // If armor is more than 1 row, nudge the display upwards to make room for both above the structure.
         let yLoc = target === "armor" && this.props.asUnit && this.props.asUnit.armor > maxCountInRow ? -22 : -10;
         let xLoc = this.props.inPlay ? 4 : 44;
-        let radius = 10;
+        let radius = this.buttonRadius;
 
         let dotArray: boolean[] = [];
         let roundDotArray: boolean[] = [];
@@ -700,9 +700,9 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
                             return (
                                 <React.Fragment key={ehIndex}>
                                     <circle
-                                        cx={16 + (this.buttonRadius * 1.625) * ehIndex}
-                                        cy={this.buttonRadius - 22}
-                                        r={10}
+                                        cx={16 + (this.buttonRadius * 2.5) * ehIndex}
+                                        cy={this.buttonRadius - 18}
+                                        r={this.buttonRadius}
                                         className={classes.join(" ")}
                                         onClick={() => this._toggleEngineHit(ehIndex)}
                                     ></circle>
@@ -710,7 +710,7 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
                             )
                         })}
 
-                        <text x={5 + (this.buttonRadius * 1.625)*2} y="0" textAnchor="start" className='crit-description'>{this.props.asUnit.type.toLowerCase() === 'cv' ||  this.props.asUnit.type.toLowerCase() === 'sv' ? "½ MV and Damage" : "+1 Heat/Firing Weapons"}</text>
+                        <text x={3 + (this.buttonRadius * 2.5)*this.props.asUnit.engineHits.length} y="0" textAnchor="start" className='crit-description'>{this.props.asUnit.type.toLowerCase() === 'cv' ||  this.props.asUnit.type.toLowerCase() === 'sv' ? "½ MV and Damage" : "+1 Heat/Firing Weapons"}</text>
                         {critLineStart += critLineHeight}
                     </g>
                 ) : (
@@ -730,16 +730,16 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
                                 return (
                                     <React.Fragment key={fcIndex}>
                                         <circle
-                                            cx={16 + (this.buttonRadius * 1.625) * fcIndex}
-                                            cy={this.buttonRadius - 22}
-                                            r={10}
+                                            cx={16 + (this.buttonRadius * 2.5) * fcIndex}
+                                            cy={this.buttonRadius - 18}
+                                            r={this.buttonRadius}
                                             className={classes.join(" ")}
                                             onClick={() => this._toggleFireControlHit(fcIndex)}
                                         ></circle>
                                     </React.Fragment>
                                 )
                     })}
-                    <text x={5 + (this.buttonRadius * 1.625)*4} y="0" textAnchor="start" className='crit-description'>+2 To Hit Each</text>
+                    <text x={3 + (this.buttonRadius * 2.5)*this.props.asUnit.fireControlHits.length} y="0" textAnchor="start" className='crit-description'>+2 To Hit Each</text>
                     {critLineStart += critLineHeight}
                 </g>
 
@@ -757,16 +757,16 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
                             return (
                                 <React.Fragment key={mpIndex}>
                                     <circle
-                                        cx={16 + (this.buttonRadius * 1.625) * mpIndex}
-                                        cy={this.buttonRadius - 23}
-                                        r={10}
+                                        cx={16 + (this.buttonRadius * 2.5) * mpIndex}
+                                        cy={this.buttonRadius - 18}
+                                        r={this.buttonRadius}
                                         className={classes.join(" ")}
                                         onClick={() => this._toggleMPHit(mpIndex)}
                                     ></circle>
                                 </React.Fragment>
                             )
                         })}
-                        <text x={7 + (this.buttonRadius * 1.625)*4} y="0" textAnchor="start" className='crit-description'>½ Move Each</text>
+                        <text x={5 + (this.buttonRadius * 2.5)*this.props.asUnit.mpControlHits.length} y="0" textAnchor="start" className='crit-description'>½ Move Each</text>
                         {critLineStart += critLineHeight}
                     </g>
                 ) :
@@ -787,16 +787,16 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
                                 return (
                                     <React.Fragment key={whIndex}>
                                         <circle
-                                            cx={16 + (this.buttonRadius * 1.625) * whIndex}
-                                            cy={this.buttonRadius - 22}
-                                            r={10}
+                                            cx={16 + (this.buttonRadius * 2.5) * whIndex}
+                                            cy={this.buttonRadius - 18}
+                                            r={this.buttonRadius}
                                             className={classes.join(" ")}
                                             onClick={() => this._toggleWeaponHit(whIndex)}
                                         ></circle>
                                     </React.Fragment>
                                 )
                     })}
-                    <text x={7 + (this.buttonRadius * 1.625)*4} y="0" textAnchor="start" textRendering={"optimizeLegibility"} className='crit-description'>-1 Damage Each</text>
+                    <text x={3 + (this.buttonRadius * 2.5)*this.props.asUnit.weaponHits.length} y="0" textAnchor="start" textRendering={"optimizeLegibility"} className='crit-description'>-1 Damage Each</text>
                     {critLineStart += critLineHeight}
                 </g>
 
@@ -809,17 +809,17 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
                                 onClick={() => this._toggleVehicle910(0)} 
                                 className={"dot" + (this.props.asUnit.vehicleMotive910[0] ? " active" : "") + (this.props.asUnit.roundVehicleMotive910[0] ? " staged" : "")} 
                                 cx="0" 
-                                cy={this.buttonRadius - 22} 
-                                r={10} 
+                                cy={this.buttonRadius - 18} 
+                                r={this.buttonRadius} 
                             ></circle>
                             <circle 
                                 onClick={() => this._toggleVehicle910(1)} 
                                 className={"dot" + (this.props.asUnit.vehicleMotive910[1] ? " active" : "") + (this.props.asUnit.roundVehicleMotive910[1] ? " staged" : "")} 
-                                cx="24" 
-                                cy={this.buttonRadius - 22} 
-                                r={10} 
+                                cx={this.buttonRadius * 2.5} 
+                                cy={this.buttonRadius - 18} 
+                                r={this.buttonRadius} 
                             ></circle>
-                            <text x="38" y="0" textAnchor="start" className='crit-description'>-2 MV</text>
+                            <text x={(this.buttonRadius * 2)*2} y="0" textAnchor="start" className='crit-description'>-2 MV</text>
                         </g>
 
                         <g transform='translate(225, 0)'>
@@ -827,17 +827,17 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
                                 onClick={() => this._toggleVehicle11(0)} 
                                 className={"dot" + (this.props.asUnit.vehicleMotive11[0] ? " active" : "") + (this.props.asUnit.roundVehicleMotive11[0] ? " staged" : "")} 
                                 cx="0" 
-                                cy={this.buttonRadius - 22} 
-                                r={10} 
+                                cy={this.buttonRadius - 18} 
+                                r={this.buttonRadius} 
                             ></circle>
                             <circle 
                                 onClick={() => this._toggleVehicle11(1)} 
                                 className={"dot" + (this.props.asUnit.vehicleMotive11[1] ? " active" : "") + (this.props.asUnit.roundVehicleMotive11[1] ? " staged" : "")} 
-                                cx="24" 
-                                cy={this.buttonRadius - 22} 
-                                r={10} 
+                                cx={this.buttonRadius * 2.5} 
+                                cy={this.buttonRadius - 18} 
+                                r={this.buttonRadius} 
                             ></circle>
-                            <text x="38" y="0" textAnchor="start" className='crit-description'>½ MV</text>
+                            <text x={(this.buttonRadius * 2)*2} y="0" textAnchor="start" className='crit-description'>½ MV</text>
                         </g>
                         
                         <g transform='translate(342, 0)'>
@@ -845,10 +845,10 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
                                 onClick={() => this._toggleVehicle12()} 
                                 className={"dot" + (this.props.asUnit.vehicleMotive12 ? " active" : "") + (this.props.asUnit.roundVehicleMotive12 ? " staged" : "")} 
                                 cx="0" 
-                                cy={this.buttonRadius - 22} 
-                                r={10} 
+                                cy={this.buttonRadius - 18} 
+                                r={this.buttonRadius}  
                             ></circle>
-                            <text x="14" y="0" textAnchor="start" className='crit-description'>0 MV</text>
+                            <text x={(this.buttonRadius * 1.625)} y="0" textAnchor="start" className='crit-description'>0 MV</text>
                         </g>
                         {critLineStart += critLineHeight}
                     </g>
