@@ -42,7 +42,7 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
           if (this.props.appGlobals.currentASForce) {
             for (let group of this.props.appGlobals.currentASForce.groups) {
               for( let unit of group.members ) {
-                unit.applyRound();
+                unit.applyRound(true);
               }
             }
     

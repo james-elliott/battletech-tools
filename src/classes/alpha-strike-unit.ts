@@ -1631,7 +1631,7 @@ export class AlphaStrikeUnit {
         this.roundHeat = this.roundHeat === newHeatValue ? 0 : newHeatValue;
     }
 
-    public applyRound() {
+    public applyRound( resetMovement: boolean = false ) {
         this.currentHeat = this.roundHeat === this.currentHeat ? 0 : this.roundHeat;
         this.roundHeat = 0;
         this.roundArmor.map( (point, pointIndex) => {
@@ -1686,7 +1686,9 @@ export class AlphaStrikeUnit {
             this.vehicleMotive12 = !this.vehicleMotive12;
         }
         this.roundVehicleMotive12 = false;
-        this.movementType = "";
+        if (resetMovement) {
+            this.movementType = "";
+        }
     }
 
     public takeDamage( numberOfPoints: number ) {
