@@ -171,12 +171,13 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
     ): JSX.Element[] => {
         let dots: JSX.Element[] = []
         // We reduce the number of dots per row to accommodate a threshold number
-        let maxCountInRow = this.props.asUnit && this.props.asUnit.threshold!==0 ? 15 : 17;
+        let maxCountInRow = this.props.asUnit && this.props.asUnit.threshold!==0 ? 14 : 16;
         if (!this.props.inPlay) {
             maxCountInRow = maxCountInRow + 2;
         }
         // If armor is more than 1 row, nudge the display upwards to make room for both above the structure.
-        let yLoc = target === "armor" && this.props.asUnit && this.props.asUnit.armor > maxCountInRow ? -22 : -10;
+        let yLoc = target === "armor" && this.props.asUnit && this.props.asUnit.armor > maxCountInRow ? -22 : -11;
+
         let xLoc = this.props.inPlay ? 4 : 44;
         let radius = this.buttonRadius;
 
@@ -214,8 +215,8 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
                 </React.Fragment>
             )
 
-            if (dotsInRow > maxCountInRow - 1) {
-                yLoc = 2;
+            if (dotsInRow >= maxCountInRow - 1) {
+                yLoc = 4;
                 dotsInRow = 0;
             } else {
                 dotsInRow++;
@@ -622,8 +623,8 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
                         {/* End Armor */}
 
                         {/* Structure */}
-                        <g transform={this.props.asUnit.armor >  (this.props.asUnit && this.props.asUnit.threshold!==0 ? 15 : 17) ? (
-                                this.props.inPlay ? 'translate(56,80)' : 'translate(10,80)'
+                        <g transform={this.props.asUnit.armor >  (this.props.asUnit && this.props.asUnit.threshold!==0 ? 14 : 16) ? (
+                                this.props.inPlay ? 'translate(56,82)' : 'translate(10,82)'
                             ) : (
                                 this.props.inPlay ? 'translate(56,76)' : 'translate(10,76)'
                             )}>
