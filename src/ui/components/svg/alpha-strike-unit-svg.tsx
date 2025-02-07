@@ -18,6 +18,7 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
         super(props);
         this.state = {
             showTakeDamage: false,
+            showMovementOptions: false
         }
         if( this.props.height ) {
             this.height = this.props.height;
@@ -37,6 +38,12 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
     private _toggleTakeDamage = () => {
         this.setState({
             showTakeDamage: !this.state.showTakeDamage,
+        })
+    }
+
+    private _toggleMovementOptions = () => {
+        this.setState({
+            showMovementOptions: !this.state.showMovementOptions,
         })
     }
 
@@ -218,6 +225,168 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
         return dots;
     }
 
+    // Function that creates a movement counter
+    private _movementCounter = (
+        cx1: number = 402, 
+        cy1: number = 152, 
+        cSize: number = 50,
+        key = "?",
+        toggle: Boolean = true
+    ): JSX.Element => {
+
+        // Plot out the hexagon's points relative to the starting position and size.
+        let cx2 = cx1 + cSize*.5;
+        let cy2 = cy1 + 0;
+        let cx3 = cx1 + cSize*.75;
+        let cy3 = cy1 + cSize*.4;
+        let cx4 = cx1 + cSize*.5;
+        let cy4 = cy1 + cSize*.8;
+        let cx5 = cx1 + 0;
+        let cy5 = cy1 + cSize*.8;
+        let cx6 = cx1 - cSize*.25;
+        let cy6 = cy1 + cSize*.4;
+
+        // Concatenate into a string for the SVG
+        let points = cx1 + "," + cy1 + " " + cx2 + "," + cy2 + " " + cx3 + "," + cy3 + " " + cx4 + "," + cy4 + " " + cx5 + "," + cy5 + " " + cx6 + "," + cy6;
+
+        // Calculate the size and placement for text
+        let text = "?";
+        let textX = cx1 + cSize*.25;
+        let textY = cy1 + cSize*.5 + cSize*.1;
+        let textSize = cSize * .6;
+        let classes = "cursor-pointer move-token";
+
+
+        // Separate concerns, is this a toggle? is this set already?
+        if (toggle && this.props && this.props.asUnit && this.props.asUnit.movementType) {
+            text = this.props.asUnit.movementType.charAt(0).toUpperCase();
+            key = this.props.asUnit.movementType.toLowerCase();
+        } else if (!toggle) {
+            text = key.charAt(0).toUpperCase() + key.slice(1);;
+            textY = textY - 34;
+        }
+        
+        classes = classes + " " + key;
+        classes = (toggle) ? classes : classes + " big";
+
+        let fragment = (toggle) ?
+            <React.Fragment
+                key={key}
+            >
+                <polygon className={classes} onClick={() => this._toggleMovementOptions()} points={points} />
+                <text className={classes} onClick={() => this._toggleMovementOptions()} x={textX} y={textY} textAnchor="middle" width="150" fontFamily="sans-serif" fontSize={textSize}>{text}</text>
+            </React.Fragment>
+        :
+            <React.Fragment
+                key={key}
+            >
+                <polygon className={classes} onClick={() => this._setMovement(key)} points={points} />
+                <text className={classes} onClick={() => this._setMovement(key)} x={textX} y={textY} textAnchor="middle" width="150" fontFamily="sans-serif" fontSize={54}>{text}</text>
+            </React.Fragment>
+        ;
+
+        if (this.props.asUnit?.immobile) {
+                    fragment = <React.Fragment
+                    key={key}
+                >
+                    <polygon className="move-token" points={points} />
+                    <text className="move-token" x={textX} y={textY} textAnchor="middle" width="150" fontFamily="sans-serif" fontSize={textSize}>I</text>
+                </React.Fragment>
+        }
+
+
+        return fragment;
+    }
+
+    private _movementOptions = (
+
+    ): JSX.Element[] => {
+        let options: JSX.Element[] = []
+
+        let moveOptions = this.props.inPlay && this.props.asUnit ? this.props.asUnit.move : [];
+        if (this.props.asUnit?.isAerospace === false) {
+
+            options.push(
+                this._movementCounter(120,70,280,'standstill',false)
+            )
+            if (moveOptions[0].currentMove > 0) {
+                options.push(
+                    this._movementCounter(430,70,280,'ground',false)
+                )
+                options.push(
+                    this._movementCounter(750,70,280,'sprint',false)
+                )
+            }
+
+            for( let currentMove = 0; moveOptions.length > currentMove; currentMove++ ) {
+
+                // Add a jump option where applicable
+                if (moveOptions[currentMove].type === 'j') {
+                    options.push(
+                        this._movementCounter(430,340,280,'jump',false)
+                    )
+                }  
+            }
+        } else {
+            // Add the available heights for flight.
+            options.push(
+                this._movementCounter(120,70,280,'low',false)
+            )
+            options.push(
+                this._movementCounter(430,70,280,'middle',false)
+            )
+            options.push(
+                this._movementCounter(740,70,280,'high',false)
+            )
+            options.push(
+                this._movementCounter(270,340,280,'extreme',false)
+            )
+            options.push(
+                this._movementCounter(590,340,280,'grounded',false)
+            )
+        }
+
+        return options;
+    }
+
+    private _setMovement = (type: string): void => {
+        if( this.props.inPlay && this.props.asUnit ) {
+            this.props.asUnit.movementType = type;
+            this.props.asUnit.calcCurrentValues();
+            this.props.appGlobals.saveCurrentASForce( this.props.appGlobals.currentASForce );
+        }
+        this.setState({
+            showMovementOptions: false,
+        })
+    }
+
+    private _splitAbilities = ( val: string ): string[][] => {
+        val = val.trim();
+        let words = val.split(",");
+        let rv: string[][] = [];
+        let line: string[] = [];
+
+
+
+
+        for( let word of words ) {
+
+            word = word.trim();
+            if( word ) {
+                if( line.length + word.length + 1 > 55 ) {
+                    rv.push( line );
+                    line = [];
+                }
+
+                line.push(word);
+
+            }
+        }
+        rv.push( line );
+
+        return rv;
+    }
+
     render = (): JSX.Element => {
         if( !this.props.asUnit ) {
             return <></>
@@ -318,6 +487,8 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
                     <g transform="translate(10, 80)">
                         <text x="0" y="0" className='data-pair'><tspan>ROLE: </tspan>{this.props.asUnit.role.toUpperCase()}</text>
                         <text x="518" y="0" className='data-pair' textAnchor='end'><tspan>SKILL: </tspan>{this.props.asUnit.currentSkill}</text>
+                        {/* Movement Token */}
+                        <> {this.props.inPlay ? this._movementCounter() : null} </>
                     </g>
                 </g>
 
@@ -721,6 +892,12 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
 
                 {/* End Critical Hits */}
 
+                {this.state.showMovementOptions ? (
+                    <>
+                        {this._movementOptions()};
+                    </>
+                )  : null}
+
                 {this.props.asUnit.isWrecked() ? (
                     <>
                     <text x="0" y="100" fontFamily="sans-serif" transform="rotate( 30, -100, 260)" fontSize="200" stroke="rgb(0,0,0)" strokeWidth="4" fill="rgb(200,0,0)" pointerEvents="none">WRECKED</text>
@@ -771,5 +948,5 @@ interface IAlphaStrikeUnitSVGProps {
 
 interface IAlphaStrikeUnitSVGState {
     showTakeDamage: boolean;
-
+    showMovementOptions: boolean;
 }
