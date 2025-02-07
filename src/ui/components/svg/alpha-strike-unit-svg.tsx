@@ -270,25 +270,20 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
         classes = (toggle) ? classes : classes + " big";
 
         let fragment = (toggle) ?
-            <React.Fragment
-                key={key}
-            >
+            <React.Fragment key={key} >
                 <polygon className={classes} onClick={() => this._toggleMovementOptions()} points={points} />
                 <text className={classes} onClick={() => this._toggleMovementOptions()} x={textX} y={textY} textAnchor="middle" width="150" fontFamily="sans-serif" fontSize={textSize}>{text}</text>
             </React.Fragment>
         :
-            <React.Fragment
-                key={key}
-            >
+            <React.Fragment key={key} >
                 <polygon className={classes} onClick={() => this._setMovement(key)} points={points} />
                 <text className={classes} onClick={() => this._setMovement(key)} x={textX} y={textY} textAnchor="middle" width="150" fontFamily="sans-serif" fontSize={54}>{text}</text>
             </React.Fragment>
         ;
 
         if (this.props.asUnit?.immobile) {
-                    fragment = <React.Fragment
-                    key={key}
-                >
+            fragment = 
+                <React.Fragment key={key} >
                     <polygon className="move-token" points={points} />
                     <text className="move-token" x={textX} y={textY} textAnchor="middle" width="150" fontFamily="sans-serif" fontSize={textSize}>I</text>
                 </React.Fragment>
@@ -307,14 +302,14 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
         if (this.props.asUnit?.isAerospace === false) {
 
             options.push(
-                this._movementCounter(120,70,280,'standstill',false)
+                this._movementCounter(145,120,280,'standstill',false)
             )
             if (moveOptions[0].currentMove > 0) {
                 options.push(
-                    this._movementCounter(430,70,280,'ground',false)
+                    this._movementCounter(455,120,280,'ground',false)
                 )
                 options.push(
-                    this._movementCounter(750,70,280,'sprint',false)
+                    this._movementCounter(775,120,280,'sprint',false)
                 )
             }
 
@@ -323,26 +318,26 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
                 // Add a jump option where applicable
                 if (moveOptions[currentMove].type === 'j') {
                     options.push(
-                        this._movementCounter(430,340,280,'jump',false)
+                        this._movementCounter(455,410,280,'jump',false)
                     )
                 }  
             }
         } else {
             // Add the available heights for flight.
             options.push(
-                this._movementCounter(120,70,280,'low',false)
+                this._movementCounter(145,120,280,'low',false)
             )
             options.push(
-                this._movementCounter(430,70,280,'middle',false)
+                this._movementCounter(455,120,280,'middle',false)
             )
             options.push(
-                this._movementCounter(740,70,280,'high',false)
+                this._movementCounter(765,120,280,'high',false)
             )
             options.push(
-                this._movementCounter(270,340,280,'extreme',false)
+                this._movementCounter(295,410,280,'extreme',false)
             )
             options.push(
-                this._movementCounter(590,340,280,'grounded',false)
+                this._movementCounter(615,410,280,'grounded',false)
             )
         }
 
@@ -358,33 +353,6 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
         this.setState({
             showMovementOptions: false,
         })
-    }
-
-    private _splitAbilities = ( val: string ): string[][] => {
-        val = val.trim();
-        let words = val.split(",");
-        let rv: string[][] = [];
-        let line: string[] = [];
-
-
-
-
-        for( let word of words ) {
-
-            word = word.trim();
-            if( word ) {
-                if( line.length + word.length + 1 > 55 ) {
-                    rv.push( line );
-                    line = [];
-                }
-
-                line.push(word);
-
-            }
-        }
-        rv.push( line );
-
-        return rv;
     }
 
     render = (): JSX.Element => {
