@@ -12,11 +12,6 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
     damageLeftBase = 0;
     buttonRadius = 15;
 
-    activeDotColor = "rgb(200,0,0)";
-    roundDotColor = "rgb(0,180,180)";
-    roundStrokeColor = "rgb(0,140,140)";
-    roundActiveColor = "rgb(230,255,255)";
-
     critLineHeight = 50;
 
     constructor(props: IAlphaStrikeUnitSVGProps) {
@@ -172,7 +167,6 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
     }
 
     private _makeArmorDots = (
-        radius: number = 0,
         target: string = "armor",
     ): JSX.Element[] => {
         let dots: JSX.Element[] = []
@@ -183,11 +177,8 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
         }
         // If armor is more than 1 row, nudge the display upwards to make room for both above the structure.
         let yLoc = target === "armor" && this.props.asUnit && this.props.asUnit.armor > maxCountInRow ? -22 : -10;
-        let xLoc = this.props.inPlay ? 0 : 40;
-
-        if( radius === 0 ) {
-            radius = this.buttonRadius - 5;
-        }
+        let xLoc = this.props.inPlay ? 4 : 44;
+        let radius = 10;
 
         let dotArray: boolean[] = [];
         let roundDotArray: boolean[] = [];
@@ -201,37 +192,36 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
             }
         }
 
+        let dotsInRow = 0;
         dotArray.map( (point, pointIndex) => {
-            let fillColor = target === "armor" ? "rgb(255,255,255)" :"rgb(153,153,153)";
-            let strokeColor = "rgb(0,0,0)";
-
-            if (this.props.inPlay) {
-                if (roundDotArray[pointIndex]) {
-                    fillColor = !point ? this.roundDotColor : this.roundActiveColor;
-                    strokeColor = this.roundStrokeColor;
-                } else {
-                    fillColor = point ? this.activeDotColor : fillColor;
-                }
+            let classes = ["dot"];
+            classes.push(target);
+            if (roundDotArray[pointIndex]) {
+                classes.push("staged");
+            }
+            if (point) {
+                classes.push("active");
             }
 
             dots.push(
                 <React.Fragment key={pointIndex}>
-                    <circle className={this.props.inPlay ? "cursor-pointer" : ""}
-                        cx={this.damageLeftBase + xLoc + (pointIndex * (radius * 2 + 9)) }
-                        cy={yLoc}
-                        r={radius + 3}
-                        fill={strokeColor}
-                        onClick={() => this._toggleArmorOrStructure( target, pointIndex )}
-                    />
-                    <circle className={this.props.inPlay ? "cursor-pointer" : ""}
-                        cx={this.damageLeftBase + xLoc + (pointIndex * (radius * 2 + 9)) }
+                    <circle className={classes.join(" ")}
+                        cx={this.damageLeftBase + xLoc + (dotsInRow * (radius * 2 + radius/2)) }
                         cy={yLoc}
                         r={radius}
-                        fill={fillColor}
                         onClick={() => this._toggleArmorOrStructure( target, pointIndex )}
                     />
                 </React.Fragment>
             )
+
+            if (dotsInRow > maxCountInRow - 1) {
+                yLoc = 2;
+                dotsInRow = 0;
+            } else {
+                dotsInRow++;
+            }
+
+            return null;
         })
 
         return dots;
@@ -394,10 +384,16 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
         return (
 
             <>
-                <svg className={"alpha-strike-card unit-type-" + this.props.asUnit.type.toLowerCase() + " " + this.props.className} version="1.1" x="0px" y="0px" viewBox="0 0 1050 750" xmlns="http://www.w3.org/2000/svg">
+                <svg className={"alpha-strike-card unit-type-" + this.props.asUnit.type.toLowerCase() + (this.props.className ? " " + this.props.className : "") + (this.props.inPlay ? " in-play" : "")} version="1.1" x="0px" y="0px" viewBox="0 0 1050 750" xmlns="http://www.w3.org/2000/svg">
                 
+                <defs>
+                    <clipPath id="heat-shape">
+                        <rect x="0" y="0" rx="15" ry="15" width="209" height="45" />
+                    </clipPath>
+                </defs>
+
                 <rect x="0" y="0" width="100%" height="100%" fill="rgb(35,31,32)"></rect>
-                <rect x="20" y="20" style={{zIndex: -1}} width="1010" height="710" fill={this.props.asUnit.isWrecked() ? this.activeDotColor : "rgb(255,255,255)"}></rect>                    
+                <rect x="20" y="20" style={{zIndex: -1}} width="1010" height="710" className={this.props.asUnit.isWrecked() ? 'active' : 'unit-background'}></rect>                    
 
                 {this.props.asUnit.imageURL ? (
                     <image x="770" y="100" href={this.props.asUnit.imageURL} className="unit-portrait"></image>
@@ -513,77 +509,54 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
                     <rect x="99" y="14" width="2" height="34" fill="rgb(0,0,0)"></rect>
                     <text x="112" y="41" className='data-pair'>HEAT SCALE</text>
 
-                    <g transform="translate(310, 7)">
-                    <rect x="0" y="0" width="212" height="46" fill="rgb(0,0,0)" stroke="rgb(0,0,0)" strokeWidth={3} rx="15" ry="15"></rect>
+                    <g transform="translate(310, 5)">
+                        <rect x="0" y="0" width="215" height="50" fill="rgb(0,0,0)" rx="17" ry="17"></rect>
 
-                    {/* 1 Heat */}
+                    <g transform="translate(3,3)" clipPath='url(#heat-shape)'>
+                        {/* 1 Heat */}
                         <rect
-                            onClick={() => this._setHeat(this.props.inPlay && this.props.asUnit && this.props.asUnit.currentHeat === 1 ? 0 : 1)}
-                            className={this.props.inPlay && this.props.asUnit ? "cursor-pointer" : ""}
-                            x="1"
-                            y="1"
-                            width="30"
+                            onClick={() => this._setHeat(1)}
+                            className={"heat heat-1" + (this.props.asUnit.currentHeat === 1 ? " active" : "") + (this.props.asUnit.roundHeat === 1 ? " staged" : "")} 
+                            x="0"
+                            y="0"
+                            width="50"
                             height="44"
-                            rx="15"
-                            fill={this.props.inPlay && this.props.asUnit && this.props.asUnit.currentHeat === 1 ? "rgb(204, 187, 0)" : this.props.inPlay && this.props.asUnit.roundHeat === 1 ? this.roundDotColor : "rgb(102,102,102)"}
                         ></rect>
-                        <rect
-                            onClick={() => this._setHeat(this.props.inPlay && this.props.asUnit && this.props.asUnit.currentHeat === 1 ? 0 : 1)}
-                            className={this.props.inPlay && this.props.asUnit ? "cursor-pointer" : ""}
-                            x="16"
-                            y="1"
-                            width="35"
-                            height="44"
-                            fill={this.props.inPlay && this.props.asUnit && this.props.asUnit.currentHeat === 1 ? "rgb(204, 187, 0)" : this.props.inPlay && this.props.asUnit.roundHeat === 1 ? this.roundDotColor : "rgb(102,102,102)"}
-                        ></rect>
-                        <text onClick={() => this._setHeat(this.props.inPlay && this.props.asUnit && this.props.asUnit.currentHeat === 1 ? 0 : 1)} className={this.props.inPlay && this.props.asUnit ? "heat-text cursor-pointer" : "heat-text"} x="26" y="34" textAnchor="middle">1</text>
+                        <text onClick={() => this._setHeat(1)} className={this.props.inPlay && this.props.asUnit ? "heat-text cursor-pointer" : "heat-text"} x="25" y="34" textAnchor="middle">1</text>
 
                         {/* 2 Heat */}
                         <rect
-                            onClick={() => this._setHeat(this.props.inPlay && this.props.asUnit && this.props.asUnit.currentHeat === 2 ? 0 : 2)}
-                            className={this.props.inPlay && this.props.asUnit ? "cursor-pointer" : ""}
-                            x="54"
-                            y="1"
+                            onClick={() => this._setHeat(2)}
+                            className={"heat heat-2" + (this.props.asUnit.currentHeat === 2 ? " active" : "") + (this.props.asUnit.roundHeat === 2 ? " staged" : "")} 
+                            x="53"
+                            y="0"
                             width="50"
                             height="44"
-                            fill={this.props.inPlay && this.props.asUnit && this.props.asUnit.currentHeat === 2 ? "rgb(236,87,16)" : this.props.inPlay && this.props.asUnit.roundHeat === 2 ? this.roundDotColor : "rgb(102,102,102)"}
                         ></rect>
-                        <text onClick={() => this._setHeat(this.props.inPlay && this.props.asUnit && this.props.asUnit.currentHeat === 2 ? 0 : 2)} className={this.props.inPlay && this.props.asUnit ? "heat-text cursor-pointer" : "heat-text"} x="79" y="34" textAnchor="middle">2</text>
+                        <text onClick={() => this._setHeat(2)} className={this.props.inPlay && this.props.asUnit ? "heat-text cursor-pointer" : "heat-text"} x="78" y="34" textAnchor="middle">2</text>
 
                         {/* 3 Heat */}
                         <rect
-                        onClick={() => this._setHeat(this.props.inPlay && this.props.asUnit && this.props.asUnit.currentHeat === 3 ? 0 : 3)}
-                        className={this.props.inPlay && this.props.asUnit ? "cursor-pointer" : ""}
-                            x="107"
-                            y="1"
+                            onClick={() => this._setHeat(3)}
+                            className={"heat heat-3" + (this.props.asUnit.currentHeat === 3 ? " active" : "") + (this.props.asUnit.roundHeat === 3 ? " staged" : "")} 
+                            x="106"
+                            y="0"
                             width="50"
                             height="44"
-                            fill={this.props.inPlay && this.props.asUnit && this.props.asUnit.currentHeat === 3 ? "rgb(200,0,0)" : "rgb(102,102,102)"}
                         ></rect>
-                        <text onClick={() => this._setHeat(this.props.inPlay && this.props.asUnit && this.props.asUnit.currentHeat === 3 ? 0 : 3)} className={this.props.inPlay && this.props.asUnit ? "heat-text cursor-pointer" : "heat-text"} x="132" y="34" textAnchor="middle">3</text>
+                        <text onClick={() => this._setHeat(3)} className={this.props.inPlay && this.props.asUnit ? "heat-text cursor-pointer" : "heat-text"} x="131" y="34" textAnchor="middle">3</text>
 
                         {/* Shutdown Heat */}
                         <rect
-                            onClick={() => this._setHeat(this.props.inPlay && this.props.asUnit && this.props.asUnit.currentHeat === 4 ? 0 : 4)}
-                            className={this.props.inPlay && this.props.asUnit ? "cursor-pointer" : ""}
-                            x="160"
-                            y="1"
-                            width="35"
+                            onClick={() => this._setHeat(4)}
+                            className={"heat heat-4" + (this.props.asUnit.currentHeat === 4 ? " active" : "") + (this.props.asUnit.roundHeat === 4 ? " staged" : "")} 
+                            x="159"
+                            y="0"
+                            width="50"
                             height="44"
-                            fill={this.props.inPlay && this.props.asUnit && this.props.asUnit.currentHeat > 3 ? "rgb(255,10,10)" : this.props.inPlay && this.props.asUnit.roundHeat > 3 ? this.roundDotColor : "rgb(102,102,102)"}
                         ></rect>
-                        <rect
-                            onClick={() => this._setHeat(this.props.inPlay && this.props.asUnit && this.props.asUnit.currentHeat === 4 ? 0 : 4)}
-                            className={this.props.inPlay && this.props.asUnit ? "cursor-pointer" : ""}
-                            x="180"
-                            y="1"
-                            width="30"
-                            height="44"
-                            rx="15"
-                            ry="15"
-                            fill={this.props.inPlay && this.props.asUnit && this.props.asUnit.currentHeat > 3 ? "rgb(255,10,10)" : this.props.inPlay && this.props.asUnit.roundHeat > 3 ? this.roundDotColor : "rgb(102,102,102)"}
-                        ></rect>
-                        <text onClick={() => this._setHeat(this.props.inPlay && this.props.asUnit && this.props.asUnit.currentHeat === 4 ? 0 : 4)} className={this.props.inPlay && this.props.asUnit ? "heat-text cursor-pointer" : "heat-text"} x="185" y="34" textAnchor="middle">S</text>
+                        <text onClick={() => this._setHeat(4)} className={this.props.inPlay && this.props.asUnit ? "heat-text cursor-pointer" : "heat-text"} x="184" y="34" textAnchor="middle">S</text>
+                    </g>
                     </g>
                 </g>
                 ) : null}
@@ -644,10 +617,7 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
                         {/* Armor */}
                         <g transform={this.props.inPlay ? 'translate(56,38)' : 'translate(10,38)'}>
                             <text x="0" y="0" className='data-pair'><tspan>A:</tspan></text>
-                            {this._makeArmorDots(
-                                0,
-                                "armor",
-                            )}
+                            {this._makeArmorDots( "armor" )}
                         </g>
                         {/* End Armor */}
 
@@ -658,16 +628,13 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
                                 this.props.inPlay ? 'translate(56,76)' : 'translate(10,76)'
                             )}>
                             <text x="0" y="0" className='data-pair'><tspan>S:</tspan></text>
-                            {this._makeArmorDots(
-                                0,
-                                "structure",
-                            )}
+                            {this._makeArmorDots(  "structure" )}
                         </g>
                         {/* End Structure */}
 
                         {/* Threshold Display */}
                         {this.props.asUnit.threshold!==0 ? (
-                            <g transform='translate(503, 36)' className='data-pair'>
+                            <g transform='translate(508, 36)' className='data-pair'>
                                 <text x="0" y="0" textAnchor="middle"><tspan>TH</tspan></text>
                                 <text x="0" y="40" textAnchor="middle" className='threshold'>{this.props.asUnit.threshold}</text>
                             </g>
@@ -719,144 +686,172 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
                 {/* End Outline Box and Title */}
 
                 {this.props.asUnit.type.toLowerCase() !== "pm" ? (
-                    <>
-                        <text x="144" y={critLineStart} textAnchor="end" className='crit-label'>ENGINE</text>
+                    <g transform={'translate(148, ' + critLineStart + ')'}>
+                        <text x="0" y="0" textAnchor="end" className='crit-label'>ENGINE</text>
 
                         {this.props.asUnit.engineHits.map( (ehValue, ehIndex) => {
-                            let fillColor = this.props.inPlay && this.props.asUnit?.roundEngineHits[ehIndex] ? this.roundDotColor : "rgb(255,255,255)";
-                            let strokeColor = this.props.inPlay && this.props.asUnit?.roundEngineHits[ehIndex] ? this.roundStrokeColor : "rgb(0,0,0)";
-                            if( this.props.inPlay && ehValue ) {
-                                fillColor = this.props.asUnit?.roundEngineHits[ehIndex] ? this.roundActiveColor : this.activeDotColor;
+                            let classes = ["dot"];
+                            if (this.props.asUnit?.roundEngineHits[ehIndex]) {
+                                classes.push("staged");
+                            }
+                            if (ehValue) {
+                                classes.push("active");
                             }
                             return (
                                 <React.Fragment key={ehIndex}>
                                     <circle
-                                        cx={161 + (this.buttonRadius * 1.8 + 1) * ehIndex}
-                                        cy={critLineStart - 27 + this.buttonRadius + 4}
-                                        r={this.buttonRadius - 3}
-                                        fill={fillColor}
-                                        stroke={strokeColor}
-                                        strokeWidth={2}
-                                        className={this.props.inPlay ? "cursor-pointer" : ""}
+                                        cx={16 + (this.buttonRadius * 1.625) * ehIndex}
+                                        cy={this.buttonRadius - 22}
+                                        r={10}
+                                        className={classes.join(" ")}
                                         onClick={() => this._toggleEngineHit(ehIndex)}
                                     ></circle>
                                 </React.Fragment>
                             )
                         })}
 
-                        <text x={151 + (this.buttonRadius * 1.8)*2} y={critLineStart} textAnchor="start" className='crit-description'>{this.props.asUnit.type.toLowerCase() === 'cv' ||  this.props.asUnit.type.toLowerCase() === 'sv' ? "½ MV and Damage" : "+1 Heat/Firing Weapons"}</text>
+                        <text x={5 + (this.buttonRadius * 1.625)*2} y="0" textAnchor="start" className='crit-description'>{this.props.asUnit.type.toLowerCase() === 'cv' ||  this.props.asUnit.type.toLowerCase() === 'sv' ? "½ MV and Damage" : "+1 Heat/Firing Weapons"}</text>
                         {critLineStart += critLineHeight}
-                    </>
+                    </g>
                 ) : (
                     <></>
                 )}
 
-                <text x="144" y={critLineStart} textAnchor="end" className='crit-label'>FIRE CONTROL</text>
-                {this.props.asUnit.fireControlHits.map( (fcValue, fcIndex) => {
-                            let fillColor = this.props.inPlay && this.props.asUnit?.roundFireControlHits[fcIndex] ? this.roundDotColor : "rgb(255,255,255)";
-                            let strokeColor = this.props.inPlay && this.props.asUnit?.roundFireControlHits[fcIndex] ? this.roundStrokeColor : "rgb(0,0,0)";
-                            if( this.props.inPlay &&  fcValue ) {
-                                fillColor = this.props.asUnit?.roundFireControlHits[fcIndex] ? this.roundActiveColor : this.activeDotColor;
-                            }
-                            return (
-                                <React.Fragment key={fcIndex}>
-                                    <circle
-                                        cx={161 + (this.buttonRadius * 1.8 + 1) * fcIndex}
-                                        cy={critLineStart - 27 + this.buttonRadius + 4}
-                                        r={this.buttonRadius - 3}
-                                        fill={fillColor}
-                                        stroke={strokeColor}
-                                        strokeWidth={2}
-                                        className={this.props.inPlay ? "cursor-pointer" : ""}
-                                        onClick={() => this._toggleFireControlHit(fcIndex)}
-                                    ></circle>
-                                </React.Fragment>
-                            )
-                })}
-                <text x={152 + (this.buttonRadius * 1.8)*4} y={critLineStart} textAnchor="start" className='crit-description'>+2 To Hit Each</text>
-                {critLineStart += critLineHeight}
+                <g transform={'translate(148, ' + critLineStart + ')'}>
+                    <text x="0" y="0" textAnchor="end" className='crit-label'>FIRE CONTROL</text>
+                    {this.props.asUnit.fireControlHits.map( (fcValue, fcIndex) => {
+                                let classes = ["dot"];
+                                if (this.props.asUnit?.roundFireControlHits[fcIndex]) {
+                                    classes.push("staged");
+                                }
+                                if (fcValue) {
+                                    classes.push("active");
+                                }
+                                return (
+                                    <React.Fragment key={fcIndex}>
+                                        <circle
+                                            cx={16 + (this.buttonRadius * 1.625) * fcIndex}
+                                            cy={this.buttonRadius - 22}
+                                            r={10}
+                                            className={classes.join(" ")}
+                                            onClick={() => this._toggleFireControlHit(fcIndex)}
+                                        ></circle>
+                                    </React.Fragment>
+                                )
+                    })}
+                    <text x={5 + (this.buttonRadius * 1.625)*4} y="0" textAnchor="start" className='crit-description'>+2 To Hit Each</text>
+                    {critLineStart += critLineHeight}
+                </g>
 
                 {this.props.asUnit.type.toLowerCase() === 'bm' || this.props.asUnit.type.toLowerCase() === 'pm' ? (
-                    <>
-                        <text x="144" y={critLineStart} textAnchor="end" className='crit-label'>MP</text>
+                    <g transform={'translate(148, ' + critLineStart + ')'}>
+                        <text x="0" y="0" textAnchor="end" className='crit-label'>MP</text>
                         {this.props.asUnit.mpControlHits.map( (mpValue, mpIndex) => {
-                            let fillColor = this.props.inPlay && this.props.asUnit?.roundMpControlHits[mpIndex] ? this.roundDotColor : "rgb(255,255,255)";
-                            let strokeColor = this.props.inPlay && this.props.asUnit?.roundMpControlHits[mpIndex] ? this.roundStrokeColor : "rgb(0,0,0)";
-                            if( this.props.inPlay &&  mpValue ) {
-                                fillColor = this.props.asUnit?.roundMpControlHits[mpIndex] ? this.roundActiveColor : this.activeDotColor;
+                            let classes = ["dot"];
+                            if (this.props.asUnit?.roundMpControlHits[mpIndex]) {
+                                classes.push("staged");
+                            }
+                            if (mpValue) {
+                                classes.push("active");
                             }
                             return (
                                 <React.Fragment key={mpIndex}>
                                     <circle
-                                        cx={161 + (this.buttonRadius * 1.8 + 1) * mpIndex}
-                                        cy={critLineStart - 27 + this.buttonRadius + 4}
-                                        r={this.buttonRadius - 3}
-                                        fill={fillColor}
-                                        stroke={strokeColor}
-                                        strokeWidth={2}
-                                        className={this.props.inPlay ? "cursor-pointer" : ""}
+                                        cx={16 + (this.buttonRadius * 1.625) * mpIndex}
+                                        cy={this.buttonRadius - 23}
+                                        r={10}
+                                        className={classes.join(" ")}
                                         onClick={() => this._toggleMPHit(mpIndex)}
                                     ></circle>
                                 </React.Fragment>
                             )
                         })}
-                        <text x={153 + (this.buttonRadius * 1.8)*4} y={critLineStart} textAnchor="start" className='crit-description'>½ Move Each</text>
+                        <text x={7 + (this.buttonRadius * 1.625)*4} y="0" textAnchor="start" className='crit-description'>½ Move Each</text>
                         {critLineStart += critLineHeight}
-                    </>
+                    </g>
                 ) :
                 (
                     <></>
                 )}
 
-                <text x="144" y={critLineStart} textAnchor="end" className='crit-label'>WEAPONS</text>
-                {this.props.asUnit.weaponHits.map( (whValue, whIndex) => {
-                            let fillColor = this.props.inPlay && this.props.asUnit?.roundWeaponHits[whIndex] ? this.roundDotColor : "rgb(255,255,255)";
-                            let strokeColor = this.props.inPlay && this.props.asUnit?.roundWeaponHits[whIndex] ? this.roundStrokeColor : "rgb(0,0,0)";
-                            if( whValue && this.props.inPlay ) {
-                                fillColor = this.props.inPlay && this.props.asUnit?.roundWeaponHits[whIndex] ? this.roundActiveColor : this.activeDotColor;
-                            }
-                            return (
-                                <React.Fragment key={whIndex}>
-                                    <circle
-                                        cx={161 + (this.buttonRadius * 1.8 + 1) * whIndex}
-                                        cy={critLineStart - 27 + this.buttonRadius + 4}
-                                        r={this.buttonRadius - 3}
-                                        fill={fillColor}
-                                        stroke={strokeColor}
-                                        strokeWidth={2}
-                                        className={this.props.inPlay ? "cursor-pointer" : ""}
-                                        onClick={() => this._toggleWeaponHit(whIndex)}
-                                    ></circle>
-                                </React.Fragment>
-                            )
-                })}
-                <text x={153 + (this.buttonRadius * 1.8)*4} y={critLineStart} textAnchor="start" textRendering={"optimizeLegibility"} className='crit-description'>-1 Damage Each</text>
-                {critLineStart += critLineHeight}
+                <g transform={'translate(148, ' + critLineStart + ')'}>
+                    <text x="0" y="0" textAnchor="end" className='crit-label'>WEAPONS</text>
+                    {this.props.asUnit.weaponHits.map( (whValue, whIndex) => {
+                                let classes = ["dot"];
+                                if (this.props.asUnit?.roundWeaponHits[whIndex]) {
+                                    classes.push("staged");
+                                }
+                                if (whValue) {
+                                    classes.push("active");
+                                }
+                                return (
+                                    <React.Fragment key={whIndex}>
+                                        <circle
+                                            cx={16 + (this.buttonRadius * 1.625) * whIndex}
+                                            cy={this.buttonRadius - 22}
+                                            r={10}
+                                            className={classes.join(" ")}
+                                            onClick={() => this._toggleWeaponHit(whIndex)}
+                                        ></circle>
+                                    </React.Fragment>
+                                )
+                    })}
+                    <text x={7 + (this.buttonRadius * 1.625)*4} y="0" textAnchor="start" textRendering={"optimizeLegibility"} className='crit-description'>-1 Damage Each</text>
+                    {critLineStart += critLineHeight}
+                </g>
 
-                {this.props.asUnit.type.toLowerCase() === 'cv' ||  this.props.asUnit.type.toLowerCase() === 'sv'? (
-                    <>  
-                        <g transform={"translate(0, " + (critLineStart - 2) + ")"}>
-                            <text x="16" y="0" textAnchor="start" className='crit-label'>MOTIVE</text>
+                {this.props.asUnit.type.toLowerCase() === 'cv' ||  this.props.asUnit.type.toLowerCase() === 'sv'? (  
+                    <g transform={"translate(6, " + (critLineStart - 2) + ")"}>
+                        <text x="16" y="0" textAnchor="start" className='crit-label'>MOTIVE</text>
 
-                            <g transform='translate(112, 0)'>
-                                <circle onClick={() => this._toggleVehicle910(0)} className="" cx="0" cy={this.buttonRadius - 23} r={this.buttonRadius - 3} fill={this.props.inPlay && this.props.asUnit.vehicleMotive910[0] ? this.props.asUnit.roundVehicleMotive910[0] ? this.roundActiveColor : this.activeDotColor : this.props.inPlay && this.props.asUnit.roundVehicleMotive910[0] ? this.roundDotColor : "rgb(255,255,255)"} stroke={this.props.inPlay && this.props.asUnit.roundVehicleMotive910[0] ? this.roundStrokeColor : "rgb(0,0,0)"} strokeWidth={2}></circle>
-                                <circle onClick={() => this._toggleVehicle910(1)} className="" cx="28" cy={this.buttonRadius - 23} r={this.buttonRadius - 3} fill={this.props.inPlay && this.props.asUnit.vehicleMotive910[1] ? this.props.asUnit.roundVehicleMotive910[1] ? this.roundActiveColor : this.activeDotColor : this.props.inPlay && this.props.asUnit.roundVehicleMotive910[1] ? this.roundDotColor : "rgb(255,255,255)"} stroke={this.props.inPlay && this.props.asUnit.roundVehicleMotive910[1] ? this.roundStrokeColor : "rgb(0,0,0)"} strokeWidth={2}></circle>
-                                <text x="44" y="0" textAnchor="start" className='crit-description'>-2 MV</text>
-                            </g>
+                        <g transform='translate(108, 0)'>
+                            <circle 
+                                onClick={() => this._toggleVehicle910(0)} 
+                                className={"dot" + (this.props.asUnit.vehicleMotive910[0] ? " active" : "") + (this.props.asUnit.roundVehicleMotive910[0] ? " staged" : "")} 
+                                cx="0" 
+                                cy={this.buttonRadius - 22} 
+                                r={10} 
+                            ></circle>
+                            <circle 
+                                onClick={() => this._toggleVehicle910(1)} 
+                                className={"dot" + (this.props.asUnit.vehicleMotive910[1] ? " active" : "") + (this.props.asUnit.roundVehicleMotive910[1] ? " staged" : "")} 
+                                cx="24" 
+                                cy={this.buttonRadius - 22} 
+                                r={10} 
+                            ></circle>
+                            <text x="38" y="0" textAnchor="start" className='crit-description'>-2 MV</text>
+                        </g>
 
-                            <g transform='translate(230, 0)'>
-                                <circle onClick={() => this._toggleVehicle11(0)} className="" cx="0" cy={this.buttonRadius - 23} r={this.buttonRadius - 3} fill={this.props.inPlay && this.props.asUnit.vehicleMotive11[0] ? this.props.asUnit.roundVehicleMotive11[0] ? this.roundActiveColor : this.activeDotColor : this.props.inPlay && this.props.asUnit.roundVehicleMotive11[0] ? this.roundDotColor : "rgb(255,255,255)"} stroke={this.props.inPlay && this.props.asUnit.roundVehicleMotive11[0] ? this.roundStrokeColor : "rgb(0,0,0)"} strokeWidth={2}></circle>
-                                <circle onClick={() => this._toggleVehicle11(1)} className="" cx="28" cy={this.buttonRadius - 23} r={this.buttonRadius - 3} fill={this.props.inPlay && this.props.asUnit.vehicleMotive11[1] ? this.props.asUnit.roundVehicleMotive11[1] ? this.roundActiveColor : this.activeDotColor : this.props.inPlay && this.props.asUnit.roundVehicleMotive11[1] ? this.roundDotColor : "rgb(255,255,255)"} stroke={this.props.inPlay && this.props.asUnit.roundVehicleMotive11[1] ? this.roundStrokeColor : "rgb(0,0,0)"} strokeWidth={2}></circle>
-                                <text x="44" y="0" textAnchor="start" className='crit-description'>½ MV</text>
-                            </g>
-                            
-                            <g transform='translate(352, 0)'>
-                                <circle onClick={() => this._toggleVehicle12()} className="" cx="0" cy={this.buttonRadius - 23} r={this.buttonRadius - 3} fill={this.props.inPlay && this.props.asUnit.vehicleMotive12 ? this.props.asUnit.roundVehicleMotive12 ? this.roundActiveColor : this.activeDotColor : this.props.inPlay && this.props.asUnit.roundVehicleMotive12 ? this.roundDotColor : "rgb(255,255,255)"} stroke={this.props.inPlay && this.props.asUnit.roundVehicleMotive12 ? this.roundStrokeColor : "rgb(0,0,0)"} strokeWidth={2}></circle>
-                                <text x="16" y="0" textAnchor="start" className='crit-description'>0 MV</text>
-                            </g>
+                        <g transform='translate(225, 0)'>
+                            <circle 
+                                onClick={() => this._toggleVehicle11(0)} 
+                                className={"dot" + (this.props.asUnit.vehicleMotive11[0] ? " active" : "") + (this.props.asUnit.roundVehicleMotive11[0] ? " staged" : "")} 
+                                cx="0" 
+                                cy={this.buttonRadius - 22} 
+                                r={10} 
+                            ></circle>
+                            <circle 
+                                onClick={() => this._toggleVehicle11(1)} 
+                                className={"dot" + (this.props.asUnit.vehicleMotive11[1] ? " active" : "") + (this.props.asUnit.roundVehicleMotive11[1] ? " staged" : "")} 
+                                cx="24" 
+                                cy={this.buttonRadius - 22} 
+                                r={10} 
+                            ></circle>
+                            <text x="38" y="0" textAnchor="start" className='crit-description'>½ MV</text>
+                        </g>
+                        
+                        <g transform='translate(342, 0)'>
+                            <circle 
+                                onClick={() => this._toggleVehicle12()} 
+                                className={"dot" + (this.props.asUnit.vehicleMotive12 ? " active" : "") + (this.props.asUnit.roundVehicleMotive12 ? " staged" : "")} 
+                                cx="0" 
+                                cy={this.buttonRadius - 22} 
+                                r={10} 
+                            ></circle>
+                            <text x="14" y="0" textAnchor="start" className='crit-description'>0 MV</text>
                         </g>
                         {critLineStart += critLineHeight}
-                    </>
+                    </g>
                 ) : (
                     <></>
                 )}
@@ -877,21 +872,35 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
                 )  : null}
 
                 {this.props.asUnit.isWrecked() ? (
-                    <>
                     <text x="0" y="100" fontFamily="sans-serif" transform="rotate( 30, -100, 260)" fontSize="200" stroke="rgb(0,0,0)" strokeWidth="4" fill="rgb(200,0,0)" pointerEvents="none">WRECKED</text>
-                    </>
                 ) : (
                     <></>
                 )}
 
                 <g transform='translate(20, 650)'>
-                <path d="M 0 50 L 19 80 H 0" fill="rgb(188,189,192"/>
-                <path d="M 96 15 H 188 L 226 80 H 134" fill="rgb(188,189,192"/>
-                <path d="M 300 15 H 392 L 430 80 H 338" fill="rgb(188,189,192"/>
-                <path d="M 0 15 H 475 L 513 80" fill='transparent' stroke='rgb(0,0,0)' strokeWidth={3}/>
-                <path d="M 0 0 H 486 L 532 80" fill='transparent' stroke='rgb(0,0,0)' strokeWidth={3}/>
-                <text x="21" y="64" textAnchor="start" className='card-title'>ALPHA STRIKE STATS</text>
+                    <path d="M 0 50 L 19 80 H 0" fill="rgb(188,189,192"/>
+                    <path d="M 96 15 H 188 L 226 80 H 134" fill="rgb(188,189,192"/>
+                    <path d="M 300 15 H 392 L 430 80 H 338" fill="rgb(188,189,192"/>
+                    <path d="M 0 15 H 475 L 513 80" fill='transparent' stroke='rgb(0,0,0)' strokeWidth={3}/>
+                    <path d="M 0 0 H 486 L 532 80" fill='transparent' stroke='rgb(0,0,0)' strokeWidth={3}/>
+                    <text x="21" y="64" textAnchor="start" className='card-title'>ALPHA STRIKE STATS</text>
                 </g>
+
+                {this.props.inPlay && this.props.asUnit.hasRoundStaged() ? ( 
+                    <g className='staged' transform='translate(664, 20)'>
+                        <polygon points="0,0 140,0 161,40 21,40" onClick={(e) => this._ApplyRound()}></polygon>
+                        <path onClick={(e) => this._ApplyRound()} d="M 0 0 L 21 40 H 162"/>
+                        <text x="80" y="30" 
+                            onClick={(e) => this._ApplyRound()}
+                            className={this.props.inPlay && this.props.asUnit ? "cursor-pointer" : ""}
+                            fontFamily="sans-serif" 
+                            fontSize="30"
+                            fontWeight="bold"
+                            fill="rgb(255,255,255)"
+                            textAnchor='middle'
+                            >APPLY</text>
+                    </g>
+                ) : null }
 
                 <BattleTechLogo
                     xLoc={586}

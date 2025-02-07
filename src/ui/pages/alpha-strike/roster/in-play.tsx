@@ -1,5 +1,6 @@
 import React from 'react';
 import { FaArrowCircleLeft, FaColumns } from "react-icons/fa";
+import { FiRefreshCcw } from "react-icons/fi";
 import { Link } from 'react-router-dom';
 import AlphaStrikeGroup from '../../../../classes/alpha-strike-group';
 import { CONST_BATTLETECH_URL } from '../../../../configVars';
@@ -135,29 +136,6 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
       })
     }
 
-    nextRound = (
-      e: React.FormEvent<HTMLSpanElement>
-    ): void => {
-      if( e && e.preventDefault ) e.preventDefault();
-
-      if (this.props.appGlobals.currentASForce) {
-        for (let group of this.props.appGlobals.currentASForce.groups) {
-          for( let unit of group.members ) {
-
-            // Reset movement
-            if( unit && unit.movementType ) {
-              unit.movementType = '';
-            }
-
-          }
-        }
-
-        this.props.appGlobals.saveCurrentASForce( this.props.appGlobals.currentASForce );
-
-      }      
-    } 
-
-
     render = (): JSX.Element => {
       if(!this.props.appGlobals.currentASForce) {
         return <></>;
@@ -199,7 +177,7 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
           <ul className="main-menu">
                 <li><Link title="Click here to leave Play Mode (don't worry, you won't lose your current mech statuses)" className="current" to={`${process.env.PUBLIC_URL}/alpha-strike-roster`}><FaArrowCircleLeft /></Link></li>
 
-                <li title="Switch to showing 2+ cards per row"><span className="current" onClick={this.toggleCardMode}><FaColumns /> {this.props.appGlobals.appSettings.alphaStrikeInPlayColumns}</span></li>
+                <li title="Switch to showing 2+ cards per row"><span className="current no-select" onClick={this.toggleCardMode}><FaColumns /> {this.props.appGlobals.appSettings.alphaStrikeInPlayColumns}</span></li>
 
                 <li>
                   <AlphaStrikeToggleRulerHexes
@@ -265,7 +243,7 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
                           asUnit={unit}
                           inPlay={true}
                           appGlobals={this.props.appGlobals}
-                          className="small-margins"
+                          className=""
                           measurementsInHexes={this.props.appGlobals.appSettings.alphaStrikeMeasurementsInHexes}
                           showSpecialAbility={this.showSpecialAbility}
                           showPilotAbility={this.showPilotAbility}

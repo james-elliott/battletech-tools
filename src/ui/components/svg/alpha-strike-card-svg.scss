@@ -10,6 +10,10 @@ svg.alpha-strike-card {
     }
 }
 
+.unit-background {
+    fill: rgb(255,255,255);
+}
+
 .impact {
     font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
     text-transform: uppercase;
@@ -79,12 +83,6 @@ svg.alpha-strike-card {
         font-size: 2.2rem;
         font-weight: 700;
     }
-}
-
-.heat-text {
-    font-size: 2rem;
-    fill: white;
-    font-weight: 700;
 }
 
 .crit-label {
@@ -185,3 +183,67 @@ svg.alpha-strike-card {
         }
     }
 }
+
+.dot {
+    fill: rgb(255,255,255);
+    stroke: rgb(0,0,0);
+    stroke-width: 2;
+    &.structure {
+        fill: rgb(153,153,153);
+    }
+
+}
+
+.heat {
+    fill: rgb(102,102,102);
+    stroke-width: 0;
+    &+ text {
+        font-size: 2rem;
+        fill: white;
+        font-weight: 700;
+    }
+}
+
+.in-play {
+    .dot,
+    .heat {
+        cursor: pointer;
+    }
+    .active {
+        fill: rgb(200,0,0);
+        &.heat-1 {
+            fill: rgb(204, 187, 0);
+        }
+        &.heat-2 {
+            fill: rgb(236,87,16);
+        }
+        &.heat-3 {
+            fill: rgb(200,0,0);
+        }
+        &.heat-4 {
+            fill: rgb(255,10,10);
+        }
+        &.staged {
+            fill: rgb(230,255,255);
+            &.heat {
+                fill: rgb(113,153,153);
+            }
+        }
+    }
+    .staged {
+        fill: rgb(0,180,180);
+        stroke: rgb(0,140,140);
+        polygon {
+            stroke: none;
+        }
+        path {
+            fill: none;
+            stroke-width: 3;
+        }
+        text {
+            stroke: none;
+        }
+
+    }
+}
+

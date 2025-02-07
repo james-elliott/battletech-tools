@@ -731,6 +731,9 @@ export class AlphaStrikeUnit {
 
     public isUnderStrength(): boolean {
 
+        if (this.currentHeat > 0) {
+            return true;
+        }
         if( this.getCurrentArmor() < this.armor ) {
             return true;
         }
@@ -780,7 +783,7 @@ export class AlphaStrikeUnit {
 
     public hasRoundStaged(): boolean {
 
-        if (this.roundHeat !== this.currentHeat) {
+        if (this.roundHeat !== 0) {
             return true;
         }
 
@@ -1625,11 +1628,12 @@ export class AlphaStrikeUnit {
     }
 
     public setHeat( newHeatValue: number ) {
-        this.roundHeat = newHeatValue;
+        this.roundHeat = this.roundHeat === newHeatValue ? 0 : newHeatValue;
     }
 
     public applyRound() {
-        this.currentHeat = this.roundHeat;
+        this.currentHeat = this.roundHeat === this.currentHeat ? 0 : this.roundHeat;
+        this.roundHeat = 0;
         this.roundArmor.map( (point, pointIndex) => {
             if (point) {
                 this.currentArmor[pointIndex] = !this.currentArmor[pointIndex];
@@ -1682,6 +1686,7 @@ export class AlphaStrikeUnit {
             this.vehicleMotive12 = !this.vehicleMotive12;
         }
         this.roundVehicleMotive12 = false;
+        this.movementType = "";
     }
 
     public takeDamage( numberOfPoints: number ) {
