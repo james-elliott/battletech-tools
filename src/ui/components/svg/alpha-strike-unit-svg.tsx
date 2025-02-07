@@ -227,8 +227,8 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
 
     // Function that creates a movement counter
     private _movementCounter = (
-        cx1: number = 402, 
-        cy1: number = 152, 
+        cx1: number = 362, 
+        cy1: number = -37, 
         cSize: number = 50,
         key = "?",
         toggle: Boolean = true
