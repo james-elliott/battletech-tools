@@ -12,6 +12,7 @@
     font-size: 14px;
     text-align: center;
     position: relative;
+    overflow: hidden;
     > * {
         width: 50%;
         box-sizing: border-box;
@@ -22,45 +23,29 @@
         border-right: 1px solid black;
         padding-right: 4px;
         position: relative;
-        .group {
-            left: 10px;
-            padding: 4px;
-            background: rgba(255,255,255,.85);
-        }
-        .token-portrait {
+        img {
             mix-blend-mode: darken;
-            transform: rotate(90deg);
             position: absolute;
             left: -8px;
-            top: .15in;
-            width: 1.15in;
-            height: .9in;
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: 50% 50%;
+            top: 22px;
+            max-width: 1.25in;
+            width: 110px;
+            transform: rotate(90deg);
         }
     }
     .back {
         padding-left: 4px;
         writing-mode: sideways-lr;
         .group {
-            right: 14px;
-            font-weight: 400;
+            font-size: 12px;
+            line-height: 14px;
+            margin-left: 14px;
         }
-    }
-    .group {
-        font-size: 12px;
-        line-height: 14px;
-        font-weight: 600;
-        position: absolute;
-        top: 4px;
-        bottom: 4px;
     }
     .unit-name {
         padding: 4px 0;
         font-size: 12px;
         font-weight: 700;
-        text-shadow: 1px 1px white;
         .custom-name {
             font-size: 14px;
         }
@@ -76,39 +61,45 @@
     &.bm {
         width: 4in;
         order: 1000;
-        .front {
-            .token-portrait {
-                left: 40px;
-                top: -32px;
-                width: 1.15in;
-                height: 1.9in;
-            }
+        img {
+            left: 30px;
+            top: -14px;
+            width: 106px;
         }
     }
     &.superheavy {
         width: 6in;
         height: 1.5in;
         order: 2000;
-        .front {
-            .token-portrait {
-                left: 76px;
-                top: -68px;
-                width: 1.4in;
-                height: 2.9in;
-            }
+        img {
+            left: 50px;
+            top: -20px;
+            width: 100%;
+            max-width: 1.4in;
         }
     }
     &.pm {
         height: 1in;
         width: 2in;
-        .front {
-            .token-portrait {
-                left: .05in;
-                top: .05in;
-                width: .9in;
-                height: .9in;
-            }
-        }
         order: 3000;
+        img {
+            left: 12px;
+            top: 0;
+            width: 72px;
+            max-width: 1in;
+        }
+    }
+    &.ba {
+        img {
+            left: 12px;
+            top: 10px;
+            width: 70px;
+        }
+    }
+    &.af,
+    &.js {
+        img {
+            top: 28px;
+        }
     }
 }

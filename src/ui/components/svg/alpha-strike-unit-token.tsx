@@ -14,17 +14,15 @@ export default class AlphaStrikeUnitToken extends React.Component<IAlphaStrikeUn
         let classes = ["alpha-strike-unit-token"];
         classes.push(this.props.asUnit.type.toLowerCase());
         classes.push(this.props.asUnit.abilities.indexOf("LG") > -1 ? 'superheavy' : "");
-        let background = "url(" + this.props.asUnit.imageURL + ")";
 
         return (
 
             <div className={classes.join(" ")}>
                 <div className='front'>
-                    <div className="token-portrait" style={{'backgroundImage': background}}></div>
+                    {this.props.asUnit.imageURL ? ( <img src={this.props.asUnit.imageURL}></img> ) : null}
                     <div className="unit-name">
                         <div className="custom-name">{this.props.asUnit.customName}</div>
                     </div>
-                    <div className='group'>{this.props.groupName}</div>
                 </div>
                 <div className='back'>
                     <div className="unit-name">
