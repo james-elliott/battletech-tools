@@ -117,6 +117,7 @@ export interface IAlphaStrikeUnitExport {
     roundVehicleMotive11?: boolean[];
     roundVehicleMotive12?: boolean;
     roundHeat?: number;
+    currentBehavior?: OpForBehavior;
 
     tmm: number;
     // Additional Fields we use internally
@@ -575,6 +576,10 @@ export class AlphaStrikeUnit {
             this.roundHeat = incomingMechData.roundHeat;
         }
 
+        if( incomingMechData.currentBehavior ) {
+            this.currentBehavior = incomingMechData.currentBehavior;
+        }
+
             if( incomingMechData.customName )
             this.customName = incomingMechData.customName;
 
@@ -686,6 +691,7 @@ export class AlphaStrikeUnit {
     }
 
     getOpForBehavior(rollNew: boolean = false): OpForBehavior {
+        console.log(this.currentBehavior);
         let behavior = this.currentBehavior ? this.currentBehavior : {
             name: "",
             quarry: "",
@@ -1865,6 +1871,13 @@ export class AlphaStrikeUnit {
         let _roundVehicleMotive11: boolean[] = [];
         let _roundVehicleMotive12: boolean = false;
         let _roundHeat = 0;
+        let _currentBehavior: OpForBehavior = {
+            name: "",
+            quarry: "",
+            movement: "",
+            attack: "",
+            reroll: false
+        };
 
         if( !noInPlayVariables ) {
             _currentArmor = this.currentArmor;
@@ -1888,6 +1901,7 @@ export class AlphaStrikeUnit {
             _roundVehicleMotive11 = this.roundVehicleMotive11;
             _roundVehicleMotive12 = this.roundVehicleMotive12;
             _roundHeat = this.roundHeat;
+            _currentBehavior = this.currentBehavior;
         }
 
         let rv:  IAlphaStrikeUnitExport = {
@@ -1912,6 +1926,7 @@ export class AlphaStrikeUnit {
             roundVehicleMotive11: _roundVehicleMotive11,
             roundVehicleMotive12: _roundVehicleMotive12,
             roundHeat: _roundHeat,
+            currentBehavior: _currentBehavior,
             classification:  this.classification,
             class:  this.class?? "",
             costCR:  this.costCR,
