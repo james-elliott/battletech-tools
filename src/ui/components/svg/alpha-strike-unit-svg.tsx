@@ -359,6 +359,43 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
         })
     }
 
+    private _GetBehavior = (
+
+    ): JSX.Element => {
+        let behavior = this.props.asUnit ? this.props.asUnit.getOpForBehavior() : null;
+
+        let fragment = 
+            <React.Fragment>
+                <g transform='translate(90, -28)'>
+                    <text className="cursor-pointer behavior" onClick={(e) => this._showOpForBehavior(e, behavior)} x="0" y="0" textAnchor="left" width="150" fontFamily="sans-serif" fontSize={20} fill='rgb(200,0,0)'>{behavior ? behavior.name : ""}</text>
+                    {behavior?.reroll ? (<FaDiceD6 className="cursor-pointer behavior" onClick={(e) => this._rerollBehavior(e)} x={-30} y={-19} fontSize={24} fill='rgb(100,100,100)' />) : null }
+                </g>
+            </React.Fragment>
+        ;
+
+        return fragment;
+    }
+
+    private _showOpForBehavior = (
+        e: React.MouseEvent<SVGTextElement, MouseEvent>,
+        behavior: OpForBehavior | null,
+    ) => {
+        if( e && e.preventDefault ) e.preventDefault();
+        if( this.props.showOpForBehavior && behavior ) {
+            this.props.showOpForBehavior(e, behavior );
+        }
+    }
+
+    private _rerollBehavior = (
+        e: React.MouseEvent<SVGElement, MouseEvent>
+    ) => {
+        if( e && e.preventDefault ) e.preventDefault();
+        if (this.props.asUnit) {
+            this.props.asUnit.getOpForBehavior(true);
+            this.setState(this.state);
+        }
+    }
+
     render = (): JSX.Element => {
         if( !this.props.asUnit ) {
             return <></>
@@ -464,6 +501,7 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
 
                     <g transform="translate(10, 80)">
                         <text x="0" y="0" className='data-pair'><tspan>ROLE: </tspan>{this.props.asUnit.role.toUpperCase()}</text>
+                        {this.props.inPlay && this.props.aiMode ? this._GetBehavior() : null}
                         <text x="518" y="0" className='data-pair' textAnchor='end'><tspan>SKILL: </tspan>{this.props.asUnit.currentSkill}</text>
                         {/* Movement Token */}
                         <> {this.props.inPlay ? this._movementCounter() : null} </>

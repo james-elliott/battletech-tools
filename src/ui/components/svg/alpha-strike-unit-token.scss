@@ -1,0 +1,114 @@
+.tokens {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: left;
+}
+.alpha-strike-unit-token {
+    border: 1px solid black;
+    box-sizing: border-box;
+    width: 2in;
+    height: 1.25in;
+    display: flex;
+    font-size: 14px;
+    text-align: center;
+    position: relative;
+    > * {
+        width: 50%;
+        box-sizing: border-box;
+        position: relative;
+    }
+    .front {
+        writing-mode: sideways-rl;
+        border-right: 1px solid black;
+        padding-right: 4px;
+        position: relative;
+        .group {
+            left: 10px;
+            padding: 4px;
+            background: rgba(255,255,255,.85);
+        }
+        .token-portrait {
+            mix-blend-mode: darken;
+            transform: rotate(90deg);
+            position: absolute;
+            left: -8px;
+            top: .15in;
+            width: 1.15in;
+            height: .9in;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: 50% 50%;
+        }
+    }
+    .back {
+        padding-left: 4px;
+        writing-mode: sideways-lr;
+        .group {
+            right: 14px;
+            font-weight: 400;
+        }
+    }
+    .group {
+        font-size: 12px;
+        line-height: 14px;
+        font-weight: 600;
+        position: absolute;
+        top: 4px;
+        bottom: 4px;
+    }
+    .unit-name {
+        padding: 4px 0;
+        font-size: 12px;
+        font-weight: 700;
+        text-shadow: 1px 1px white;
+        .custom-name {
+            font-size: 14px;
+        }
+        .custom-name + .class {
+            font-weight: 400;
+        }
+    }
+    svg {
+        display: none;
+        max-width: 100%;
+        top: 50%;
+    }
+    &.bm {
+        width: 4in;
+        order: 1000;
+        .front {
+            .token-portrait {
+                left: 40px;
+                top: -32px;
+                width: 1.15in;
+                height: 1.9in;
+            }
+        }
+    }
+    &.superheavy {
+        width: 6in;
+        height: 1.5in;
+        order: 2000;
+        .front {
+            .token-portrait {
+                left: 76px;
+                top: -68px;
+                width: 1.4in;
+                height: 2.9in;
+            }
+        }
+    }
+    &.pm {
+        height: 1in;
+        width: 2in;
+        .front {
+            .token-portrait {
+                left: .05in;
+                top: .05in;
+                width: .9in;
+                height: .9in;
+            }
+        }
+        order: 3000;
+    }
+}
