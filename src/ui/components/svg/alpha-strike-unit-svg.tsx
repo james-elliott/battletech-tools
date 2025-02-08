@@ -5,6 +5,8 @@ import { IASSpecialAbility } from '../../../data/alpha-strike-special-abilities'
 import { IAppGlobals } from '../../app-router';
 import BattleTechLogo from '../battletech-logo';
 import './alpha-strike-card-svg.scss';
+import { OpForBehavior } from '../../../data/bryms-opfor-behaviors';
+import { FaDiceD6 } from "react-icons/fa";
 
 export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnitSVGProps, IAlphaStrikeUnitSVGState> {
     height: string = "100%";
@@ -32,7 +34,6 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
         if( this.props.inPlay ) {
             this.damageLeftBase = 40;
         }
-
     }
 
     private _toggleTakeDamage = () => {
@@ -931,7 +932,9 @@ interface IAlphaStrikeUnitSVGProps {
     showSpecialAbility?(
         e: React.FormEvent<HTMLAnchorElement>,
         ability: IASSpecialAbility
-      ): void
+      ): void;
+    showOpForBehavior?(e: React.FormEvent<SVGTextElement>, behavior: OpForBehavior): void;
+    aiMode?: boolean;
 }
 
 interface IAlphaStrikeUnitSVGState {

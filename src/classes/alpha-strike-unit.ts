@@ -1,5 +1,7 @@
 import { CONST_AS_PILOT_ABILITIES, IASPilotAbility } from "../data/alpha-strike-pilot-abilities";
 import { CONST_AS_SPECIAL_ABILITIES, IASSpecialAbility } from "../data/alpha-strike-special-abilities";
+import { CONST_AS_OPFOR_BEHAVIORS, OpForBehavior } from "../data/bryms-opfor-behaviors";
+import { CONST_AS_BEHAVIOR_TABLE } from "../data/bryms-opfor-behaviors";
 import { IAlphaStrikeExport } from "../utils/calculateAlphaStrikeValue";
 import { generateUUID } from "../utils/generateUUID";
 import Pilot, { IPilot } from "./pilot";
@@ -221,6 +223,14 @@ export class AlphaStrikeUnit {
 
     public overheat: number = 0;
     public role = "";
+    public behaviors:string[] = [];
+    public currentBehavior: OpForBehavior = {
+        name: "",
+        quarry: "",
+        movement: "",
+        attack: "",
+        reroll: false
+    };
 
     public basePoints: number = 0;
     public currentPoints: number = 0;
@@ -432,6 +442,12 @@ export class AlphaStrikeUnit {
             this.tro = incomingMechData.tro;
 
             this.role =  incomingMechData.role;
+
+            for (let table of CONST_AS_BEHAVIOR_TABLE) {
+                if (table.role == this.role) {
+                    this.behaviors = table.behavior;
+                }
+            }
 
             this.tonnage = incomingMechData.tonnage / 1;
 
@@ -667,6 +683,73 @@ export class AlphaStrikeUnit {
 
 
         return rv;
+    }
+
+    getOpForBehavior(rollNew: boolean = false): OpForBehavior {
+        let behavior = this.currentBehavior ? this.currentBehavior : {
+            name: "",
+            quarry: "",
+            movement: "",
+            attack: "",
+            reroll: false
+        };
+
+        // Roll a new behavior based on a d8 roll
+        if (rollNew && this.behaviors.length > 0) {
+            let index = Math.floor(Math.random() * 8);
+            let IF = false;
+            // Automatically reroll Indirect Fire behavior for Sniper and Missile Boat without IF#
+            if (this.role === "Sniper" || this.role === "Missile Boat") {
+                // See if any abilities are IF#
+                for (let ability of this.abilities) {
+                    if (ability.substring(0,2) === "IF") {
+                        IF = true;
+                    }
+                }
+                // Reroll until we get an new random number besides 2,3,4
+                if (!IF) {
+                    while (index > 1 && index < 5) {
+                        index = Math.floor(Math.random() * 8);
+                    }
+                }
+            }
+
+            // Save the behavior rolled so it can be reverted from heat and retreat overrides.
+            this.currentBehavior = this.getBehavior(this.behaviors[index]);
+            behavior = this.currentBehavior;
+        }
+
+        // Override default behavior when heat is 2 or more.
+        behavior = this.currentHeat > 1 ? this.getBehavior("Overheat Protocol") : behavior;
+
+        // Check forced withdrawal rules and override all other behavior.
+        let fleeing = this.immobile;
+        if (this.structure == 1) {
+            fleeing = this.getCurrentArmor() == 0;
+        }
+        if (this.structure > 1 && this.getCurrentStructure() <= this.structure*.5) {
+            fleeing = true;
+        }
+        behavior = fleeing ? this.getBehavior("Forced Withdrawal") : behavior;
+
+        return behavior;
+    }
+
+    private getBehavior(behaviorName: String = ""): OpForBehavior {
+        let behavior = {
+            name: "",
+            quarry: "",
+            movement: "",
+            attack: "",
+            reroll: false
+        };
+        for (let action of CONST_AS_OPFOR_BEHAVIORS) {
+            if (action.name == behaviorName) {
+                behavior = action;
+            }
+        }
+
+        return behavior;
     }
 
     public getTotalPilotAbilityPoints(): number {

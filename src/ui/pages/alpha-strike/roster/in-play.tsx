@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaArrowCircleLeft, FaColumns } from "react-icons/fa";
+import { FaArrowCircleLeft, FaColumns, FaDiceD6, FaRobot } from "react-icons/fa";
 import { FiRefreshCcw } from "react-icons/fi";
 import { Link } from 'react-router-dom';
 import AlphaStrikeGroup from '../../../../classes/alpha-strike-group';
@@ -12,17 +12,19 @@ import StandardModal from '../../../components/standard-modal';
 import AlphaStrikeUnitSVG from '../../../components/svg/alpha-strike-unit-svg';
 import './in-play.scss';
 import AlphaStrikeToggleRulerHexes from "./_toggleRulerHexes";
+import { OpForBehavior } from '../../../../data/bryms-opfor-behaviors';
 
 export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProps, IInPlayState> {
 
     constructor(props: IInPlayProps) {
         super(props);
 
-
         this.state = {
             updated: false,
             showPilotAbility: null,
             showSpecialAbility: null,
+            showOpForBehavior: null,
+            aiMode: false
         };
 
         this.props.appGlobals.makeDocumentTitle("Playing Alpha Strike");
@@ -136,6 +138,57 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
       })
     }
 
+    toggleAI = (
+      e: React.FormEvent<HTMLSpanElement>
+    ): void => {
+      if( e && e.preventDefault ) e.preventDefault();
+      let appSettings = this.props.appGlobals.appSettings;
+
+      appSettings.aiMode = !appSettings.aiMode;
+      this.props.appGlobals.saveAppSettings( appSettings );
+    }
+
+    showOpForBehavior = (
+      e: React.FormEvent<SVGTextElement>,
+      behavior: OpForBehavior,
+    ): void => {
+      e.preventDefault();
+      this.setState({
+        showOpForBehavior: behavior,
+      })
+    };
+
+    closeOpForBehavior = (
+      e: React.FormEvent<HTMLButtonElement>
+    ): void => {
+      if( e && e.preventDefault ) e.preventDefault();
+
+      this.setState({
+        showOpForBehavior: null,
+      })
+    }
+
+    reRollOpForBehavior = (
+      e: React.FormEvent<HTMLSpanElement>
+    ): void => {
+      if( e && e.preventDefault ) e.preventDefault();
+      if (this.props.appGlobals.currentASForce) {
+        for (let group of this.props.appGlobals.currentASForce?.groups) {
+          for (let unit of group.members) {
+            unit.getOpForBehavior(true);
+          }
+        }
+        // Force a re-render of all the unit cards.
+        this.props.appGlobals.saveCurrentASForce( this.props.appGlobals.currentASForce );
+      }
+    }
+
+    // This is really gross, but I'm not sure else how to turn the behavior strings into HTML so they can use italics and bold.
+    behaviorHTML = (text: string) => {
+      return { __html: text};
+    }
+
+
     render = (): JSX.Element => {
       if(!this.props.appGlobals.currentASForce) {
         return <></>;
@@ -173,6 +226,30 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
 </StandardModal>
 ) : null}
 
+{this.state.showOpForBehavior ? (
+<StandardModal
+  title={this.state.showOpForBehavior.name}
+  show={true}
+  onClose={this.closeOpForBehavior}
+>
+  <div className=''>
+    <h3>Quarry</h3>
+    <p dangerouslySetInnerHTML={this.behaviorHTML(this.state.showOpForBehavior.quarry)}></p>
+  </div>
+
+  <div className=''>
+    <h3>Movement</h3>
+    <p dangerouslySetInnerHTML={this.behaviorHTML(this.state.showOpForBehavior.movement)}></p>
+  </div>
+
+  <div className=''>
+    <h3>Attack</h3>
+    <p dangerouslySetInnerHTML={this.behaviorHTML(this.state.showOpForBehavior.attack)}></p>
+  </div>
+  
+</StandardModal>
+) : null}
+
           <header className="topmenu">
           <ul className="main-menu">
                 <li><Link title="Click here to leave Play Mode (don't worry, you won't lose your current mech statuses)" className="current" to={`${process.env.PUBLIC_URL}/alpha-strike-roster`}><FaArrowCircleLeft /></Link></li>
@@ -184,6 +261,11 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
                     appGlobals={this.props.appGlobals}
                   />
                 </li>
+
+                <li title="Toggle AI behaviors"><span className="current" onClick={this.toggleAI}><FaRobot /></span></li>
+                {this.props.appGlobals.appSettings.aiMode ? (
+                <li title="Reroll Behaviors" className="left-auto"><span onClick={this.reRollOpForBehavior}><FaDiceD6 /></span></li>
+                ) : null }
 
                 <li title="Apply damage and heat changes to end the round"><span className="" onClick={this.nextRound}>End Round</span></li>
 
@@ -247,6 +329,8 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
                           measurementsInHexes={this.props.appGlobals.appSettings.alphaStrikeMeasurementsInHexes}
                           showSpecialAbility={this.showSpecialAbility}
                           showPilotAbility={this.showPilotAbility}
+                          showOpForBehavior={this.showOpForBehavior}
+                          aiMode={this.props.appGlobals.appSettings.aiMode}
                         />
                       </div>
                     </React.Fragment>
@@ -272,5 +356,7 @@ interface IInPlayProps {
 interface IInPlayState {
   updated: boolean;
   showPilotAbility: IASPilotAbility | null,
-  showSpecialAbility: IASSpecialAbility | null
+  showSpecialAbility: IASSpecialAbility | null,
+  showOpForBehavior: OpForBehavior | null,
+  aiMode: boolean;
 }

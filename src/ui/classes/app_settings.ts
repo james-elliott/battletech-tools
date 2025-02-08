@@ -4,6 +4,7 @@ import { ESaveDataMode } from "../../dataSaves";
 export class AppSettings {
     developerMenu: boolean = false;
     alphaStrikeMeasurementsInHexes: boolean = false;
+    aiMode: boolean = false;
     uiTheme: string = "";
     equipmentFilter: string = "";
     installEquipCategory: string = "";
@@ -41,6 +42,10 @@ export class AppSettings {
 
             if ( typeof( io.alphaStrikeMeasurementsInHexes ) !== "undefined" ) {
                 this.alphaStrikeMeasurementsInHexes = io.alphaStrikeMeasurementsInHexes;
+            }
+
+            if ( typeof( io.aiMode ) !== "undefined" ) {
+                this.aiMode = io.aiMode;
             }
 
             if ( typeof( io.developerMenu ) !== "undefined" ) {
@@ -121,6 +126,7 @@ export class AppSettings {
             alphaStrikeSearchType: this.alphaStrikeSearchType,
             alphaStrikeSearchRole: this.alphaStrikeSearchRole,
             alphaStrikeMeasurementsInHexes: this.alphaStrikeMeasurementsInHexes,
+            aiMode: this.aiMode,
             asValues: this.asValues,
             alphaStrikeSearchFactions: this.alphaStrikeSearchFactions,
             hideMPIntro: this.hideMPIntro,
@@ -147,6 +153,7 @@ export interface IAppSettingsExport {
     alphaStrikeSearchType: number;
     alphaStrikeInPlayColumns: number;
     alphaStrikeMeasurementsInHexes: boolean;
+    aiMode: boolean;
     alphaStrikeSearchFactions: Array<number>;
     hideMPIntro: boolean;
    
