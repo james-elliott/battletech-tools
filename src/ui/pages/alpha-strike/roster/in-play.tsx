@@ -263,11 +263,8 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
                 </li>
 
                 <li title="Toggle AI behaviors"><span className="current" onClick={this.toggleAI}><FaRobot /></span></li>
-                {this.props.appGlobals.appSettings.aiMode ? (
-                <li title="Reroll Behaviors" className="left-auto"><span onClick={this.reRollOpForBehavior}><FaDiceD6 /></span></li>
-                ) : null }
 
-                <li title="Apply damage and heat changes to end the round"><span className="" onClick={this.nextRound}>End Round</span></li>
+                <li className="left-auto" title="Apply damage and heat changes to end the round"><span onClick={this.nextRound}>End Round</span></li>
 
                 <li className="logo">
                     <a

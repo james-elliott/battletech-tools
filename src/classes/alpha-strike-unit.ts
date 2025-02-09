@@ -691,7 +691,6 @@ export class AlphaStrikeUnit {
     }
 
     getOpForBehavior(rollNew: boolean = false): OpForBehavior {
-        console.log(this.currentBehavior);
         let behavior = this.currentBehavior ? this.currentBehavior : {
             name: "",
             quarry: "",
@@ -701,7 +700,7 @@ export class AlphaStrikeUnit {
         };
 
         // Roll a new behavior based on a d8 roll
-        if (rollNew && this.behaviors.length > 0) {
+        if (rollNew) {
             let index = Math.floor(Math.random() * 8);
             let IF = false;
             // Automatically reroll Indirect Fire behavior for Sniper and Missile Boat without IF#
@@ -1778,6 +1777,7 @@ export class AlphaStrikeUnit {
         if (resetMovement) {
             this.movementType = "";
         }
+        this.getOpForBehavior(true);
     }
 
     public takeDamage( numberOfPoints: number ) {
