@@ -1720,8 +1720,15 @@ export class AlphaStrikeUnit {
     }
 
     public applyRound( resetMovement: boolean = false ) {
-        this.currentHeat = this.roundHeat === this.currentHeat ? 0 : this.roundHeat;
-        this.roundHeat = 0;
+        if (this.roundHeat > 0) {
+            if (this.roundHeat === this.currentHeat) {
+                this.currentHeat = 0;
+            } else {
+                this.currentHeat = this.roundHeat;
+            }
+            this.roundHeat = 0;
+        }
+
         this.roundArmor.map( (point, pointIndex) => {
             if (point) {
                 this.currentArmor[pointIndex] = !this.currentArmor[pointIndex];
