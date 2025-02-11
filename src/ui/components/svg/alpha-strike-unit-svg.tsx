@@ -6,7 +6,7 @@ import { IAppGlobals } from '../../app-router';
 import BattleTechLogo from '../battletech-logo';
 import './alpha-strike-card-svg.scss';
 import { OpForBehavior } from '../../../data/bryms-opfor-behaviors';
-import { FaDiceD6 } from "react-icons/fa";
+import { FaArrowDown, FaArrowUp, FaDiceD6 } from "react-icons/fa";
 
 export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnitSVGProps, IAlphaStrikeUnitSVGState> {
     height: string = "100%";
@@ -20,7 +20,7 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
         super(props);
         this.state = {
             showTakeDamage: false,
-            showMovementOptions: false
+            showMovementOptions: false,
         }
         if( this.props.height ) {
             this.height = this.props.height;
@@ -146,6 +146,13 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
                 this.props.asUnit.roundMpControlHits[indexNumber] = !this.props.asUnit.roundMpControlHits[indexNumber];
                 this.props.appGlobals.saveCurrentASForce( this.props.appGlobals.currentASForce );
             }
+        }
+    }
+
+    private _changeAltitude = (change: number = 0): void => {
+        if( this.props.inPlay && this.props.asUnit ) {
+            this.props.asUnit.altitude = this.props.asUnit.altitude + change;
+            this.props.appGlobals.saveCurrentASForce( this.props.appGlobals.currentASForce );
         }
     }
 
@@ -382,7 +389,7 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
     ) => {
         if( e && e.preventDefault ) e.preventDefault();
         if( this.props.showOpForBehavior && behavior ) {
-            this.props.showOpForBehavior(e, behavior );
+            this.props.showOpForBehavior( behavior );
         }
     }
 
@@ -503,8 +510,22 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
                         <text x="0" y="0" className='data-pair'><tspan>ROLE: </tspan>{this.props.asUnit.role.toUpperCase()}</text>
                         {this.props.inPlay && this.props.aiMode ? this._GetBehavior() : null}
                         <text x="518" y="0" className='data-pair' textAnchor='end'><tspan>SKILL: </tspan>{this.props.asUnit.currentSkill}</text>
+                        {/* Altitude */}
+                        {this.props.inPlay && this.props.asUnit.altitude > -1 ? (
+                            <g transform='translate(380, -90)'>
+                                <text x="0" y="0" className='data-pair' textAnchor='start'><tspan>Alt: </tspan>{this.props.asUnit.altitude}</text>
+                                <g className='cursor-pointer' onClick={() => this._changeAltitude(1)} transform='translate(110, -26)'>
+                                    <rect x="0" y="0" rx="5" ry="5" width="30" height="30" fill='rgb(102,102,102'></rect>
+                                    <FaArrowUp x="7" y="5" />
+                                </g>
+                                <g className='cursor-pointer' onClick={() => this._changeAltitude(-1)} transform='translate(-35, -26)'>
+                                    <rect x="0" y="0" rx="5" ry="5" width="30" height="30" fill='rgb(102,102,102'></rect>
+                                    <FaArrowDown x="7" y="5" />
+                                </g>
+                            </g>
+                            ) : null}
                         {/* Movement Token */}
-                        <> {this.props.inPlay ? this._movementCounter() : null} </>
+                        {this.props.inPlay ? this._movementCounter() : null}
                     </g>
                 </g>
 
@@ -971,7 +992,7 @@ interface IAlphaStrikeUnitSVGProps {
         e: React.FormEvent<HTMLAnchorElement>,
         ability: IASSpecialAbility
       ): void;
-    showOpForBehavior?(e: React.FormEvent<SVGTextElement>, behavior: OpForBehavior): void;
+    showOpForBehavior?( behavior: OpForBehavior): void;
     aiMode?: boolean;
 }
 

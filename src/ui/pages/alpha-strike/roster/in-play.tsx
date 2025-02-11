@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaArrowCircleLeft, FaColumns, FaDiceD6, FaRobot } from "react-icons/fa";
+import { FaArrowCircleLeft, FaColumns, FaRobot } from "react-icons/fa";
 import { FiRefreshCcw } from "react-icons/fi";
 import { Link } from 'react-router-dom';
 import AlphaStrikeGroup from '../../../../classes/alpha-strike-group';
@@ -149,10 +149,8 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
     }
 
     showOpForBehavior = (
-      e: React.FormEvent<SVGTextElement>,
       behavior: OpForBehavior,
     ): void => {
-      e.preventDefault();
       this.setState({
         showOpForBehavior: behavior,
       })

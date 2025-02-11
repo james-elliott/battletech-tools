@@ -139,6 +139,7 @@ export interface IAlphaStrikeUnitExport {
 
     move: IMoveNumber[];
     movementType: string;
+    altitude: number;
     jumpMove: number;
     structure: number;
     armor: number;
@@ -193,6 +194,7 @@ export class AlphaStrikeUnit {
     public currentMoveHexesSprint: string = "";
     public currentTMM: string = "";
     public movementType: string = "";
+    public altitude: number = -1;
 
     public armor: number = 0;
     public structure: number = 1;
@@ -445,7 +447,7 @@ export class AlphaStrikeUnit {
             this.role =  incomingMechData.role;
 
             for (let table of CONST_AS_BEHAVIOR_TABLE) {
-                if (table.role == this.role) {
+                if (table.role === this.role) {
                     this.behaviors = table.behavior;
                 }
             }
@@ -578,6 +580,14 @@ export class AlphaStrikeUnit {
 
         if( incomingMechData.currentBehavior ) {
             this.currentBehavior = incomingMechData.currentBehavior;
+        }
+
+        if( incomingMechData.movementType ) {
+            this.movementType = incomingMechData.movementType;
+        }
+
+        if( incomingMechData.altitude ) {
+            this.altitude = incomingMechData.altitude;
         }
 
             if( incomingMechData.customName )
@@ -729,8 +739,8 @@ export class AlphaStrikeUnit {
 
         // Check forced withdrawal rules and override all other behavior.
         let fleeing = this.immobile;
-        if (this.structure == 1) {
-            fleeing = this.getCurrentArmor() == 0;
+        if (this.structure === 1) {
+            fleeing = this.getCurrentArmor() === 0;
         }
         if (this.structure > 1 && this.getCurrentStructure() <= this.structure*.5) {
             fleeing = true;
@@ -749,7 +759,7 @@ export class AlphaStrikeUnit {
             reroll: false
         };
         for (let action of CONST_AS_OPFOR_BEHAVIORS) {
-            if (action.name == behaviorName) {
+            if (action.name === behaviorName) {
                 behavior = action;
             }
         }
@@ -1015,6 +1025,7 @@ export class AlphaStrikeUnit {
         this.vehicleMotive11 = [];
         this.vehicleMotive12 = false;
         this.movementType = "";
+        this.altitude = -1;
         this.roundArmor = [];
         this.roundStructure = [];
         this.roundHeat = 0;
@@ -1409,7 +1420,9 @@ export class AlphaStrikeUnit {
         }
         for( let moveC = 0; moveC < this.move.length; moveC++ ) {
 
-
+            if (this.move[moveC].type === "v" && this.altitude < 0 ) {
+                this.altitude = 0;
+            }
 
 
             let tmpTMM = 0;
@@ -1885,6 +1898,8 @@ export class AlphaStrikeUnit {
             attack: "",
             reroll: false
         };
+        let _movementType: string = "";
+        let _altitude: number = -1;
 
         if( !noInPlayVariables ) {
             _currentArmor = this.currentArmor;
@@ -1909,6 +1924,9 @@ export class AlphaStrikeUnit {
             _roundVehicleMotive12 = this.roundVehicleMotive12;
             _roundHeat = this.roundHeat;
             _currentBehavior = this.currentBehavior;
+            _movementType = this.movementType;
+            _altitude = this.altitude;
+            console.log(_movementType);
         }
 
         let rv:  IAlphaStrikeUnitExport = {
@@ -1963,6 +1981,7 @@ export class AlphaStrikeUnit {
             currentSkill:  this.currentSkill,
             uuid: this.uuid,
             movementType: this.movementType,
+            altitude: _altitude,
         };
 
         return rv;
