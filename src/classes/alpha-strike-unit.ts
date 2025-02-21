@@ -423,6 +423,36 @@ export class AlphaStrikeUnit {
             this.uuid = incomingMechData.uuid;
         if( typeof(incomingMechData) !== "undefined" && incomingMechData !== null ) {
 
+            // Ugly BS to make our custom units
+            if (incomingMechData.customName === "SGX") {
+                incomingMechData.move = [{
+                    move: 12,
+                    currentMove: 12,
+                    type: ''
+                },
+                {
+                    move: 16,
+                    currentMove: 16,
+                    type: 'j'
+                }];
+                incomingMechData.abilities = 'ENE,MEL,SHLD,JMPS1,TSM';
+                incomingMechData.class = "Snow Guard";
+            }
+
+            if (incomingMechData.customName === "KWE") {
+                incomingMechData.move = [{
+                    move: 16,
+                    currentMove: 16,
+                    type: ''
+                },
+                {
+                    move: 20,
+                    currentMove: 20,
+                    type: 'j'
+                }];
+                incomingMechData.abilities = 'CASE,IF0*,JMPS1';
+            }
+
             // Internally Processed Data
 
             if( incomingMechData.classification )
