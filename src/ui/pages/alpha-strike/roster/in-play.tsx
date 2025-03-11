@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaArrowCircleLeft, FaColumns } from "react-icons/fa";
+import { FaArrowCircleLeft, FaCog, FaColumns, FaSync } from "react-icons/fa";
 import { FiRefreshCcw } from "react-icons/fi";
 import { Link } from 'react-router-dom';
 import AlphaStrikeGroup from '../../../../classes/alpha-strike-group';
@@ -9,51 +9,26 @@ import { getSpecialAbilityTypeName, IASSpecialAbility } from '../../../../data/a
 import { IAppGlobals } from '../../../app-router';
 import BattleTechLogo from '../../../components/battletech-logo';
 import StandardModal from '../../../components/standard-modal';
-import AlphaStrikeUnitSVG from '../../../components/svg/alpha-strike-unit-svg';
+import AlphaStrikeUnitCard from '../../../components/alpha-strike-play-card';
 import './in-play.scss';
 import AlphaStrikeToggleRulerHexes from "./_toggleRulerHexes";
+import { IFormationBonus } from '../../../../data/formation-bonuses';
 
 export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProps, IInPlayState> {
 
     constructor(props: IInPlayProps) {
         super(props);
 
-
         this.state = {
             updated: false,
             showPilotAbility: null,
             showSpecialAbility: null,
+            settingsOpen: false,
+            showFormationBonus: null
         };
 
         this.props.appGlobals.makeDocumentTitle("Playing Alpha Strike");
     }
-
-    nextRound = (
-      e: React.FormEvent<HTMLSpanElement>
-    ): void => {
-      if( e && e.preventDefault ) e.preventDefault();
-
-      this.props.appGlobals.openConfirmDialog(
-        "End Round",
-        "Ending the round will apply all the pending updates to all units heat and damage.",
-        "End Round",
-        "Cancel",
-        () => {
-          if (this.props.appGlobals.currentASForce) {
-            for (let group of this.props.appGlobals.currentASForce.groups) {
-              for( let unit of group.members ) {
-                unit.applyRound();
-              }
-            }
-    
-            this.props.appGlobals.saveCurrentASForce( this.props.appGlobals.currentASForce );
-    
-          }  
-        }
-      )
-
-          
-    } 
 
     toggleCardMode = (
       e: React.FormEvent<HTMLSpanElement>
@@ -106,16 +81,6 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
       })
     };
 
-    closePilotAbility = (
-      e: React.FormEvent<HTMLButtonElement>
-    ): void => {
-      if( e && e.preventDefault ) e.preventDefault();
-
-      this.setState({
-        showPilotAbility: null,
-      })
-    }
-
     showSpecialAbility = (
       e: React.FormEvent<HTMLAnchorElement>,
       ability: IASSpecialAbility
@@ -126,16 +91,51 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
       })
     };
 
-    closeSpecialAbility = (
-      e: React.FormEvent<HTMLButtonElement>
-    ): void => {
-      if( e && e.preventDefault ) e.preventDefault();
+    showFormationBonus = ( bonus: IFormationBonus ): void => {
+      this.setState({
+        showFormationBonus: bonus,
+      })
+    };
 
+    closeModal = (): void => {
       this.setState({
         showSpecialAbility: null,
+        showFormationBonus: null,
+        showPilotAbility: null,
       })
     }
 
+    nextRound = (
+      e: React.FormEvent<HTMLSpanElement>
+    ): void => {
+      if( e && e.preventDefault ) e.preventDefault();
+
+      this.props.appGlobals.openConfirmDialog(
+        "Next Round",
+        "Ending the round will apply all the pending updates to all units heat and damage.",
+        "Next Round",
+        "Cancel",
+        () => {
+          if (this.props.appGlobals.currentASForce) {
+            for (let group of this.props.appGlobals.currentASForce.groups) {
+              for( let unit of group.members ) {
+                unit.applyRound();
+                unit.moveToken = {
+                    move: 0,
+                    currentMove: 0,
+                    currentSprint: 0,
+                    type: '',
+                    tmm: 0,
+                }
+              }
+            }
+
+            this.props.appGlobals.saveCurrentASForce( this.props.appGlobals.currentASForce );
+
+          }  
+        }
+      )
+    }
 
     render = (): JSX.Element => {
       if(!this.props.appGlobals.currentASForce) {
@@ -147,7 +147,7 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
 <StandardModal
   title={this.state.showPilotAbility.ability+ " (" + this.state.showPilotAbility.cost + ")"}
   show={true}
-  onClose={this.closePilotAbility}
+  onClose={this.closeModal}
 >
   <div className='text-center'><em>Pilot Special Ability</em> - <span title="Alpha Strike Commander's Edition">p{this.state.showPilotAbility.asce_page}</span></div>
   {this.state.showPilotAbility.summary.map( (line, lineIndex) => {
@@ -162,7 +162,7 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
 <StandardModal
   title={this.state.showSpecialAbility.rawTag + ": " + this.state.showSpecialAbility.name}
   show={true}
-  onClose={this.closeSpecialAbility}
+  onClose={this.closeModal}
 >
   <div className='text-center'><em>{getSpecialAbilityTypeName(this.state.showSpecialAbility.type)}</em> - <span title="Alpha Strike Commander's Edition">p{this.state.showSpecialAbility.asce_page}</span></div>
 
@@ -174,65 +174,65 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
 </StandardModal>
 ) : null}
 
-          <header className="topmenu">
-          <ul className="main-menu">
-                <li><Link title="Click here to leave Play Mode (don't worry, you won't lose your current mech statuses)" className="current" to={`${process.env.PUBLIC_URL}/alpha-strike-roster`}><FaArrowCircleLeft /></Link></li>
+{this.state.showFormationBonus ? (
+<StandardModal
+  title={this.state.showFormationBonus.Name}
+  show={true}
+  onClose={this.closeModal}
+>
+{this.state.showFormationBonus.BonusDescription}
+</StandardModal>
+) : null}
 
-                <li title="Switch to showing 2+ cards per row"><span className="current" onClick={this.toggleCardMode}><FaColumns /> {this.props.appGlobals.appSettings.alphaStrikeInPlayColumns}</span></li>
+        <header className="play-bar flex-grid justified">
+          <Link title="Click here to leave Play Mode (don't worry, you won't lose your current mech statuses)" className="current" to={`${process.env.PUBLIC_URL}/alpha-strike-roster`}><FaArrowCircleLeft /></Link>
 
-                <li>
-                  <AlphaStrikeToggleRulerHexes
-                    appGlobals={this.props.appGlobals}
-                  />
-                </li>
+          {/* <span className="current" onClick={this.toggleCardMode}><FaColumns /> {this.props.appGlobals.appSettings.alphaStrikeInPlayColumns}</span> */}
+          
+          <button title="Apply damage and heat changes to end the round and start another" className="" onClick={this.nextRound}>Next Round</button>
 
-                <li title="Apply damage and heat changes to end the round"><span className="" onClick={this.nextRound}>End Round</span></li>
+          <button>
+            <AlphaStrikeToggleRulerHexes appGlobals={this.props.appGlobals} />
+          </button>
 
-                <li className="logo">
-                    <a
-                        href={CONST_BATTLETECH_URL}
-                        rel="noopener noreferrer"
-                        target="_blank"
-                        title="Click here to go to the official BattleTech website!"
-                    >
-                        <BattleTechLogo />
-                    </a>
-                </li>
+          {/* <button><FaCog/></button> */}
 
-            </ul>
-
-          </header>
+        </header>
           {this.props.appGlobals.currentASForce.groups.map( (group, groupIndex) => {
             if( group.members.length === 0) {
               return (<></>);
             }
             return (
               <React.Fragment key={groupIndex}>
-              <div className="text-section lr-margin in-play-group">
-                <h2>
-                  {group.isUnderStrength() ? (
-                    <button
-                      className="pull-right btn-primary btn-sm"
-                      title={"Click here to reset the damage for this " + group.groupLabel + ". You'll be prompted for confirmation."}
-                      onClick={(e) => this.resetGroup( e, group )}
-                    >
-                      <FiRefreshCcw />&nbsp;Reset
-                    </button>
-                  ) : null}
-
+              <div className="in-play-group flex-grid">
+                <div className='group-title row justified'>
+                  <h2>
                   {group.getName(groupIndex + 1)}
-                </h2>
-                <div className="section-content">
-                  <div className={"flex-grid flex-" + this.props.appGlobals.appSettings.alphaStrikeInPlayColumns}>
-                  {group.formationBonus!.Name!=="None"?(
-                    <>
-                    <div>
-                      <p><strong>Bonus</strong>:&nbsp;
-                      <em>{group.formationBonus!.Name}</em> - {group.formationBonus!.BonusDescription}</p>
-                    </div>
-                    </>
+                  </h2>
+                  {group.formationBonus! && group.formationBonus!.Name !== "None" ?(
+                      <div onClick={() => this.showFormationBonus(group.formationBonus!)}><strong>Formation Type</strong>:&nbsp;
+                      {group.formationBonus!.Name}</div>
                   ) : null
                   }
+                  
+
+                  <div className='data-pair large'>
+                    {group.isUnderStrength() ? (
+                      <button
+                        className="btn-primary"
+                        title={"Click here to reset the damage for this " + group.groupLabel + ". You'll be prompted for confirmation."}
+                        onClick={(e) => this.resetGroup( e, group )}
+                      >
+                        Reset Lance
+                      </button>
+                    ) : null}
+                    <span>PV:</span>{group.getTotalPoints()}
+                  </div>
+                </div>
+
+                
+                <div className="section-content">
+                  <div className={"flex-grid flex-" + this.props.appGlobals.appSettings.alphaStrikeInPlayColumns}>
                   {group.members.map( (unit, unitIndex) => {
                     // if( unitIndex === 0 && group.members[unitIndex +1 ])
 
@@ -240,11 +240,9 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
                     return (
                     <React.Fragment key={unitIndex}>
                       <div className="unit-card">
-                        <AlphaStrikeUnitSVG
+                        <AlphaStrikeUnitCard
                           asUnit={unit}
-                          inPlay={true}
                           appGlobals={this.props.appGlobals}
-                          className="small-margins"
                           measurementsInHexes={this.props.appGlobals.appSettings.alphaStrikeMeasurementsInHexes}
                           showSpecialAbility={this.showSpecialAbility}
                           showPilotAbility={this.showPilotAbility}
@@ -260,6 +258,17 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
             </React.Fragment>
             )
           })}
+          <footer className='flex-grid center'>
+            <a
+                href={CONST_BATTLETECH_URL}
+                rel="noopener noreferrer"
+                target="_blank"
+                title="Click here to go to the official BattleTech website!"
+            >
+                <BattleTechLogo
+                />
+            </a>
+          </footer>
         </>
       );
     }
@@ -273,5 +282,7 @@ interface IInPlayProps {
 interface IInPlayState {
   updated: boolean;
   showPilotAbility: IASPilotAbility | null,
-  showSpecialAbility: IASSpecialAbility | null
+  showSpecialAbility: IASSpecialAbility | null,
+  showFormationBonus: IFormationBonus | null;
+  settingsOpen: boolean;
 }

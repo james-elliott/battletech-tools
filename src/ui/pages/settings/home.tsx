@@ -43,6 +43,12 @@ export default class SettingsHome extends React.Component<ISettingsHomeProps, IS
       })
     }
 
+    setAlphaStrikeVariableDamage = (event: React.FormEvent<HTMLSelectElement> ): void => {
+      let appSettingsHome = this.props.appGlobals.appSettings;
+      appSettingsHome.alphaStrikeVariableDamage = event.currentTarget.value;
+      this.props.appGlobals.saveAppSettings( appSettingsHome );
+    }
+
     render = (): JSX.Element => {
 
       return (
@@ -70,11 +76,23 @@ export default class SettingsHome extends React.Component<ISettingsHomeProps, IS
                     onChange={this.setDeveloperMenu}
                   />
 
-              <InputCheckbox
-                  label='Alpha Strike Roster: Display Measurements in Hexes'
-                  checked={this.props.appGlobals.appSettings.alphaStrikeMeasurementsInHexes}
-                  onChange={this.setAlphaStrikeMeasurementsInHexes}
-                />
+                  <InputCheckbox
+                    label='Alpha Strike Roster: Display Measurements in Hexes'
+                    checked={this.props.appGlobals.appSettings.alphaStrikeMeasurementsInHexes}
+                    onChange={this.setAlphaStrikeMeasurementsInHexes}
+                  />
+
+                  <label>
+                    Damage Calculations:
+                    <select
+                      value={this.props.appGlobals.appSettings.alphaStrikeVariableDamage}
+                      onChange={this.setAlphaStrikeVariableDamage}
+                    >
+                      <option value="">Standard (one roll, full damage)</option>
+                      <option value="damage">Multiple Damage Rolls</option>
+                      <option value="attack">Multiple Attack Rolls</option>
+                    </select>
+                  </label>
 
                 </fieldset>
 

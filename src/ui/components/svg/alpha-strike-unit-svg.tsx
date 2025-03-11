@@ -302,7 +302,7 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
                         <text x="518" y="0" className='data-pair' textAnchor='end'><tspan>{this.props.asUnit.isGroundUnit() ? "MV: " : "THR: "}</tspan>{this.props.measurementsInHexes ? this.props.asUnit.currentMoveHexes.trim() : this.props.asUnit.currentMove.trim()}</text>
                         {this.props.asUnit.isGroundUnit() && !this.props.forPrint ? (
                             <>
-                                <text x="518" y="20" className='data-pair small' textAnchor='end'><tspan>Sprint: </tspan>{this.props.measurementsInHexes ? this.props.asUnit.currentMoveHexesSprint.trim() : this.props.asUnit.currentMoveSprint.trim()}</text>
+                                <text x="518" y="20" className='data-pair small' textAnchor='end'><tspan>Sprint: </tspan>{this.props.measurementsInHexes ? this.props.asUnit.currentMoveHexesSprint.trim() : 1}</text>
                             </>
                         ) : null}
                     </g>

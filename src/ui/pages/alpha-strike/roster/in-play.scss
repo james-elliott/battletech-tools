@@ -1,28 +1,127 @@
+footer {
+    padding: 12px;
+}
+
+.play-bar {
+    padding: 6px 12px;
+    align-items: stretch;
+    background-color: #dfab2d;
+    button,
+    a {
+        color: #000;
+        background-color: transparent;
+        border: none;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        padding: 4px 8px;
+        border-radius: 14px;
+        font-size: 16px;
+        &:hover {
+            background-color: rgba(0,0,0,.2);
+        }
+    }
+}
+
+.flex-grid .section-content {
+    width: 100%;
+}
 .flex-grid {
     flex-flow: row wrap;
     display: flex;
+    width: 100%;
+    --gap: 12px;
+    gap: var(--gap);
     .unit-card {
-        padding: 5px;
-        text-align: center;
+        // padding: 6px;
+        flex-shrink: 0;
+        align-self: stretch;
     }
     &.flex-1 .unit-card {
         flex-basis: 100%;
-        padding: 10px 0;
     }
     &.flex-2 .unit-card {
-        flex-basis: 50%;
-        padding: 10px;
+        flex-basis: calc(50% - var(--gap));
     }
     &.flex-3 .unit-card {
-        flex-basis: 33.333%;
+        flex-basis: calc(33.333% - var(--gap)/(3/2));
     }
     &.flex-4 .unit-card {
-        flex-basis: 25%;
+        flex-basis: calc(25% - var(--gap)/(4/3));
     }
     &.flex-5 .unit-card {
-        flex-basis: 20%;
+        flex-basis: calc(20% - var(--gap)/(5/4));
     }
 }
+
+.justified {
+    justify-content: space-between;
+}
+
+.evenly {
+    justify-content: space-evenly;
+}
+
+.center {
+    justify-content: center;
+}
+
+.nowrap {
+    flex-wrap: nowrap;
+}
+
+.start {
+    justify-content: start;
+}
+
+.text-center {
+    text-align: center;
+}
+
 .in-play-group {
-    background: black;
+    // background: black;
+    color: #fff;
+    padding: 12px 12px 24px 12px;
+    .row {
+        margin: 0;
+        padding: 0;
+        width: auto;
+        flex-grow: 0;
+        flex-shrink: 1;
+        > * {
+            width: auto;
+            margin: 0;
+            &:not(button) {
+                padding: 0;
+            }
+        }
+    }
+    .group-title {
+        flex-grow: 1;
+        * {
+            line-height: 36px;
+        }
+        .data-pair {
+            font-weight: bold;
+            font-size: 1.5rem;
+            line-height: 36px;
+            span {
+                font-weight: normal;
+                font-size: 1.25rem;
+                margin-right: 4px;
+            }
+        }
+        button {
+            border: none;
+            font-size: 1.2rem;
+            line-height: 2.2rem;
+            border-radius: 8px;
+            padding: 0px 16px;
+            margin: 0 32px;
+        }
+    }
+}
+
+.in-play-group + .in-play-group {
+    border-top: 1px solid #999;
 }

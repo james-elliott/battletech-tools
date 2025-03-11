@@ -1,0 +1,554 @@
+.alpha-strike-play-card {
+    background-color: #fff;
+    color: #000;
+    padding: 12px;
+    border-radius: 4px;
+    box-sizing: border-box;
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    gap: 12px;
+    position: relative;
+    // border: 1px solid #70787C;
+    &.wrecked {
+        background-color: lightpink;
+    }
+    h4 {
+        line-height: 20px;
+    }
+    a {
+        cursor: pointer;
+        user-select: none;
+    }
+    > * {
+        flex-wrap: nowrap;
+    }
+    > :last-child {
+        flex-grow: 1;
+    }
+    .row {
+        display: flex;
+        flex-direction: row;
+        width: auto;
+        padding: 0;
+        margin: 0;
+        > * {
+            width: auto;
+            padding: 0;
+            margin: 0;
+        }
+    }
+    .column {
+        display: flex;
+        flex-direction: column;
+        > * {
+            height: auto;
+            width: 100%;
+            padding: 0;
+            margin: 0;
+        }
+    }
+    .variant {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        max-width: 100%;
+        width: 100%;
+        flex-basis: 100%;
+    }
+    .unit-portrait {
+        flex-grow: 1;
+        background-repeat: no-repeat;
+        background-size: contain;
+        background-position: 50%;
+        mix-blend-mode: multiply;
+        img {
+            display: none;
+        }
+    }
+    button {
+        border-radius: 4px;
+        border: 1px solid #bababa;
+        background-color: lighten(#dfab2d, 40%);;
+        &.physical {
+            background-color: #eee;
+            .button {
+                background-color: #666;
+                color: #fff;
+            }
+        }
+        &:not(:disabled):hover {
+            background-color: rgba(#b48a25, .25);
+            border-color: #888;
+            &.physical {
+                background-color: #ccc;
+                .button {
+                    background-color: #444;
+                }
+            }
+            .button {
+                background-color: #b48a25;
+            }
+        }
+        .button,
+        &.button {
+            background-color: #dfab2d;
+            border-radius: 4px;
+            border: none;
+            font-weight: 600;
+            &:not(:disabled):hover {
+                background-color: #b48a25;
+            }
+        }
+        &:disabled .button {
+            &:hover {
+                background-color: #dfab2d;
+            }
+            &.physical,
+            &.physical:hover {
+                background-color: #bababa;
+            }
+        }
+        &:not(:disabled) .disabled {
+            opacity: .3;
+        }
+    }
+    .armor-structure {
+        button:not(.button) {
+            background-color: #fff;
+            &.active {
+                background-color: red;
+            }
+            &.staged {
+                background-color: lightpink;
+                border-color: blueviolet;
+                &.active {
+                    background-color: #fff;
+                }
+            }
+        }
+        .structure button {
+            background-color: #eee;
+            &.active {
+                background-color: crimson;
+            }
+            &.staged {
+                background-color: darken(lightpink, 10%);
+                &.active {
+                    background-color: #eee;
+                }
+            }
+        }
+    }
+    .data-pair {
+        font-weight: bold;
+        font-size: 1rem;
+        line-height: 20px;
+        span {
+            font-weight: normal;
+            font-size: .75rem;
+            margin-right: 6px;
+        }
+        a {
+            text-decoration: none;
+        }
+        &.staged,
+        .staged {
+            color: lightblue;
+            &:hover {
+                color: darken(lightblue, 10%);
+            }
+        }
+    }
+    a.data-pair {
+        text-decoration: none;
+        span {
+            color: #000;
+        }
+    }
+    .move-type {
+        text-transform: capitalize;
+        letter-spacing: -0.5px;
+    }
+    .move-heat {
+        gap: 16px;
+        .move-stats {
+            min-width: 64px;
+            .alt-adjust {
+                gap: 4px;
+            }
+            button {
+                flex-grow: 1;
+                flex-basis: calc(50% - 2px);
+                font-weight: 700;
+                line-height: 20px;
+                padding-bottom: 2px;
+            }
+        }
+    }
+    .heat.column {
+        min-width: 80px;
+        flex-grow: .5;
+        button {
+            flex-basis: 25%;
+            border-radius: 0;;
+            font-weight: 600;
+            border: 1px solid #666;
+            background-color: #eee;
+            --rad: 6px;
+            &:hover {
+                background-color: darken(#eee, 5%);
+            }
+            &.staged {
+                border-color: #000;
+                box-shadow: violet 0px 0px 4px inset;
+            }
+            &:has(~ .staged) {
+                opacity: .8;
+                box-shadow: rgba(0,0,0,.6) 0px 0px 4px inset;
+            }
+            &:first-child {
+                &.active {
+                    background-color: yellow;
+                    &:hover {
+                        background-color: darken(yellow, 5%);
+                    }
+                }
+                border-radius: var(--rad) 0 0 var(--rad);
+            }
+            &:nth-child(2).active {
+                background-color: orange;
+                &:hover {
+                    background-color: darken(orange, 5%);
+                }
+            }
+            &:nth-child(3).active {
+                background-color: red;
+                    &:hover {
+                        background-color: darken(red, 5%);
+                    }
+            }
+            &:last-child {
+                &.active {
+                    background-color: crimson;
+                    color: #fff;
+                    &:hover {
+                        background-color: darken(crimson, 5%);
+                    }
+                }
+                border-radius: 0 var(--rad) var(--rad) 0;
+            }
+        }
+        .staged ~ button {
+            opacity: .6;
+        }
+    }
+    .attack-row h4 {
+        writing-mode: sideways-lr;
+        text-transform: uppercase;
+        text-align: center;
+        width: 20px;
+        font-size: 12px;
+    }
+    .attacks {
+        flex-grow: 1;
+        display: flex;
+        gap: 4px;
+        button {
+            flex-grow: 1;
+            flex-basis: 20%;
+            width: auto;
+            padding: 4px;
+            .button {
+                font-weight: 600;
+            }
+            .data-pair {
+                margin-bottom: 6px;
+                flex-grow: 1;
+                span {
+                    margin: 0;
+                    font-weight: 600;
+                    &.range {
+                        font-size: 12px;
+                        color: rgba(0,0,0,.5);
+                    }
+                }
+            }
+            
+        }
+    }
+    .armor-crits {
+        gap: 8px;
+        &.row {
+            flex-grow: 1;
+        }
+        >:first-child {
+            max-width: calc(100% - 100px);
+            flex-grow: 1;
+            &:last-child {
+                max-width: 100%;
+            }
+        }
+        button.damage {
+            padding: 0 4px;
+        }
+        .armor-structure {
+            position: relative;
+            gap: 2px;
+            > .column.evenly {
+                gap: 8px;
+                flex-grow: 0;
+                flex-shrink: 1;
+                flex-basis: 1;
+            }
+            .take-damage {
+                display: none;
+                width: 0;
+                transition: all 150ms;
+                button {
+                    flex-basis: 10%;
+                }
+            }
+            &.take-damage {
+                .take-damage {
+                    display: flex;
+                    position: absolute;
+                    left: 26px;
+                    right: 0;
+                    top: 0;
+                    bottom: 0;
+                    width: auto;
+                }
+                .column.evenly {
+                    opacity: 0;
+                }
+            }
+        }
+        .armor,
+        .structure {
+            label {
+                width: 16px;
+                margin: 0 4px;
+                text-align: center;
+                line-height: 20px;
+                font-weight: 600;
+            }
+            .dots {
+                gap: 2px 1px;
+            }
+            button {
+                border-radius: 10px;
+                height: 20px;
+                width: 20px;
+            }
+        }
+        .vehicle.row {
+            span {
+                margin-right: 1px;
+            }
+        }
+        .crits {
+            width: 92px;
+            max-width: 92px;
+            button {
+                padding: 2px;
+                line-height: 1rem;
+                font-size: 1.2rem;
+                margin-top: 4px;
+            }
+        }
+    }
+    .list {
+        span::after {
+           content: ' ';
+        }
+        span:last-child:not(:first-child) {
+            display: none;
+        }
+    }
+    .overlay {
+        position: absolute;
+        border-radius: 4px;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        padding: 12px;
+        background-color: rgba(#fff,.95);
+        z-index: 100;
+        h5 {
+            margin-bottom: 10px;
+        }
+        .row + h5 {
+            margin-top: 18px;
+        }
+        .row {
+            gap: 20px;
+        }
+    }
+    .staged-actions {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translate(-50%, -25%);
+        button {
+            background-color: lightblue;
+            box-shadow: 0px 1px 4px rgba(0,0,0,.45);;
+            &:last-child {
+                background-color: #eee;
+            }
+            &:hover {
+                background-color: darken(lightblue, 10%) !important;
+            }
+        }
+    }
+    @media (max-width: 1024px)  {
+        .unit-portrait,
+        .attack-row h4,
+        .range {
+            display: none;
+        }
+    }
+    button.staged {
+        background-color: plum;
+        &:not(:disabled):hover {
+            background-color: darken(plum, 10%);
+        }
+    }
+}
+
+.token-wrapper {
+    text-align: center;
+    font-weight: 600;
+    --h: 72px;
+    $tokenColor: lighten(#dfab2d, 40%);
+    .data {
+        position: absolute;
+        line-height: 1rem;
+        width: 100%;
+        top: 6px;
+        height: calc(100% - 12px);
+    }
+    span {
+        font-size: .75rem;
+        font-weight: 400;
+    }
+
+    .token-inner {
+        --b: 2px; /* adjust to control the border  */
+        height: var(--h); /* adjust to control the size  */
+        aspect-ratio: 1/cos(30deg);
+        clip-path: 
+        polygon(0 50%,50% -50%,100% 50%,50% 150%,0 50%,
+        var(--b) 50%,
+        calc(25% + var(--b)*cos(60deg)) calc(100% - var(--b)*sin(60deg)),
+        calc(75% - var(--b)*cos(60deg)) calc(100% - var(--b)*sin(60deg)),
+        calc(100% - var(--b)) 50%,
+        calc(75% - var(--b)*cos(60deg)) calc(var(--b)*sin(60deg)),
+        calc(25% + var(--b)*cos(60deg)) calc(var(--b)*sin(60deg)),
+        var(--b) 50%);
+        background-color: darken($tokenColor, 20%);
+        position: absolute;
+        top: 0;
+    }
+
+    .token {
+        cursor: pointer;
+        position: relative;
+        height: var(--h); /* adjust to control the size  */
+        aspect-ratio: 1/cos(30deg);
+        clip-path: polygon(50% -50%,100% 50%,50% 150%,0 50%);
+        background-color: $tokenColor;
+        &:hover {
+            background-color: darken($tokenColor, 5%);
+        }
+        &.standstill,
+        &.low {
+            $tokenColor: #666;
+            background-color: $tokenColor;
+            color: #fff;
+            .token-inner {
+                background-color: darken($tokenColor, 20%);
+            }
+            &:hover {
+                background-color: darken($tokenColor, 5%);
+            }
+        }
+        &.ground,
+        &.middle,
+        &.charge {
+            $tokenColor: #fff;
+            background-color: $tokenColor;
+            .token-inner {
+                background-color: darken($tokenColor, 20%);
+            }
+            &:hover {
+                background-color: darken($tokenColor, 5%);
+            }
+        }
+        &.sprint,
+        &.high {
+            $tokenColor: lighten(#dfab2d, 40%);
+            background-color: $tokenColor;
+            .token-inner {
+                background-color: darken($tokenColor, 20%);
+            }
+            &:hover {
+                background-color: darken($tokenColor, 5%);
+            }
+        }
+        &.jump,
+        &.extreme,
+        &.dfa {
+            $tokenColor: crimson;
+            background-color: $tokenColor;
+            color: #fff;
+            .token-inner {
+                background-color: darken($tokenColor, 20%);
+            }
+            &:hover {
+                background-color: darken($tokenColor, 5%);
+            }
+        }
+        &.immobile {
+            cursor: not-allowed;
+            color: #fff;
+            $tokenColor: crimson;
+            background-color: $tokenColor;
+            .token-inner {
+                background-color: darken($tokenColor, 20%);
+            }
+        }
+        &.hull.down {
+            $tokenColor: #eee;
+            background-color: $tokenColor;
+            .token-inner {
+                background-color: darken($tokenColor, 20%);
+            }
+            &:hover {
+                background-color: darken($tokenColor, 5%);
+            }
+        }
+        &.dfa .move-type {
+            text-transform: uppercase;
+        }
+        span {
+            font-size: .75rem;
+            font-weight: 400;
+        }
+    }
+}
+
+.die {
+    font-size: 2rem;
+    &.miss {
+        opacity: .3;
+    }
+    &.damage {
+        color: crimson;
+    }
+    &.minimal {
+        color: lightseagreen;
+    }
+}
+
