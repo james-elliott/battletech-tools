@@ -1354,6 +1354,7 @@ export class AlphaStrikeAttackOverlay extends React.Component<AlphaStrikeAttackO
             ams: false,
             tailing: false,
             swordsman: false,
+            streetFighter: false,
             bombs: {
                 max: this.props.attack.type === 'bomb' && this.props.unit ? this.props.unit.getAbilityValues('BOMB').damage : 0,
                 using: 1,
@@ -1630,6 +1631,18 @@ export class AlphaStrikeAttackOverlay extends React.Component<AlphaStrikeAttackO
         });
     }
 
+    private _toggleStreetFighter = (): void => {
+        if(this.props.unit) {
+            let damage = this.props.attack.damage + this.props.unit.getCurrentDamage(0).value;
+            let minimal = this.props.unit.getCurrentDamage(0).minimal;
+            this.setState({
+                streetFighter: !this.state.streetFighter,
+                baseDamage: !this.state.streetFighter ? damage : this.props.attack.damage,
+                minimal: minimal,
+            });
+        }
+    }
+
     private _setAirToAirRange = ( range: number ): void => {
         if (this.props.unit) {
             for(let attack of this.props.unit.attacks) {
@@ -1733,6 +1746,9 @@ export class AlphaStrikeAttackOverlay extends React.Component<AlphaStrikeAttackO
             if (this.props.attack.type === 'physical') {
                 if (this.props.unit.hasPilotAbility('Swordsman') && this.props.unit.hasAbility('MEL')) {
                     options.push(<button key='swordsman' className={this.state.swordsman ? 'staged' : ''} onClick={() => this._toggleSwordsman()}>Swordsman</button>);
+                }
+                if (this.props.unit.hasPilotAbility('Street Fighter')) {
+                    options.push(<button key='streetFighter' className={this.state.streetFighter ? 'staged' : ''} onClick={() => this._toggleStreetFighter()}>Street Fighter</button>);
                 }
             }
         }
@@ -2024,6 +2040,7 @@ interface AlphaStrikeAttackOverlayState {
     };
     tailing: boolean;
     swordsman: boolean;
+    streetFighter: boolean;
     // attackRollResults: RollResult[];
     // damageRollResults: RollResult[];
 }
