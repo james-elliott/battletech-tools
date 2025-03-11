@@ -1205,6 +1205,8 @@ export default class AlphaStrikeUnitCard extends React.Component<IAlphaStrikeUni
                                             //@ts-ignore
                                             <React.Fragment key={wordIndex}><a onClick={(e) => this.props.showSpecialAbility(e, ability)} title={"Click here to view the description for " + word} href="/">{word}</a><span>, </span></React.Fragment>
                                         )
+                                    }  else {
+                                        return <React.Fragment key={wordIndex}>{word}<span>, </span></React.Fragment>;
                                     }
                                 }
                                 return null;
@@ -1741,7 +1743,7 @@ export class AlphaStrikeAttackOverlay extends React.Component<AlphaStrikeAttackO
                         <button key='multi2' className={this.state.multiTasker === 2 ? 'staged' : ''} onClick={() => this._setMultiTasker(2)}>Secondary</button>
                     </div>
                 );
-            } else {
+            } else if (this.props.attack.damage > 1) {
                 let multi = this.props.unit?.hasPilotAbility('Multi-Tasker') ? 1 : 2;
                 options.push(<button key='multi1' className={this.state.multiTasker === multi ? 'staged' : ''} onClick={() => this._setMultiTasker(multi)}>Secondary</button>);
             }

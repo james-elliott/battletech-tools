@@ -1,6 +1,6 @@
 import React from 'react';
-import { FaArrowCircleLeft, FaCog, FaColumns, FaSync } from "react-icons/fa";
-import { FiRefreshCcw } from "react-icons/fi";
+import { FaArrowCircleLeft, FaColumns, FaRuler } from "react-icons/fa";
+import { FiHexagon } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 import AlphaStrikeGroup from '../../../../classes/alpha-strike-group';
 import { CONST_BATTLETECH_URL } from '../../../../configVars';
@@ -11,7 +11,6 @@ import BattleTechLogo from '../../../components/battletech-logo';
 import StandardModal from '../../../components/standard-modal';
 import AlphaStrikeUnitCard from '../../../components/alpha-strike-play-card';
 import './in-play.scss';
-import AlphaStrikeToggleRulerHexes from "./_toggleRulerHexes";
 import { IFormationBonus } from '../../../../data/formation-bonuses';
 
 export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProps, IInPlayState> {
@@ -72,7 +71,18 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
           this.props.appGlobals.saveCurrentASForce( this.props.appGlobals.currentASForce );
         }
       )
+    }
 
+    toggleAlphaStrikeMeasurementsInHexes = (
+        e: React.FormEvent<HTMLSpanElement>
+      ): void => {
+
+        if( e && e.preventDefault ) e.preventDefault();
+
+        let appSettings = this.props.appGlobals.appSettings;
+
+        appSettings.alphaStrikeMeasurementsInHexes = !appSettings.alphaStrikeMeasurementsInHexes;
+        this.props.appGlobals.saveAppSettings( appSettings );
     }
 
     showPilotAbility = ( ability: IASPilotAbility ): void => {
@@ -187,15 +197,17 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
         <header className="play-bar flex-grid justified">
           <Link title="Click here to leave Play Mode (don't worry, you won't lose your current mech statuses)" className="current" to={`${process.env.PUBLIC_URL}/alpha-strike-roster`}><FaArrowCircleLeft /></Link>
 
-          {/* <span className="current" onClick={this.toggleCardMode}><FaColumns /> {this.props.appGlobals.appSettings.alphaStrikeInPlayColumns}</span> */}
+          <span className="current" onClick={this.toggleCardMode}><FaColumns /> {this.props.appGlobals.appSettings.alphaStrikeInPlayColumns}</span>
           
           <button title="Apply damage and heat changes to end the round and start another" className="" onClick={this.nextRound}>Next Round</button>
 
-          <button>
-            <AlphaStrikeToggleRulerHexes appGlobals={this.props.appGlobals} />
+          <button onClick={(e) => this.toggleAlphaStrikeMeasurementsInHexes(e)}>
+            {this.props.appGlobals.appSettings.alphaStrikeMeasurementsInHexes ? (
+                <FiHexagon />
+            ) : (
+                <FaRuler />
+            )}
           </button>
-
-          {/* <button><FaCog/></button> */}
 
         </header>
           {this.props.appGlobals.currentASForce.groups.map( (group, groupIndex) => {

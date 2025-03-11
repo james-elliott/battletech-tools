@@ -372,15 +372,14 @@ export class AlphaStrikeUnit {
             }
 
             if( incomingMechData.BFAbilities && incomingMechData.BFAbilities.trim() ) {
-                this.abilities = incomingMechData.BFAbilities.split(",");
-                if (!this.abilities){
+                let matches = incomingMechData.BFAbilities.match(/([^,\(]+(\(.*?\))*)+/g);
+                if (!matches){
                     this.abilities = [];
                 } else {
-                    for( let abi of this.abilities ) {
-                        abi = abi.trim();
+                    for( let match of matches ) {
+                        this.abilities.push(match.trim());
                     }
                 }
-                console.log(this.name, this.abilities);
             }
 
             this.overheat = +incomingMechData.BFOverheat;
@@ -907,10 +906,11 @@ export class AlphaStrikeUnit {
         for(let abi of this.abilities) {
             if (abi.toLowerCase().indexOf(ability.toLowerCase()) > -1) {
                 // Get its value for this range
-                let values = abi.substring(abi.search(/\d/)).split('/');
-                result.minimal =  values[range].indexOf('*') > -1;
-                if (values[range].indexOf('-') < 0) {
-                    result.damage =  parseInt(values[range]);
+                let regex = new RegExp(String.raw`((?<=${ability}.*)(\d\*?))`, "gi");
+                let matches = abi.match(regex);
+                if (matches) {
+                    result.minimal =  matches[range].indexOf('*') > -1;
+                    result.damage =  parseInt(matches[range]);
                 }
             }
         }
@@ -1871,6 +1871,25 @@ export class AlphaStrikeUnit {
                 damage.value = damage.value/2;
             }
             damage.value = Math.floor(damage.value);
+        }
+
+        // Adjust for hull-down
+        if (this.moveToken.type === 'hull down') {
+            if (this.type.toLowerCase() === 'cv' || this.type.toLowerCase() === 'sv') {
+                damage.value = -1; // This will eval to 0, no minimal
+            } else if(this.type.toLowerCase() === 'bm' || this.type.toLowerCase() === 'im') {
+                // Reduce by 1, but not below 0*
+                damage.value = damage.value > 1 ? damage.value -1 : 0;
+            } else {
+                // Half damage, rounded down
+                damage.value = Math.floor(damage.value);
+            }
+            // Check to see if turret is better, and use that instead
+            let turret = this.getAbilityValues('TUR', range);
+            if (turret.damage > damage.value || (turret.minimal === true && damage.minimal === false)) {
+                damage.value = turret.damage;
+                damage.minimal = turret.minimal;
+            }
         }
         
         // Check for minimal damage
