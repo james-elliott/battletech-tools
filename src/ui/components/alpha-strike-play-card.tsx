@@ -602,7 +602,7 @@ export default class AlphaStrikeUnitCard extends React.Component<IAlphaStrikeUni
         );
 
         for (let moveC of unit.move) {
-            if (moveC.type !== 'j' && moveC.type !== 's' && moveC.type !== 'v' && moveC.currentMove > 0 || (moveC.type === 'j' && unit.move.length === 1)) {
+            if ((moveC.type !== 'j' && moveC.type !== 's' && moveC.type !== 'v' && moveC.currentMove > 0) || (moveC.type === 'j' && unit.move.length === 1)) {
                 ground.push(
                     <div key="ground" className='token-wrapper' onClick={() => this._setMovement('ground', moveC.tmm)}>
                         {this._moveToken('ground', moveC.tmm)}
@@ -695,7 +695,6 @@ export default class AlphaStrikeUnitCard extends React.Component<IAlphaStrikeUni
             }
         }
 
-        // console.log(unit.name, ground.length);
         return <>
             {airborne.length > 0 ? (<><h5>Airborne options</h5><div className='row center'>{airborne}</div></>) : null }
             {airborne.length + aquatic.length + attackMoves.length > 0 ? (<h5>Ground options</h5>) : null }<div className='row center'>{ground}</div>
@@ -961,7 +960,7 @@ export default class AlphaStrikeUnitCard extends React.Component<IAlphaStrikeUni
                             onClick={() => this._showAttack(attack)}>
                             <div className='row justified'>
                                 {physicalAttacks.map( (attack, attackIndex) => {
-                                    return <div key={attackIndex} className={attack.disabled ? 'data-pair disabled' : 'data-pair'}>{attack.damage}<span>{attack.name.match(/[A-Z]/g)?.join('')}</span></div>;
+                                    return <div key={attackIndex} className={attack.disabled ? 'data-pair disabled' : 'data-pair'}>{attack.damage}{attack.minimal ? '*' : ''}<span>{attack.name.match(/[A-Z]/g)?.join('')}</span></div>;
                                 })}
                             </div>
                             <div className={unit.isWrecked() ? 'button physical wrecked' : 'button physical'}>Physical</div>
@@ -1039,8 +1038,6 @@ export default class AlphaStrikeUnitCard extends React.Component<IAlphaStrikeUni
             return <></>
         }
 
-        // console.log(this.props.asUnit.name, this.props.asUnit);
-
         let showHeat = this.props.asUnit.type.toLocaleLowerCase() === "bm" || this.props.asUnit.type.toLocaleLowerCase() === "af" || this.props.asUnit.type.toLocaleLowerCase() === "im";
 
         let motive910 = 0;
@@ -1084,7 +1081,7 @@ export default class AlphaStrikeUnitCard extends React.Component<IAlphaStrikeUni
                         <div className='data-pair'><span>PV</span>{this.props.asUnit.currentPoints}</div>
                     </div>
                     <div className='variant row justified'>
-                        {!this.props.asUnit.customName && this.props.asUnit.variant != ' ' ? this.props.asUnit.variant : this.props.asUnit.name}
+                        {!this.props.asUnit.customName && this.props.asUnit.variant !== ' ' ? this.props.asUnit.variant : this.props.asUnit.name}
                     </div>
                     <div className='row justified'>
                         <div className='data-pair'><span>Role</span>{this.props.asUnit.role}</div>
@@ -1219,9 +1216,10 @@ export default class AlphaStrikeUnitCard extends React.Component<IAlphaStrikeUni
                         <div className='crits column justified'>
                             <h4>Critical Hits</h4>
                             {this.props.asUnit.type.toLowerCase() !== "pm" ? (
-                                <a className={this.props.asUnit.getEngineHits() !== this.props.asUnit.getEngineHits(true) ? 'data-pair row justified staged' : 'data-pair row justified'} onClick={() => this._toggleEngineHit(true)}><span>Engine</span>{this.props.asUnit.getEngineHits() !== this.props.asUnit.getEngineHits(true) ? this.props.asUnit.getEngineHits(true) : this.props.asUnit.getEngineHits()}</a>
+                                <a href="#engineCrit" className={this.props.asUnit.getEngineHits() !== this.props.asUnit.getEngineHits(true) ? 'data-pair row justified staged' : 'data-pair row justified'} onClick={() => this._toggleEngineHit(true)}><span>Engine</span>{this.props.asUnit.getEngineHits() !== this.props.asUnit.getEngineHits(true) ? this.props.asUnit.getEngineHits(true) : this.props.asUnit.getEngineHits()}</a>
                             ) : null }
                             <a 
+                                href="#fireControlCrit"
                                 className={this.props.asUnit.getFireControlHits() !== this.props.asUnit.getFireControlHits(true) ? 'data-pair row justified staged' : 'data-pair row justified'} 
                                 onClick={() => this._toggleFireControlHit(true)}
                                 >
@@ -1229,6 +1227,7 @@ export default class AlphaStrikeUnitCard extends React.Component<IAlphaStrikeUni
                                     {this.props.asUnit.getFireControlHits() !== this.props.asUnit.getFireControlHits(true) ? this.props.asUnit.getFireControlHits(true) : this.props.asUnit.getFireControlHits()}
                             </a>
                             <a 
+                                href="#weaponCrit"
                                 className={this.props.asUnit.getWeaponHits() !== this.props.asUnit.getWeaponHits(true) ? 'data-pair row justified staged' : 'data-pair row justified'} 
                                 onClick={() => this._toggleWeaponHit(true)}
                                 >
@@ -1237,6 +1236,7 @@ export default class AlphaStrikeUnitCard extends React.Component<IAlphaStrikeUni
                             </a>
                             {this.props.asUnit.type.toLowerCase() === 'bm' || this.props.asUnit.type.toLowerCase() === 'im' || this.props.asUnit.type.toLowerCase() === 'pm' ? (
                                 <a 
+                                    href="#movementCrit"
                                     className={this.props.asUnit.getMPHits() !== this.props.asUnit.getMPHits(true) ? 'data-pair row justified staged' : 'data-pair row justified'} 
                                     onClick={() => this._toggleMPHit(true)}
                                     >
@@ -1247,9 +1247,9 @@ export default class AlphaStrikeUnitCard extends React.Component<IAlphaStrikeUni
                             {this.props.asUnit.type.toLowerCase() === 'cv' ||  this.props.asUnit.type.toLowerCase() === 'sv'? (
                                 <div className='vehicle data-pair row justified'>
                                     <span>Motive</span>
-                                    <a className={roundMotive910 !== motive910 ? 'staged' : ''} onClick={() => this._toggleVehicle910()}>{roundMotive910 !== motive910 ? roundMotive910 : motive910}</a>
-                                    <a className={roundMotive11 !== motive11 ? 'staged' : ''} onClick={() => this._toggleVehicle11()}>{roundMotive11 !== motive11 ? roundMotive11 : motive11}</a>
-                                    <a className={this.props.asUnit.vehicleMotive12 !== this.props.asUnit.roundVehicleMotive12 ? 'staged' : ''} onClick={() => this._toggleVehicle12()}>{motive12}</a>
+                                    <a href="#motive910crit" className={roundMotive910 !== motive910 ? 'staged' : ''} onClick={() => this._toggleVehicle910()}>{roundMotive910 !== motive910 ? roundMotive910 : motive910}</a>
+                                    <a href="#motive11crit" className={roundMotive11 !== motive11 ? 'staged' : ''} onClick={() => this._toggleVehicle11()}>{roundMotive11 !== motive11 ? roundMotive11 : motive11}</a>
+                                    <a href="#motive12crit" className={this.props.asUnit.vehicleMotive12 !== this.props.asUnit.roundVehicleMotive12 ? 'staged' : ''} onClick={() => this._toggleVehicle12()}>{motive12}</a>
                                 </div>
                             ) : null }
                             <button className='button' onClick={() => this._rollCritical()}>
@@ -1359,6 +1359,7 @@ export class AlphaStrikeAttackOverlay extends React.Component<AlphaStrikeAttackO
                 max: this.props.attack.type === 'bomb' && this.props.unit ? this.props.unit.getAbilityValues('BOMB').damage : 0,
                 using: 1,
             },
+            multiTasker: 0,
             // attackRollResults: [],
             // damageRollResults: [],
         }
@@ -1394,8 +1395,6 @@ export class AlphaStrikeAttackOverlay extends React.Component<AlphaStrikeAttackO
 
             tn += this.state.tailing ? -2 : 0;
 
-            this.targetNumber = tn;
-
             // Damage
             let damage = this.state.baseDamage;
             damage += this.state.overheat;
@@ -1412,6 +1411,12 @@ export class AlphaStrikeAttackOverlay extends React.Component<AlphaStrikeAttackO
                 damage = this.props.unit.getAbilityValues('ART').damage;
             }
 
+            if (this.state.multiTasker > 0) {
+                tn += this.state.multiTasker > 1 ? 1 : 0;
+                damage = this.props.appGlobals.appSettings.alphaStrikeVariableDamage !== 'attack' ? Math.floor(damage/2) : damage;
+            }
+
+            this.targetNumber = tn;
             this.maxDamage = damage;
 
             // Check all the to-hit rolls
@@ -1451,12 +1456,17 @@ export class AlphaStrikeAttackOverlay extends React.Component<AlphaStrikeAttackO
                 if (this.toHitRollResults.length > 0 && this.toHitRollResults[0].hit) {
                     this.totalDamage = this.maxDamage;
                     if (this.state.minimal) {
-                        this.totalDamage += this.damageRollResults[0].hit ? 1 : 0;
+                        this.totalDamage += this.damageRollResults[this.damageRollResults.length-1].hit ? 1 : 0;
                     }
                 }
             } else
             // Multiple Damage Rolls
             if (this.props.appGlobals.appSettings.alphaStrikeVariableDamage === 'damage') {
+                // Need to make sure there are enough damage dice
+                let needed = this.state.minimal ? this.maxDamage + 1 : this.maxDamage;
+                if (needed > this.damageRollResults.length) {
+                    this.damageRollResults = [this._rollDamage(3), ...this.damageRollResults];
+                }
                 if (this.toHitRollResults.length > 0 && this.toHitRollResults[0].hit && this.damageRollResults.length > 0) {
                     for(let index = 0; index < this.maxDamage; index++) {
                         this.totalDamage += this.damageRollResults[index].hit ? 1 : 0;
@@ -1466,6 +1476,7 @@ export class AlphaStrikeAttackOverlay extends React.Component<AlphaStrikeAttackO
                     }
                     // Successful hits ALWAYS do at least 1 damage, except for 0* minimal
                     if (this.maxDamage > 0 && this.totalDamage === 0) {
+                        console.log('Hits with Multiple Damage Rolls always do at least 1 damage');
                         this.totalDamage = 1;
                     }
                 }
@@ -1647,7 +1658,6 @@ export class AlphaStrikeAttackOverlay extends React.Component<AlphaStrikeAttackO
         if (this.props.unit) {
             for(let attack of this.props.unit.attacks) {
                 if (attack.type === 'weapon' && attack.range === range) {
-                    console.log(attack);
                     this.setState({
                         range: range,
                         toHit: attack.toHit,
@@ -1657,6 +1667,12 @@ export class AlphaStrikeAttackOverlay extends React.Component<AlphaStrikeAttackO
                 }
             }
         }
+    }
+
+    private _setMultiTasker = ( target: number ): void => {
+        this.setState({
+            multiTasker: target !== this.state.multiTasker ? target : 0,
+        });
     }
 
     private _setBombs( count: number ) {
@@ -1717,6 +1733,21 @@ export class AlphaStrikeAttackOverlay extends React.Component<AlphaStrikeAttackO
             }
         }
 
+        if (this.props.attack.type === 'weapon' && (this.props.unit?.hasPilotAbility('Multi-Tasker') || this.props.appGlobals.appSettings.alphaStrikeVariableDamage === 'attack')) {
+            if (this.props.appGlobals.appSettings.alphaStrikeVariableDamage !== 'attack') {
+                options.push(
+                    <div key='multi'>Multi-Target:
+                        <button key='multi1' className={this.state.multiTasker === 1 ? 'staged' : ''} onClick={() => this._setMultiTasker(1)}>Primary</button>
+                        <button key='multi2' className={this.state.multiTasker === 2 ? 'staged' : ''} onClick={() => this._setMultiTasker(2)}>Secondary</button>
+                    </div>
+                );
+            } else {
+                let multi = this.props.unit?.hasPilotAbility('Multi-Tasker') ? 1 : 2;
+                options.push(<button key='multi1' className={this.state.multiTasker === multi ? 'staged' : ''} onClick={() => this._setMultiTasker(multi)}>Secondary</button>);
+            }
+            
+        }
+
         // Any unit can spot
         options.push(<button key='spotting' className={this.state.spotting ? 'staged' : ''} onClick={() => this._toggleSpotting()}>Spotting</button>);
 
@@ -1727,7 +1758,7 @@ export class AlphaStrikeAttackOverlay extends React.Component<AlphaStrikeAttackO
         let options: JSX.Element[] = [];
 
         if (this.props.unit) {
-            if (!this.state.artillery && this.state.bombs.using < 1 && this.props.unit && (this.state.range < 2 || this.props.unit.hasAbility('OVL') && this.state.range < 3)) {
+            if (!this.state.artillery && this.state.bombs.using < 1 && this.props.unit && (this.state.range < 2 || (this.props.unit.hasAbility('OVL') && this.state.range < 3))) {
                 for(let index = 0; index < this.props.unit.overheat; index++) {
                     options.push(<button key={'ov'+index+1} className={this.state.overheat === index+1 ? 'staged' : ''} onClick={() => this._setOverheat(index+1)}>OV {index+1}</button>)
                 }
@@ -1768,7 +1799,6 @@ export class AlphaStrikeAttackOverlay extends React.Component<AlphaStrikeAttackO
         if (this.props.unit) {
             let attackRollResults: RollResult[] = [];
             let damageRollResults: RollResult[] = [];
-            let totalDamage = 0;
             let rolls = 1;
             if (this.state.artillery) {
                 rolls = this.props.unit.getAbilityValues('ART').damage;
@@ -1798,7 +1828,7 @@ export class AlphaStrikeAttackOverlay extends React.Component<AlphaStrikeAttackO
                     damageRollResults.push(this._rollDamage(5));
                 }
             } else {
-                for(let roll of attackRollResults) {
+                for(let index = 0; index < attackRollResults.length; index++) {
                     // Need to redo a special case here to roll attack die for Artillery regardless, otherwise toggling cause issues.
                     if (this.state.artillery || this.state.bombs.using > 0) {
                         damageRollResults.push(this._rollDamage(1));
@@ -1810,7 +1840,6 @@ export class AlphaStrikeAttackOverlay extends React.Component<AlphaStrikeAttackO
 
             this.toHitRollResults = attackRollResults;
             this.damageRollResults = damageRollResults;
-            this.totalDamage = totalDamage;
 
             this.setState({
                 // damageResult: totalDamage,
@@ -1849,14 +1878,19 @@ export class AlphaStrikeAttackOverlay extends React.Component<AlphaStrikeAttackO
             if (this.props.appGlobals.appSettings.alphaStrikeVariableDamage === 'damage') {
                 // When not using Multiple Damage Rolls, the first hit needs to be successful to show damage
                 show = this.toHitRollResults[0].hit;
-            } else if (this.state.minimal) {
+            }
+            if (this.props.attack.type === 'physical') {
+                // Don't show for physical attacks
+                show = false;
+            }
+            if (this.state.minimal) {
                 // Show if we have minimal damage
                 show = this.toHitRollResults[this.toHitRollResults.length - 1].hit;
             }
         }
 
         // Never show damage with Artillery or Bombs
-        if (this.state.artillery || this.state.bombs.max > 0 || this.props.attack.type === 'physical') {
+        if (this.state.artillery || this.state.bombs.max > 0) {
             show = false;
         } 
 
@@ -1954,7 +1988,7 @@ export class AlphaStrikeAttackOverlay extends React.Component<AlphaStrikeAttackO
                 {this.toHitRollResults.length > 0 ? (
                         <div className='row'>
                             {this.toHitRollResults.map( (result, resultIndex) => {
-                                if (this.props.attack.type !== 'physical' && resultIndex < this.maxDamage || this.state.artillery) {
+                                if ((this.props.attack.type !== 'physical' && resultIndex < this.maxDamage) || this.state.artillery) {
                                     let scatter = this.damageRollResults[resultIndex];
                                     return <div key={resultIndex}>
                                         <DiceIcon classes={result.hit ? '' : 'miss'} roll={result.roll1}></DiceIcon>
@@ -1971,7 +2005,7 @@ export class AlphaStrikeAttackOverlay extends React.Component<AlphaStrikeAttackO
                                     <DiceIcon classes={this.toHitRollResults[0].hit ? '' : 'miss'} roll={this.toHitRollResults[0].roll2}></DiceIcon>
                                 </div>
                             ) : null }
-                            {this.state.minimal ? (
+                            {this.state.minimal && this.maxDamage === 0 ? (
                                 <div key={"minimal"}>
                                     <DiceIcon classes={this.toHitRollResults[this.toHitRollResults.length - 1].hit ? 'minimal' : 'minimal miss'} roll={this.toHitRollResults[this.toHitRollResults.length - 1].roll1}></DiceIcon>
                                     <DiceIcon classes={this.toHitRollResults[this.toHitRollResults.length - 1].hit ? 'minimal' : 'minimal miss'} roll={this.toHitRollResults[this.toHitRollResults.length - 1].roll2}></DiceIcon>
@@ -1983,13 +2017,13 @@ export class AlphaStrikeAttackOverlay extends React.Component<AlphaStrikeAttackO
                 {this._showDamageDice() ? (
                     <>
                         <div className='row'>
-                            {this.damageRollResults.map( (result,resultIndex) => {
+                            {this.props.appGlobals.appSettings.alphaStrikeVariableDamage !== 'attack' && this.props.attack.type !== 'physical' ? this.damageRollResults.map( (result,resultIndex) => {
                                 if (resultIndex < this.maxDamage && this.props.appGlobals.appSettings.alphaStrikeVariableDamage !== 'attack') {
                                     return <DiceIcon key={resultIndex} classes={result.hit ? 'damage' : 'damage miss'} roll={result.roll1}></DiceIcon>;
                                 } else {
                                     return null;
                                 }
-                            })}
+                            }) : null }
                             {this.state.minimal ? (
                                 <DiceIcon key={"minimal"} classes={this.damageRollResults[this.damageRollResults.length - 1].hit ? 'damage' : 'damage miss'} roll={this.damageRollResults[this.damageRollResults.length - 1].roll1}></DiceIcon>
                             ) : null }
@@ -2041,6 +2075,7 @@ interface AlphaStrikeAttackOverlayState {
     tailing: boolean;
     swordsman: boolean;
     streetFighter: boolean;
+    multiTasker: number;
     // attackRollResults: RollResult[];
     // damageRollResults: RollResult[];
 }
@@ -2061,10 +2096,6 @@ interface RollResult {
 
 export class DiceIcon extends React.Component<DiceProps> {
     
-    constructor(props: DiceProps) {
-        super(props);
-    }
-
     render = (): JSX.Element => {
         let die = <></>;
         switch (this.props.roll) {
