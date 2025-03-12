@@ -1762,7 +1762,7 @@ export class AlphaStrikeAttackOverlay extends React.Component<AlphaStrikeAttackO
         let options: JSX.Element[] = [];
 
         if (this.props.unit) {
-            if (!this.state.artillery && this.state.bombs.max < 1 && this.props.unit && (this.state.range < 2 || (this.props.unit.hasAbility('OVL') && this.state.range < 3))) {
+            if (!this.state.artillery && this.state.bombs.max < 1 && this.props.attack.type !== 'physical' && this.props.unit && (this.state.range < 2 || (this.props.unit.hasAbility('OVL') && this.state.range < 3))) {
                 let overheat: JSX.Element[] = [];
                 for(let index = 0; index < this.props.unit.overheat; index++) {
                     overheat.push(<button key={'ov'+index+1} className={this.state.overheat === index+1 ? 'staged' : ''} onClick={() => this._setOverheat(index+1)}>{index+1}</button>)
