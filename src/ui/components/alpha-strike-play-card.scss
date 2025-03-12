@@ -302,26 +302,12 @@
                 flex-basis: 1;
             }
             .take-damage {
-                display: none;
-                width: 0;
-                transition: all 150ms;
                 button {
                     flex-basis: 10%;
                 }
             }
-            &.take-damage {
-                .take-damage {
-                    display: flex;
-                    position: absolute;
-                    left: 26px;
-                    right: 0;
-                    top: 0;
-                    bottom: 0;
-                    width: auto;
-                }
-                .column.evenly {
-                    opacity: 0;
-                }
+            button.damage {
+                min-height: 52px;
             }
         }
         .armor,

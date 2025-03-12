@@ -568,7 +568,7 @@ export default class AlphaStrikeUnitCard extends React.Component<IAlphaStrikeUni
             }
 
             return ( 
-                <div className={'token ' + type.toLowerCase()} title="TMM includes modifiers from Other > Target except STL because it is based on range">    
+                <div className={'token ' + type.toLowerCase()} title="TMM on the token includes all target modifiers and modifiers from Other>Target except STL because it is based on range">    
                     <div className='token-inner'></div>
                     <div className='data column evenly'>
                         {type !== "???" ? (<span>{tmm} TMM*</span>) : null }
@@ -1134,53 +1134,55 @@ export default class AlphaStrikeUnitCard extends React.Component<IAlphaStrikeUni
                 <div className='armor-crits row justified nowrap'>
                     <div className='column justified'>
                         <div className={'armor-structure row nowrap' + (this.state.showTakeDamage ? ' take-damage' : '')}>
-                            <button className='button damage' onClick={(e) => this._toggleTakeDamage()}>
+                            <button className='button damage' title="Take Damage" onClick={(e) => this._toggleTakeDamage()}>
                                 <FaShieldVirus />
                             </button>
 
-                            <div className='column evenly'>
-                                <div className='armor row nowrap'>
-                                    <div className='column center'>
-                                        <label>A:</label>
+                            {this.state.showTakeDamage ? (
+                                <div className='take-damage row'>
+                                    <button onClick={() => this._takeDamage(1)}>1</button>
+                                    <button onClick={() => this._takeDamage(2)}>2</button>
+                                    <button onClick={() => this._takeDamage(3)}>3</button>
+                                    <button onClick={() => this._takeDamage(4)}>4</button>
+                                    <button onClick={() => this._takeDamage(5)}>5</button>
+                                    <button onClick={() => this._takeDamage(6)}>6</button>
+                                    <button onClick={() => this._takeDamage(7)}>7</button>
+                                    <button onClick={() => this._takeDamage(8)}>8</button>
+                                    <button onClick={() => this._takeDamage(9)}>9</button>
+                                    <button onClick={() => this._takeDamage(10)}>10</button>
+                                    <button onClick={() => this._takeDamage(11)}>11</button>
+                                    <button onClick={() => this._takeDamage(12)}>12</button>
+                                    <button onClick={() => this._takeDamage(13)}>13</button>
+                                    <button onClick={() => this._takeDamage(14)}>14</button>
+                                    <button onClick={() => this._takeDamage(15)}>15</button>
+                                    <button onClick={() => this._takeDamage(16)}>16</button>
+                                    <button onClick={() => this._takeDamage(17)}>17</button>
+                                    <button onClick={() => this._takeDamage(18)}>18</button>
+                                    <button onClick={() => this._takeDamage(19)}>19</button>
+                                    <button onClick={() => this._takeDamage(20)}>20</button>
+                                </div>
+                            ) : (
+                                <div className='column evenly'>
+                                    <div className='armor row nowrap'>
+                                        <div className='column center'>
+                                            <label>A:</label>
+                                        </div>
+                                        <div className='row dots'>
+                                            {this._makeArmorDots('armor')}
+                                        </div>
                                     </div>
-                                    <div className='row dots'>
-                                        {this._makeArmorDots('armor')}
+                                    <div className='structure row nowrap'>
+                                        <label>S:</label>
+                                        <div className='row dots'>
+                                            {this._makeArmorDots('structure')}
+                                        </div>
                                     </div>
                                 </div>
-                                <div className='structure row nowrap'>
-                                    <label>S:</label>
-                                    <div className='row dots'>
-                                        {this._makeArmorDots('structure')}
-                                    </div>
-                                </div>
-                                    
-                                
-                            </div>
+                            ) }
                             {this.props.asUnit.isAerospace ? (
                                 <div className='data-pair threshold column text-center start'><span>TH</span>{this.props.asUnit.threshold}</div>
                             ) : null }
-                            <div className='take-damage row'>
-                                <button onClick={() => this._takeDamage(1)}>1</button>
-                                <button onClick={() => this._takeDamage(2)}>2</button>
-                                <button onClick={() => this._takeDamage(3)}>3</button>
-                                <button onClick={() => this._takeDamage(4)}>4</button>
-                                <button onClick={() => this._takeDamage(5)}>5</button>
-                                <button onClick={() => this._takeDamage(6)}>6</button>
-                                <button onClick={() => this._takeDamage(7)}>7</button>
-                                <button onClick={() => this._takeDamage(8)}>8</button>
-                                <button onClick={() => this._takeDamage(9)}>9</button>
-                                <button onClick={() => this._takeDamage(10)}>10</button>
-                                <button onClick={() => this._takeDamage(11)}>11</button>
-                                <button onClick={() => this._takeDamage(12)}>12</button>
-                                <button onClick={() => this._takeDamage(13)}>13</button>
-                                <button onClick={() => this._takeDamage(14)}>14</button>
-                                <button onClick={() => this._takeDamage(15)}>15</button>
-                                <button onClick={() => this._takeDamage(16)}>16</button>
-                                <button onClick={() => this._takeDamage(17)}>17</button>
-                                <button onClick={() => this._takeDamage(18)}>18</button>
-                                <button onClick={() => this._takeDamage(19)}>19</button>
-                                <button onClick={() => this._takeDamage(20)}>20</button>
-                            </div>
+                            
                             
                         </div>
                         {pilotAbilitiesList.length > 0 ? (
@@ -1254,7 +1256,7 @@ export default class AlphaStrikeUnitCard extends React.Component<IAlphaStrikeUni
                                     <a href="#motive12crit" className={this.props.asUnit.vehicleMotive12 !== this.props.asUnit.roundVehicleMotive12 ? 'staged' : ''} onClick={() => this._toggleVehicle12()}>{motive12}</a>
                                 </div>
                             ) : null }
-                            <button className='button' onClick={() => this._rollCritical()}>
+                            <button className='button' title="Roll Critical Hit" onClick={() => this._rollCritical()}>
                                 <FaDice />
                                 {this.state.showCriticalOverlay ? (
                                     <div className='overlay column evenly'>
@@ -1760,10 +1762,12 @@ export class AlphaStrikeAttackOverlay extends React.Component<AlphaStrikeAttackO
         let options: JSX.Element[] = [];
 
         if (this.props.unit) {
-            if (!this.state.artillery && this.state.bombs.using < 1 && this.props.unit && (this.state.range < 2 || (this.props.unit.hasAbility('OVL') && this.state.range < 3))) {
+            if (!this.state.artillery && this.state.bombs.max < 1 && this.props.unit && (this.state.range < 2 || (this.props.unit.hasAbility('OVL') && this.state.range < 3))) {
+                let overheat: JSX.Element[] = [];
                 for(let index = 0; index < this.props.unit.overheat; index++) {
-                    options.push(<button key={'ov'+index+1} className={this.state.overheat === index+1 ? 'staged' : ''} onClick={() => this._setOverheat(index+1)}>OV {index+1}</button>)
+                    overheat.push(<button key={'ov'+index+1} className={this.state.overheat === index+1 ? 'staged' : ''} onClick={() => this._setOverheat(index+1)}>{index+1}</button>)
                 }
+                options.push(<div key="overheat">OV:{overheat}</div>)
             }
 
             if (!this.props.unit.isAerospace) {
@@ -1789,12 +1793,12 @@ export class AlphaStrikeAttackOverlay extends React.Component<AlphaStrikeAttackO
         return options;
     }
 
-    private _bombOptions = (): JSX.Element[] => {
+    private _bombOptions = (): JSX.Element => {
         let options: JSX.Element[] = [];
         for(let index = 1; index <= this.state.bombs.max; index++) {
             options.push(<button key={'bomb'+index} className={this.state.bombs.using === index ? 'staged' : ''} onClick={() => this._setBombs(index)}>{index}</button>);
         }
-        return options;
+        return <div>Bombs:{options}</div>;
     }
 
     private _rollAttack = (): void => {
@@ -1831,7 +1835,6 @@ export class AlphaStrikeAttackOverlay extends React.Component<AlphaStrikeAttackO
                 }
             } else {
                 for(let index = 0; index < attackRollResults.length; index++) {
-                    // Need to redo a special case here to roll attack die for Artillery regardless, otherwise toggling cause issues.
                     if (this.state.artillery || this.state.bombs.using > 0) {
                         damageRollResults.push(this._rollDamage(1));
                     } else {
@@ -1906,7 +1909,7 @@ export class AlphaStrikeAttackOverlay extends React.Component<AlphaStrikeAttackO
         return <>
             <div className='overlay column'>
                 <h2 className='row justified'>
-                    <span>{this.props.attack.type} attack - {this.props.attack.name}</span>
+                    <span>{this.props.attack.name}</span>
                     <button onClick={this.props.close}>X</button>
                 </h2>
 
@@ -1930,28 +1933,31 @@ export class AlphaStrikeAttackOverlay extends React.Component<AlphaStrikeAttackO
                         <button className={this.state.indirect.tag ? 'staged' : ''} disabled={this.state.indirect.noSpotter} onClick={() => this._toggleSpotter('tag')}>Tag</button>
                     </div>
                     <div className='row'>
-                        <span>Spotter Movement Modifier:</span>
-                        <button className={this.state.indirect.spotterMove === -1 ? 'staged' : ''} disabled={this.state.indirect.noSpotter} onClick={() => {this._setSpotterMovement(-1)}}>-1</button>
-                        <button className={this.state.indirect.spotterMove === 0 ? 'staged' : ''} disabled={this.state.indirect.noSpotter} onClick={() => {this._setSpotterMovement(0)}}>0</button>
-                        <button className={this.state.indirect.spotterMove === 1 ? 'staged' : ''} disabled={this.state.indirect.noSpotter} onClick={() => {this._setSpotterMovement(1)}}>1</button>
-                        <button className={this.state.indirect.spotterMove === 2 ? 'staged' : ''} disabled={this.state.indirect.noSpotter} onClick={() => {this._setSpotterMovement(2)}}>2</button>
+                        <div>Spotter Movement Modifier:
+                            <button className={this.state.indirect.spotterMove === -1 ? 'staged' : ''} disabled={this.state.indirect.noSpotter} onClick={() => {this._setSpotterMovement(-1)}}>-1</button>
+                            <button className={this.state.indirect.spotterMove === 0 ? 'staged' : ''} disabled={this.state.indirect.noSpotter} onClick={() => {this._setSpotterMovement(0)}}>0</button>
+                            <button className={this.state.indirect.spotterMove === 1 ? 'staged' : ''} disabled={this.state.indirect.noSpotter} onClick={() => {this._setSpotterMovement(1)}}>1</button>
+                            <button className={this.state.indirect.spotterMove === 2 ? 'staged' : ''} disabled={this.state.indirect.noSpotter} onClick={() => {this._setSpotterMovement(2)}}>2</button>
+                        </div>
                     </div>
                 </>
                 ) : null }
 
                 {!this.state.artillery && this.state.bombs.max === 0 ? (
                     <div className='row'>
-                        <span>TMM:</span>
-                        {this.tmmRange.map( (value) => {
-                            let classes = [];
-                            if (value === this.state.tmm) {
-                                classes.push('staged');
-                            }
-                            return <button key={value} className={classes.join(' ')} disabled={this.state.artillery} onClick={() => this._adjustTMM(value)}>{value}</button>;
-                        })}
-                        <span>Target Stealth:</span>
-                        <button className={this.state.stealth === 1 ? 'staged' : ''} disabled={this.state.artillery} onClick={() => this._targetStealth(1)}>+1</button>
-                        <button className={this.state.stealth === 2 ? 'staged' : ''} disabled={this.state.artillery} onClick={() => this._targetStealth(2)}>+2</button>
+                        <div>TMM:
+                            {this.tmmRange.map( (value) => {
+                                let classes = [];
+                                if (value === this.state.tmm) {
+                                    classes.push('staged');
+                                }
+                                return <button key={value} className={classes.join(' ')} disabled={this.state.artillery} onClick={() => this._adjustTMM(value)}>{value}</button>;
+                            })}
+                        </div>
+                        <div>Target Stealth:
+                            <button className={this.state.stealth === 1 ? 'staged' : ''} disabled={this.state.artillery} onClick={() => this._targetStealth(1)}>+1</button>
+                            <button className={this.state.stealth === 2 ? 'staged' : ''} disabled={this.state.artillery} onClick={() => this._targetStealth(2)}>+2</button>
+                        </div>
                     </div>
                 ) : null }
                 
@@ -1973,9 +1979,8 @@ export class AlphaStrikeAttackOverlay extends React.Component<AlphaStrikeAttackO
 
                 {this.state.bombs.max > 1 ? (
                     <div className='row'>
-                        <span>Bombs</span>
                         {this._bombOptions()}
-                </div>
+                    </div>
                 ) : null }
 
                 <div className='row'>

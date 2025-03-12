@@ -372,7 +372,7 @@ export class AlphaStrikeUnit {
             }
 
             if( incomingMechData.BFAbilities && incomingMechData.BFAbilities.trim() ) {
-                let matches = incomingMechData.BFAbilities.match(/([^,\(]+(\(.*?\))*)+/g);
+                let matches = incomingMechData.BFAbilities.match(/([^,(]+(\(.*?\))*)+/g);
                 if (!matches){
                     this.abilities = [];
                 } else {
@@ -908,9 +908,9 @@ export class AlphaStrikeUnit {
                 // Get its value for this range
                 let regex = new RegExp(String.raw`((?<=${ability}.*)(\d\*?))`, "gi");
                 let matches = abi.match(regex);
-                if (matches) {
-                    result.minimal =  matches[range].indexOf('*') > -1;
-                    result.damage =  parseInt(matches[range]);
+                if (matches && range < matches.length) {
+                    result.minimal = matches[range].indexOf('*') > -1;
+                    result.damage = parseInt(matches[range]);
                 }
             }
         }
@@ -1158,9 +1158,6 @@ export class AlphaStrikeUnit {
         }
 
         if( typeof( this.engineHits ) === "undefined"  || this.engineHits.length === 0  ) {
-            if (this.name === 'Stinger C') {
-                console.log(this.name, 'rebuilding engine hits');
-            }
             this.engineHits = [];
             for( let engineHitsCount = 0; engineHitsCount < 2; engineHitsCount++) {
             for( let engineHitsCount = 0; engineHitsCount < 2; engineHitsCount++) {
@@ -1453,8 +1450,6 @@ export class AlphaStrikeUnit {
             }
 
             this.immobile = this.move[moveC].currentMove > 0 ? false : true;
-
-            // console.log(this.name, this.move[moveC].currentMove, this.move[moveC].tmm, this.move[moveC].type);
         }
 
         this.currentMoveHexes = "";
@@ -1515,11 +1510,9 @@ export class AlphaStrikeUnit {
             if (this.type.toLowerCase() === 'bm' || this.type.toLowerCase() === 'pm' || this.type.toLowerCase() === 'im') {
                 let name = 'Normal';
                 let damage = this.size;
-                let range = 1;
                 if (this.hasAbility('MEL')) {
                     name = 'Melee';
                     damage += 1;
-                    range += 1;
                 }
                 if (this.hasAbility('I-TSM') || this.hasAbility('TSMX')) {
                     damage += 1;
@@ -1642,9 +1635,6 @@ export class AlphaStrikeUnit {
         }
 
         // Add Tag attack type
-
-        // console.log(this.name, this);
-
     }
     /**
     * Returns a boolean if the unit is a ground unit. This is used for
@@ -1730,36 +1720,36 @@ export class AlphaStrikeUnit {
         }
         this.roundHeat = 0;
 
-        this.roundArmor.map( (point, pointIndex) => {
-            if (point) {
+        for(let pointIndex = 0; pointIndex < this.roundArmor.length; pointIndex++) {
+            if (this.roundArmor[pointIndex]) {
                 this.currentArmor[pointIndex] = !this.currentArmor[pointIndex];
                 this.roundArmor[pointIndex] = false;
             }
-        })
-        this.roundStructure.map( (point, pointIndex) => {
-            if (point) {
+        }
+        for(let pointIndex = 0; pointIndex < this.roundStructure.length; pointIndex++) {
+            if (this.roundStructure[pointIndex]) {
                 this.currentStructure[pointIndex] = !this.currentStructure[pointIndex];
                 this.roundStructure[pointIndex] = false;
             }
-        })
+        }
         for (let index = 0; index < this.engineHits.length; index++ ) {
             this.engineHits[index] = this.roundEngineHits[index];
         }
-        this.roundFireControlHits.map( (point, pointIndex) => {
-            this.fireControlHits[pointIndex] = point;
-        })
-        this.roundMpControlHits.map( (point, pointIndex) => {
-            this.mpControlHits[pointIndex] = point;
-        })
-        this.roundWeaponHits.map( (point, pointIndex) => {
-            this.weaponHits[pointIndex] = point;
-        })
-        this.roundVehicleMotive910.map( (point, pointIndex) => {
-            this.vehicleMotive910[pointIndex] = point;
-        })
-        this.roundVehicleMotive11.map( (point, pointIndex) => {
-            this.vehicleMotive11[pointIndex] = point;
-        })
+        for (let index = 0; index < this.fireControlHits.length; index++ ) {
+            this.fireControlHits[index] = this.roundFireControlHits[index];
+        }
+        for (let index = 0; index < this.mpControlHits.length; index++ ) {
+            this.mpControlHits[index] = this.roundMpControlHits[index];
+        }
+        for (let index = 0; index < this.weaponHits.length; index++ ) {
+            this.weaponHits[index] = this.roundWeaponHits[index];
+        }
+        for (let index = 0; index < this.vehicleMotive910.length; index++ ) {
+            this.vehicleMotive910[index] = this.roundVehicleMotive910[index];
+        }
+        for (let index = 0; index < this.vehicleMotive11.length; index++ ) {
+            this.vehicleMotive11[index] = this.roundVehicleMotive11[index];
+        }
 
         this.vehicleMotive12 = this.roundVehicleMotive12
     }
@@ -1885,7 +1875,11 @@ export class AlphaStrikeUnit {
                 damage.value = -1; // This will eval to 0, no minimal
             } else if(this.type.toLowerCase() === 'bm' || this.type.toLowerCase() === 'im') {
                 // Reduce by 1, but not below 0*
-                damage.value = damage.value > 1 ? damage.value -1 : 0;
+                damage.value = damage.value - 1;
+                if (damage.value < 1) {
+                    damage.value = 0;
+                    damage.minimal = true;
+                }
             } else {
                 // Half damage, rounded down
                 damage.value = Math.floor(damage.value);
@@ -1958,6 +1952,9 @@ export class AlphaStrikeUnit {
                     toHit += 2;
                 }
             }
+            if (this.hasPilotAbility('Melee Specialist')) {
+                toHit += -1;
+            }
             // -- AM attack
             if (this.isInfantry && this.hasAbility('AM')) {
                 toHit += this.type.toLowerCase() === 'ci' ? 3 : 1;
@@ -1965,7 +1962,11 @@ export class AlphaStrikeUnit {
         }
 
         // Add Range
-        toHit += 2*range;
+        let rangeMod = 2;
+        if (this.hasPilotAbility('Sniper')) {
+            rangeMod = 1;
+        }
+        toHit += rangeMod*range;
 
         return toHit;
     }

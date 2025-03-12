@@ -2,10 +2,18 @@ footer {
     padding: 12px;
 }
 
+body:has(.play-bar) {
+    padding-top: 44px;
+}
+
 .play-bar {
     padding: 6px 12px;
     align-items: stretch;
     background-color: #dfab2d;
+    position: fixed;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0px 3px 4px rgba(0,0,0,.4);
     button,
     a {
         color: #000;
