@@ -196,8 +196,6 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
 
         <header className="play-bar flex-grid justified">
           <Link title="Click here to leave Play Mode (don't worry, you won't lose your current mech statuses)" className="current" to={`${process.env.PUBLIC_URL}/alpha-strike-roster`}><FaArrowCircleLeft /></Link>
-
-          <span className="current" onClick={this.toggleCardMode}><FaColumns /> {this.props.appGlobals.appSettings.alphaStrikeInPlayColumns}</span>
           
           <button title="Apply damage and heat changes to end the round and start another" className="" onClick={this.nextRound}>Next Round</button>
 

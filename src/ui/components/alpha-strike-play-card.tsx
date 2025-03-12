@@ -960,7 +960,7 @@ export default class AlphaStrikeUnitCard extends React.Component<IAlphaStrikeUni
                             onClick={() => this._showAttack(attack)}>
                             <div className='row justified'>
                                 {physicalAttacks.map( (attack, attackIndex) => {
-                                    return <div key={attackIndex} className={attack.disabled ? 'data-pair disabled' : 'data-pair'}>{attack.damage}{attack.minimal ? '*' : ''}<span>{attack.name.match(/[A-Z]/g)?.join('')}</span></div>;
+                                    return <div key={attackIndex} className={attack.disabled ? 'data-pair disabled' : 'data-pair'}>{attack.damage}{attack.minimal ? '*' : ''}<span>{attack.name.charAt(0)}</span></div>;
                                 })}
                             </div>
                             <div className={unit.isWrecked() ? 'button physical wrecked' : 'button physical'}>Physical</div>
@@ -976,7 +976,7 @@ export default class AlphaStrikeUnitCard extends React.Component<IAlphaStrikeUni
                     let values = this._getRangeValues(attack.range);
                     let min = this.props.measurementsInHexes ? Math.ceil(values.min/2) : values.min;
                     let max = this.props.measurementsInHexes ? Math.ceil(values.max/2) : values.max;
-                    let range = min > 0 ? '>' : '';
+                    let range = '';
 
                     if (min > 0 && !max) {
                         range += min;

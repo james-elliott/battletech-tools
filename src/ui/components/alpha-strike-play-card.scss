@@ -9,6 +9,8 @@
     flex-direction: column;
     gap: 12px;
     position: relative;
+    container: card/inline-size;
+    min-width: 300px;
     // border: 1px solid #70787C;
     &.wrecked {
         background-color: lightpink;
@@ -271,6 +273,7 @@
                     &.range {
                         font-size: 12px;
                         color: rgba(0,0,0,.5);
+                        letter-spacing: -0.5px;
                     }
                 }
             }
@@ -388,10 +391,13 @@
             }
         }
     }
-    @media (max-width: 1024px)  {
-        .unit-portrait,
-        .attack-row h4,
-        .range {
+    @container card (max-width: 316px)  {
+        .attack-row h4 {
+            display: none;
+        }
+    }
+    @container card (max-width: 302px) {
+        .heat + .unit-portrait {
             display: none;
         }
     }
