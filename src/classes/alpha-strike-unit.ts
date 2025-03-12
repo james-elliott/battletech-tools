@@ -599,7 +599,6 @@ export class AlphaStrikeUnit {
         if( incomingMechData.customName )
             this.customName = incomingMechData.customName;
 
-
         if( incomingMechData.pilot)
             this._pilot.import(incomingMechData.pilot);
 
@@ -890,7 +889,7 @@ export class AlphaStrikeUnit {
 
     public hasAbility( ability: string ): boolean {
         for( let abi of this.abilities ) {
-            if (abi.toLowerCase().trim().indexOf(ability.toLowerCase().trim()) > -1) {
+            if (abi.toLowerCase().trim() === ability.toLowerCase().trim()) {
                 return true;
             }
         }
