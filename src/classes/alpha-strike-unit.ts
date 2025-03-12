@@ -1521,6 +1521,12 @@ export class AlphaStrikeUnit {
                     damage += 1;
                     range += 1;
                 }
+                if (this.hasAbility('I-TSM') || this.hasAbility('TSMX')) {
+                    damage += 1;
+                }
+                if (this.hasAbility('TSM') && this.currentHeat > 0) {
+                    damage += 1;
+                }
                 if (this.hasPilotAbility('Fist Fire')) {
                     damage += 1;
                 }
@@ -1945,6 +1951,12 @@ export class AlphaStrikeUnit {
             // -- Charge or DFA
             if (type.toLowerCase() === 'charge' || type.toLowerCase() === 'death from above') {
                 toHit += 1;
+            } 
+            // Physical normal or MEL
+            else {
+                if(this.hasAbility('I-TSM')) {
+                    toHit += 2;
+                }
             }
             // -- AM attack
             if (this.isInfantry && this.hasAbility('AM')) {
