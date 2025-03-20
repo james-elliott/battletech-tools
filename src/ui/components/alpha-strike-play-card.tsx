@@ -1403,6 +1403,11 @@ export class AlphaStrikeAttackOverlay extends React.Component<AlphaStrikeAttackO
                     tn += this.state.indirect.noSpotter ? 2 : -1;
                 }
             }
+
+            // Negate Sniper bonus if the attack is IF or ART
+            if (this.props.unit.hasPilotAbility('Sniper') && (this.state.artillery || this.state.indirect.enabled)) {
+                tn += this.props.attack.range;
+            } 
             
             tn += this.state.tmm;
             tn += this.state.stealth;
