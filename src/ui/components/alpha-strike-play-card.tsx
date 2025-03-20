@@ -873,7 +873,7 @@ export default class AlphaStrikeUnitCard extends React.Component<IAlphaStrikeUni
                         damage: strafeDamage,
                         minimal: strafe.minimal,
                         range: 0,
-                        toHit: strafeToHit,
+                        toHit: unit.hasPilotAbility('Golden Goose') ? strafeToHit - 1 : strafeToHit,
                         disabled: unit.moveToken.type !== 'low',
                     })}>
                     <div className='data-pair row justified'>
@@ -895,7 +895,7 @@ export default class AlphaStrikeUnitCard extends React.Component<IAlphaStrikeUni
                         damage: rangeAttack.damage,
                         minimal: rangeAttack.minimal,
                         range: rangeAttack.range,
-                        toHit: rangeAttack.toHit + 1, // +1 for strike
+                        toHit: unit.hasPilotAbility('Golden Goose') ? rangeAttack.toHit : rangeAttack.toHit + 1, // +1 for strike
                         disabled: rangeAttack.disabled,
                     })}>
                     <div className='row justified'>
@@ -908,6 +908,7 @@ export default class AlphaStrikeUnitCard extends React.Component<IAlphaStrikeUni
             );
             if (bombAttacks.length > 0) {
                 let bombAttack = bombAttacks[heightNumber > 1 ? 1 : 0];
+                console.log(unit.name, unit.hasPilotAbility('Golden Goose'));
                 attacks.push(
                     <button key={'bombs'} 
                         className='attack-button'
@@ -1703,7 +1704,7 @@ export class AlphaStrikeAttackOverlay extends React.Component<AlphaStrikeAttackO
             let indirect = this.props.unit.getAbilityValues('IF');
             let rear = this.props.unit.getAbilityValues('REAR', this.state.range);
 
-            if (this.props.unit.hasAbility('C3')) {
+            if (this.props.unit.hasC3()) {
                 options.push(<div key={'C3'}>C3:
                 
                     {this.props.unit.attacks.map( (attack) => {

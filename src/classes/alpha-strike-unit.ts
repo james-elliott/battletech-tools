@@ -887,6 +887,15 @@ export class AlphaStrikeUnit {
         return this.hasAbility("tsm");
     }
 
+    hasC3(): boolean {
+        for( let abi of this.abilities ) {
+            if (abi.toLowerCase().trim().indexOf('c3') > -1) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public hasAbility( ability: string ): boolean {
         for( let abi of this.abilities ) {
             if (abi.toLowerCase().trim() === ability.toLowerCase().trim()) {
@@ -1612,13 +1621,13 @@ export class AlphaStrikeUnit {
                 disabled: this.moveToken.type === 'sprint' || this.moveToken.type === '' || this.moveToken.type === 'charge' || this.moveToken.type === 'dfa' || (damage.value < 1 && !damage.minimal),
         });
 
-        if (this.hasAbility('BOMB')) {
+        if (this.getAbilityValues('BOMB').damage > -1) {
             this.attacks.push({
                 name: 'Dive Bomb',
                 type: 'bomb',
                 damage: this.getAbilityValues('BOMB').damage,
                 minimal: false,
-                toHit: this.getCurrentToHit(this.getHeightRange(this.moveToken.type)),
+                toHit: this.getCurrentToHit(this.getHeightRange(this.moveToken.type), 'bomb'),
                 range: 1,
                 disabled: this.getHeightRange(this.moveToken.type) > 1,
             });
@@ -1627,7 +1636,7 @@ export class AlphaStrikeUnit {
                 type: 'bomb',
                 damage: this.getAbilityValues('BOMB').damage,
                 minimal: false,
-                toHit: this.getCurrentToHit(this.getHeightRange(this.moveToken.type)),
+                toHit: this.getCurrentToHit(this.getHeightRange(this.moveToken.type), 'bomb'),
                 range: 2,
                 disabled: this.getHeightRange(this.moveToken.type) < 2,
             });
@@ -1958,6 +1967,13 @@ export class AlphaStrikeUnit {
             if (this.isInfantry && this.hasAbility('AM')) {
                 toHit += this.type.toLowerCase() === 'ci' ? 3 : 1;
             }
+        }
+
+        // Golden Goose reduces toHit for bombs
+        console.log(type);
+        if (type.toLowerCase() === 'bomb' && this.hasPilotAbility('Golden Goose')) {
+            console.log(this.name, '-1 to hit with bombs');
+            toHit += -2;
         }
 
         // Add Range

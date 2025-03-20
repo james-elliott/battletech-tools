@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaArrowCircleLeft, FaColumns, FaRuler } from "react-icons/fa";
+import { FaArrowCircleLeft, FaRuler } from "react-icons/fa";
 import { FiHexagon } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 import AlphaStrikeGroup from '../../../../classes/alpha-strike-group';
@@ -36,12 +36,6 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
       if( e && e.preventDefault ) e.preventDefault();
 
       let appSettings = this.props.appGlobals.appSettings;
-
-      if (appSettings.alphaStrikeInPlayColumns < 5) {
-        appSettings.alphaStrikeInPlayColumns++;
-      } else {
-        appSettings.alphaStrikeInPlayColumns = 1;
-      }
 
       this.props.appGlobals.saveAppSettings( appSettings );
 
@@ -242,7 +236,7 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
 
                 
                 <div className="section-content">
-                  <div className={"flex-grid flex-" + this.props.appGlobals.appSettings.alphaStrikeInPlayColumns}>
+                  <div className={"flex-grid"}>
                   {group.members.map( (unit, unitIndex) => {
                     // if( unitIndex === 0 && group.members[unitIndex +1 ])
 

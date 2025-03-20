@@ -42,9 +42,8 @@ body:has(.play-bar) {
     gap: var(--gap);
     container: grid/inline-size;
     .unit-card {
-        flex-shrink: 0;
+        flex: 0 0 100%;
         align-self: stretch;
-        flex-basis: 100%;
     }
     @container grid (min-width: 612px) {
         .unit-card {
@@ -57,15 +56,27 @@ body:has(.play-bar) {
         }
     }
     @container grid (min-width: 1236px) {
-        .unit-card,
-        .unit-card:first-child:nth-last-child(4),
-        .unit-card:first-child:nth-last-child(4) ~ .unit-card {
+        .unit-card {
             flex-basis: calc(25% - var(--gap)/(4/3));
+        }
+        .unit-card:first-child:nth-last-child(5),
+        .unit-card:first-child:nth-last-child(5) ~ .unit-card,
+        .unit-card:first-child:nth-last-child(6),
+        .unit-card:first-child:nth-last-child(6) ~ .unit-card {
+            flex-basis: calc(33.333% - var(--gap)/(3/2));
         }
     }
     @container grid (min-width: 1548px) {
         .unit-card {
             flex-basis: calc(20% - var(--gap)/(5/4));
+        }
+        .unit-card:first-child:nth-last-child(4),
+        .unit-card:first-child:nth-last-child(4) ~ .unit-card,
+        .unit-card:first-child:nth-last-child(7),
+        .unit-card:first-child:nth-last-child(7) ~ .unit-card,
+        .unit-card:first-child:nth-last-child(8),
+        .unit-card:first-child:nth-last-child(8) ~ .unit-card {
+            flex-basis: calc(25% - var(--gap)/(4/3));
         }
         .unit-card:first-child:nth-last-child(6),
         .unit-card:first-child:nth-last-child(6) ~ .unit-card {
@@ -79,7 +90,9 @@ body:has(.play-bar) {
             flex-basis: calc(16.66666% - var(--gap)/(6/5));
         }
         .unit-card:first-child:nth-last-child(4),
-        .unit-card:first-child:nth-last-child(4) ~ .unit-card {
+        .unit-card:first-child:nth-last-child(4) ~ .unit-card,
+        .unit-card:first-child:nth-last-child(7),
+        .unit-card:first-child:nth-last-child(7) ~ .unit-card {
             flex-basis: calc(25% - var(--gap)/(4/3));
         }
         .unit-card:first-child:nth-last-child(5),
@@ -101,13 +114,13 @@ body:has(.play-bar) {
         }
     }
     @container grid (min-width: 2484px) {
-        .unit-card:first-child:nth-last-child(4),
-        .unit-card:first-child:nth-last-child(4) ~ .unit-card,
         .unit-card:first-child:nth-last-child(8),
         .unit-card:first-child:nth-last-child(8) ~ .unit-card {
             flex-basis: calc(12.5% - var(--gap)/(8/7));
         }
         .unit-card,
+        .unit-card:first-child:nth-last-child(4),
+        .unit-card:first-child:nth-last-child(4) ~ .unit-card,
         .unit-card:first-child:nth-last-child(6),
         .unit-card:first-child:nth-last-child(6) ~ .unit-card {
             flex-basis: calc(16.66666% - var(--gap)/(6/5));

@@ -19,7 +19,7 @@ export default class AlphaStrikeUnitToken extends React.Component<IAlphaStrikeUn
 
             <div className={classes.join(" ")}>
                 <div className='front'>
-                    {this.props.asUnit.imageURL ? ( <img src={this.props.asUnit.imageURL}></img> ) : null}
+                    {this.props.asUnit.imageURL ? ( <img alt="unit portrait" src={this.props.asUnit.imageURL}></img> ) : null}
                     <div className="unit-name">
                         <div className="custom-name">{this.props.asUnit.customName}</div>
                     </div>

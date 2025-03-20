@@ -15,7 +15,6 @@ export class AppSettings {
 
     alphasStrikeCachedSearchResults: IASMULUnit[] = [];
     alphaStrikeSearchTerm: string = "";
-    alphaStrikeInPlayColumns: number = 2;
     alphaStrikeVariableDamage: string = "";
     alphaStrikeSearchRules: string = "";
     alphaStrikeSearchTech: string = "";
@@ -67,10 +66,6 @@ export class AppSettings {
                 this.alphaStrikeSearchTerm = io.alphaStrikeSearchTerm;
             }
 
-            if ( typeof( io.alphaStrikeInPlayColumns ) !== "undefined" ) {
-                this.alphaStrikeInPlayColumns = io.alphaStrikeInPlayColumns;
-            }
-
             if ( typeof( io.alphaStrikeVariableDamage ) !== "undefined" ) {
                 this.alphaStrikeVariableDamage = io.alphaStrikeVariableDamage;
             }
@@ -118,7 +113,6 @@ export class AppSettings {
             installEquipCategory: this.installEquipCategory,
             alphasStrikeCachedSearchResults: this.alphasStrikeCachedSearchResults,
             alphaStrikeSearchTerm: this.alphaStrikeSearchTerm,
-            alphaStrikeInPlayColumns: this.alphaStrikeInPlayColumns,
             alphaStrikeVariableDamage: this.alphaStrikeVariableDamage,
             equipmentEditorFile: this.equipmentEditorFile,
             alphaStrikeSearchRules: this.alphaStrikeSearchRules,
@@ -151,7 +145,6 @@ export interface IAppSettingsExport {
     alphaStrikeSearchRole: string;
     alphaStrikeSearchEra: number;
     alphaStrikeSearchType: number;
-    alphaStrikeInPlayColumns: number;
     alphaStrikeVariableDamage: string;
     alphaStrikeMeasurementsInHexes: boolean;
     alphaStrikeSearchFactions: Array<number>;
