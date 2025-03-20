@@ -1602,13 +1602,13 @@ export class AlphaStrikeUnit {
             });
             damage = this.getCurrentDamage(2);
             this.attacks.push({
-                name: this.hasAbility('ART') ? 'L / ART' : 'Long',
+                name: this.getAbilityValues('ART').damage > -1 ? 'L / ART' : 'Long',
                 type: 'weapon',
                 damage: damage.value,
                 minimal: damage.minimal,
                 toHit: this.getCurrentToHit(2),
                 range: 2,
-                disabled: this.moveToken.type === 'sprint' || this.moveToken.type === '' || this.moveToken.type === 'charge' || this.moveToken.type === 'dfa' || (damage.value < 1 && !damage.minimal && !this.hasAbility('ART')),
+                disabled: this.moveToken.type === 'sprint' || this.moveToken.type === '' || this.moveToken.type === 'charge' || this.moveToken.type === 'dfa' || (damage.value < 1 && !damage.minimal && this.getAbilityValues('ART').damage < 0),
             });
             damage = this.getCurrentDamage(3);
             this.attacks.push({
@@ -1970,9 +1970,7 @@ export class AlphaStrikeUnit {
         }
 
         // Golden Goose reduces toHit for bombs
-        console.log(type);
         if (type.toLowerCase() === 'bomb' && this.hasPilotAbility('Golden Goose')) {
-            console.log(this.name, '-1 to hit with bombs');
             toHit += -2;
         }
 

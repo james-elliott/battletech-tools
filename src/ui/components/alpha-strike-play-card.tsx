@@ -1326,7 +1326,7 @@ export class AlphaStrikeAttackOverlay extends React.Component<AlphaStrikeAttackO
 
         let artillery = false;
         if (this.props.unit) {
-            artillery = this.props.attack.damage === 0 && this.props.unit.hasAbility('ART');
+            artillery = this.props.attack.damage === 0 && this.props.unit.getAbilityValues('ART').damage > -1;
         }
 
         this.state = {
@@ -1383,17 +1383,27 @@ export class AlphaStrikeAttackOverlay extends React.Component<AlphaStrikeAttackO
         if (this.props.unit && this.props.attack) {
             let tn = this.state.toHit;
             // Adjust for attack options
-            tn += this.state.artillery ? 1 : 0;
+            if (this.state.artillery) {
+                tn += this.props.unit.hasPilotAbility('Oblique Artilleryman') ? 0 : 1;
+            }
             tn += this.state.rear ? 1 : 0;
             tn += this.state.spotting ? 1 : 0;
-            // Indirect fire and Spotter
-            tn += this.state.indirect.enabled ? 1 : 0;
-            if (!this.state.indirect.tag) {
-                tn += this.state.indirect.spotterAttacked ? 1 : 0;
-                tn += this.state.indirect.spotterMove ? this.state.indirect.spotterMove : 0;
-            } else if (this.state.artillery) {
-                tn += -1;
-            }  
+
+            // Indirect fire
+            if (this.state.indirect.enabled) {
+                tn += 1;
+
+                if (!this.state.indirect.tag) {
+                    tn += this.state.indirect.spotterAttacked ? 1 : 0;
+                    tn += this.state.indirect.spotterMove ? this.state.indirect.spotterMove : 0;
+                } else if (this.state.artillery) {
+                    tn += -1;
+                }
+                if (this.props.unit.hasPilotAbility('Oblique Attacker')) {
+                    tn += this.state.indirect.noSpotter ? 2 : -1;
+                }
+            }
+            
             tn += this.state.tmm;
             tn += this.state.stealth;
             tn += this._getTerrain();
