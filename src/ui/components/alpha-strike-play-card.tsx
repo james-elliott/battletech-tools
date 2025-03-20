@@ -908,7 +908,6 @@ export default class AlphaStrikeUnitCard extends React.Component<IAlphaStrikeUni
             );
             if (bombAttacks.length > 0) {
                 let bombAttack = bombAttacks[heightNumber > 1 ? 1 : 0];
-                console.log(unit.name, unit.hasPilotAbility('Golden Goose'));
                 attacks.push(
                     <button key={'bombs'} 
                         className='attack-button'

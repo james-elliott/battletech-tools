@@ -1720,7 +1720,7 @@ export class AlphaStrikeUnit {
         this.roundHeat = newHeatValue;
     }
 
-    public applyRound( skipMove: boolean = false ) {
+    public applyRound() {
         if (this.roundHeat !== this.currentHeat) {
             this.currentHeat = this.roundHeat;
         } else {
