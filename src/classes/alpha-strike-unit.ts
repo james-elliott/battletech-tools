@@ -1629,7 +1629,7 @@ export class AlphaStrikeUnit {
                 minimal: false,
                 toHit: this.getCurrentToHit(this.getHeightRange(this.moveToken.type), 'bomb'),
                 range: 1,
-                disabled: this.getHeightRange(this.moveToken.type) > 1,
+                disabled: this.getHeightRange(this.moveToken.type) > 1 || this.moveToken.type === '',
             });
             this.attacks.push({
                 name: 'Altitude Bomb',
@@ -1638,7 +1638,7 @@ export class AlphaStrikeUnit {
                 minimal: false,
                 toHit: this.getCurrentToHit(this.getHeightRange(this.moveToken.type), 'bomb'),
                 range: 2,
-                disabled: this.getHeightRange(this.moveToken.type) < 2,
+                disabled: this.getHeightRange(this.moveToken.type) < 2 || this.moveToken.type === '',
             });
         }
 

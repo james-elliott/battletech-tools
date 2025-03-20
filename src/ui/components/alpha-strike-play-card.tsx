@@ -760,17 +760,17 @@ export default class AlphaStrikeUnitCard extends React.Component<IAlphaStrikeUni
                     break;
             }
 
-            data.push(<div key={label} className='data-pair row justified'><span>{label}</span>{distance}</div>);
+            data.push(<div key={label} title={label + ' movement in ' + (this.props.measurementsInHexes ? 'hexes' : 'inches')} className='data-pair row justified'><span>{label}</span>{distance}</div>);
 
             // Special case for Sprint
             if (unit.isGroundUnit() && moveC.type !== 'j') {
-                data.push(<div key={moveC.type + "sprint"} className='data-pair row justified'><span>Sprint</span>{this.props.measurementsInHexes ? Math.ceil(moveC.currentSprint/2) : moveC.currentSprint}</div>)
+                data.push(<div key={moveC.type + "sprint"} title={'Sprint movement in ' + (this.props.measurementsInHexes ? 'hexes' : 'inches')} className='data-pair row justified'><span>Sprint</span>{this.props.measurementsInHexes ? Math.ceil(moveC.currentSprint/2) : moveC.currentSprint}</div>)
             }
         }
 
         // Special case for Aerospace
         if (unit.isAerospace && unit.abilities.length > 0) {
-            if (unit.hasAbility('BOMB')) {
+            if (unit.getAbilityValues('BOMB').damage > -1) {
                 data.push(<div key="bombs" className='data-pair row justified'><span>Bombs</span>{unit.getAbilityValues('BOMB').damage}</div>)
             }
             let elevation = 0;
@@ -991,7 +991,7 @@ export default class AlphaStrikeUnitCard extends React.Component<IAlphaStrikeUni
                             onClick={() => this._showAttack(attack)}>
                             <div className='data-pair row justified'>
                                 {attack.damage + (attack.minimal ? "*" : "")}
-                                <span className='range'>{range}</span>
+                                <span className='range' title={this.props.measurementsInHexes ? 'range in hexes' : 'range in inches'}>{range}</span>
                                 <span>{attack.toHit}</span>
                             </div>
                             <div className={unit.isWrecked() ? 'button wrecked' : 'button'}>{attack.name}</div>
@@ -1725,7 +1725,7 @@ export class AlphaStrikeAttackOverlay extends React.Component<AlphaStrikeAttackO
                         if (attack.type === 'weapon' && attack.range < 3) {
                             return <button key={attack.name} className={this.state.toHit === attack.toHit ? 'staged' : ''} onClick={() => this._setC3(attack.range)}><span className='data-pair'>{attack.name.charAt(0)} <span>{attack.toHit}</span></span></button>;
                         }
-                        return <></>;
+                        return null;
                     })}
                 
                 </div>);

@@ -204,7 +204,7 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
           
           <button title="Apply damage and heat changes to end the round and start another" className="" onClick={this.nextRound}>Next Round</button>
 
-          <button onClick={(e) => this.toggleAlphaStrikeMeasurementsInHexes(e)}>
+          <button title="Toggle between measurements in inches or hexes" onClick={(e) => this.toggleAlphaStrikeMeasurementsInHexes(e)}>
             {this.props.appGlobals.appSettings.alphaStrikeMeasurementsInHexes ? (
                 <FiHexagon />
             ) : (
