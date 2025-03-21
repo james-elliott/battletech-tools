@@ -205,9 +205,9 @@
                 border-color: #000;
                 box-shadow: violet 0px 0px 4px inset;
             }
-            &:has(~ .staged) {
-                opacity: .8;
-                box-shadow: rgba(0,0,0,.6) 0px 0px 4px inset;
+            &:has(~ .staged),
+            &.staged ~ button {
+                opacity: .4;
             }
             &:nth-last-child(5).active {
                 background-color: greenyellow;
@@ -246,9 +246,6 @@
             &:last-child {
                 border-radius: 0 var(--rad) var(--rad) 0;
             }
-        }
-        .staged ~ button {
-            opacity: .4;
         }
         button:first-child:nth-last-child(5),
         button:first-child:nth-last-child(5) ~ button {

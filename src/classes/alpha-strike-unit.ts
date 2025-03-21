@@ -817,7 +817,7 @@ export class AlphaStrikeUnit {
 
     public hasRoundStaged(): boolean {
 
-        if (this.roundHeat !== 0) {
+        if (this.roundHeat !== this.currentHeat) {
             return true;
         }
 
@@ -1713,13 +1713,12 @@ export class AlphaStrikeUnit {
     }
 
     public applyRound() {
-        if (this.roundHeat !== this.currentHeat) {
-            this.currentHeat = this.roundHeat;
-        } else {
+        if (this.roundHeat === -1) {
             this.currentHeat = 0;
+            this.roundHeat = 0;
+        } else if (this.roundHeat !== this.currentHeat) {
+            this.currentHeat = this.roundHeat;
         }
-        this.roundHeat = 0;
-        console.log('currentHeat', this.currentHeat);
 
         for(let pointIndex = 0; pointIndex < this.roundArmor.length; pointIndex++) {
             if (this.roundArmor[pointIndex]) {

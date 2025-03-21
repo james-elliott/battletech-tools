@@ -95,7 +95,6 @@ export default class AlphaStrikeUnitCard extends React.Component<IAlphaStrikeUni
 
     private _setHeat = ( newValue: number ) => {
         if(this.props.asUnit ) {
-            console.log('set to:', newValue);
             if (this.props.asUnit.roundHeat !== newValue) {
                 this.props.asUnit.roundHeat = newValue;
             } else {
@@ -213,10 +212,16 @@ export default class AlphaStrikeUnitCard extends React.Component<IAlphaStrikeUni
         }
     }
 
-    private _adjustAltitude = ( amount: number ): void => {
+    private _adjustAltitude = (e: React.MouseEvent, amount: number ): void => {
         if (this.props.asUnit && this.props.asUnit.altitude + amount >= 0) {
+            amount = e.shiftKey ? amount*5 : amount;
+            amount = e.ctrlKey ? amount*10 : amount;
             this.props.asUnit.altitude += amount;
             
+            if (this.props.asUnit.altitude < 0) {
+                this.props.asUnit.altitude = 0;
+            }
+
             this.props.asUnit.calcCurrentValues();
             this.props.appGlobals.saveCurrentASForce( this.props.appGlobals.currentASForce );
         }
@@ -795,7 +800,7 @@ export default class AlphaStrikeUnitCard extends React.Component<IAlphaStrikeUni
         // Add altitude for VTOLs
         if (unit.move[0].type === 'v') {            
             data.push(<div key="alt" className='data-pair row justified'><span>Altitude</span>{unit.altitude}</div>)
-            data.push(<div key="alt-adjust" className='row alt-adjust'><button className='' onClick={() => this._adjustAltitude(-1)}>-</button><button className='' onClick={() => this._adjustAltitude(1)}>+</button></div>)
+            data.push(<div key="alt-adjust" className='row alt-adjust'><button className='' onClick={(e) => this._adjustAltitude(e, -1)}>-</button><button className='' onClick={(e) => this._adjustAltitude(e, 1)}>+</button></div>)
         }
 
         return data;
@@ -1024,7 +1029,9 @@ export default class AlphaStrikeUnitCard extends React.Component<IAlphaStrikeUni
                 if (this.props.asUnit.currentHeat >= level) {
                     classes.push('active');
                 }
-                if (this.props.asUnit.roundHeat === level) {
+                if ((this.props.asUnit.roundHeat === level && this.props.asUnit.currentHeat !== level)
+                ||
+                (this.props.asUnit.roundHeat === -1 && this.props.asUnit.currentHeat === level)) {
                     classes.push('staged');
                 }
 
