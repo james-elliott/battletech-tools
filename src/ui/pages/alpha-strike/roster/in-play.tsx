@@ -134,7 +134,6 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
                 // Apply HarJel where applicable
                 let harjel = unit.getAbilityValues('BHJ').damage - 1;
                 if (harjel > 0 && unit.getCurrentArmor() > 0) {
-                  console.log(unit.name, 'restores ' + harjel + ' damage from HarJel');
                   for (let index = unit.currentArmor.length - 1; index > -1; index--) {
                     if (unit.currentArmor[index] && harjel > 0) {
                       unit.currentArmor[index] = false;

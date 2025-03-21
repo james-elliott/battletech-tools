@@ -95,10 +95,11 @@ export default class AlphaStrikeUnitCard extends React.Component<IAlphaStrikeUni
 
     private _setHeat = ( newValue: number ) => {
         if(this.props.asUnit ) {
+            console.log('set to:', newValue);
             if (this.props.asUnit.roundHeat !== newValue) {
                 this.props.asUnit.roundHeat = newValue;
             } else {
-                this.props.asUnit.roundHeat = 0;
+                this.props.asUnit.roundHeat = -1;
             }
 
             this.props.asUnit.calcCurrentValues();
@@ -1014,9 +1015,10 @@ export default class AlphaStrikeUnitCard extends React.Component<IAlphaStrikeUni
 
     private _heatButtons = (): JSX.Element[] => {
         let heat: JSX.Element[] = []
-        
+
         if (this.props.asUnit) {
-            for (let level = 1; level <= 4; level++) {
+            let heatMax = this.props.asUnit.hasPilotAbility('Hot Dog') ? 5 : 4;
+            for (let level = 1; level <= heatMax; level++) {
                 let classes = [];
 
                 if (this.props.asUnit.currentHeat >= level) {
@@ -1026,7 +1028,7 @@ export default class AlphaStrikeUnitCard extends React.Component<IAlphaStrikeUni
                     classes.push('staged');
                 }
 
-                heat.push(<button key={level} className={classes.join(' ')} onClick={() => this._setHeat(level)}>{level === 4 ? 'S' : level}</button>);
+                heat.push(<button key={level} className={classes.join(' ')} onClick={() => this._setHeat(level)}>{level === heatMax ? 'S' : level}</button>);
             }
         }
 
@@ -1065,6 +1067,18 @@ export default class AlphaStrikeUnitCard extends React.Component<IAlphaStrikeUni
 
         let pilotAbilitiesList = this.props.asUnit.getPilotAbilityList();
         let pilotAbilities = this.props.asUnit.getPilotAbilities();
+
+        let breach = false;
+        if (this.props.asUnit.isAerospace) {
+            let threshold = 0;
+            for(let index = 0; index < this.props.asUnit.roundArmor.length; index ++) {
+                // Only increment if we're adding damage, not removing it
+                if (this.props.asUnit.roundArmor[index] && !this.props.asUnit.currentArmor[index]) {
+                    threshold += 1;
+                }
+            }
+            breach = threshold > this.props.asUnit.threshold ? true : false;
+        }
 
         let classes = ['alpha-strike-play-card'];
         if (this.props.asUnit.isWrecked()) {
@@ -1180,7 +1194,7 @@ export default class AlphaStrikeUnitCard extends React.Component<IAlphaStrikeUni
                                 </div>
                             ) }
                             {this.props.asUnit.isAerospace ? (
-                                <div className='data-pair threshold column text-center start'><span>TH</span>{this.props.asUnit.threshold}</div>
+                                <div className={'data-pair threshold column text-center center' + (breach ? ' staged' : '')}><span>TH</span>{this.props.asUnit.threshold}</div>
                             ) : null }
                             
                             

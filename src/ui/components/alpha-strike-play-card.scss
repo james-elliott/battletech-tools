@@ -209,40 +209,50 @@
                 opacity: .8;
                 box-shadow: rgba(0,0,0,.6) 0px 0px 4px inset;
             }
-            &:first-child {
-                &.active {
-                    background-color: yellow;
-                    &:hover {
-                        background-color: darken(yellow, 5%);
-                    }
+            &:nth-last-child(5).active {
+                background-color: greenyellow;
+                &:hover {
+                    background-color: darken(greenyellow, 15%);
                 }
-                border-radius: var(--rad) 0 0 var(--rad);
             }
-            &:nth-child(2).active {
+            &:nth-last-child(4).active {
+                background-color: yellow;
+                &:hover {
+                    background-color: darken(yellow, 7%);
+                }
+            }
+            &:nth-last-child(3).active {
                 background-color: orange;
                 &:hover {
                     background-color: darken(orange, 5%);
                 }
             }
-            &:nth-child(3).active {
+            &:nth-last-child(2).active {
                 background-color: red;
-                    &:hover {
-                        background-color: darken(red, 5%);
-                    }
+                &:hover {
+                    background-color: darken(red, 5%);
+                }
+            }
+            &:last-child.active.active {
+                background-color: crimson;
+                color: #fff;
+                &:hover {
+                    background-color: darken(crimson, 5%);
+                }
+            }
+            &:first-child {
+                border-radius: var(--rad) 0 0 var(--rad);
             }
             &:last-child {
-                &.active {
-                    background-color: crimson;
-                    color: #fff;
-                    &:hover {
-                        background-color: darken(crimson, 5%);
-                    }
-                }
                 border-radius: 0 var(--rad) var(--rad) 0;
             }
         }
         .staged ~ button {
-            opacity: .6;
+            opacity: .4;
+        }
+        button:first-child:nth-last-child(5),
+        button:first-child:nth-last-child(5) ~ button {
+            flex-basis: 20%;
         }
     }
     .attack-row h4 {

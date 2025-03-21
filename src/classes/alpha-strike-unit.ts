@@ -1356,6 +1356,7 @@ export class AlphaStrikeUnit {
             this.move = newMove;
         }
 
+        let heatValue = this.hasPilotAbility('Hot Dog') && this.currentHeat > 0 ? this.currentHeat - 1 : this.currentHeat;
         for( let moveC = 0; moveC < this.move.length; moveC++ ) {
             this.move[moveC].currentMove = this.move[moveC].move;
             if( this.move[moveC].move < 5 ) {
@@ -1429,15 +1430,16 @@ export class AlphaStrikeUnit {
                 }
             }
 
+
             
             if (this.move[moveC].type !== 'j') {
                 // Adjust movement for heat
-                this.move[moveC].currentMove -= this.currentHeat*2;
+                this.move[moveC].currentMove -= heatValue*2;
                 // Negate heat 1 and add 2" for TSM
                 if (this.hasTripeStrengthMyomer() && this.currentHeat > 0) {
                     this.move[moveC].currentMove += 4;
                 };
-                if (this.currentHeat > 1) {
+                if (heatValue > 1) {
                     this.move[moveC].tmm -= 1;
                 }
                 // Calculate Sprint & Speed Demon
@@ -1451,7 +1453,7 @@ export class AlphaStrikeUnit {
             }
 
             // Failsafe to keep at 0
-            if( this.move[moveC].currentMove < 0 || this.currentHeat > 3 ) {
+            if( this.move[moveC].currentMove < 0 || heatValue > 3 ) {
                 this.move[moveC].currentMove = 0;
                 this.move[moveC].tmm = 0;
                 this.move[moveC].currentSprint = 0;
@@ -1479,26 +1481,16 @@ export class AlphaStrikeUnit {
         }
 
         // Calculate To-Hits with Criticals
-        this.currentToHitShort = this.currentSkill + this.currentHeat + currentFCHits * 2 + movementToHit; // + currentEngineHits;
-        this.currentToHitMedium = this.currentSkill + 2 + this.currentHeat + currentFCHits * 2 + movementToHit; // + currentEngineHits;
-        this.currentToHitLong = this.currentSkill + 4 + this.currentHeat + currentFCHits * 2 + movementToHit; // + currentEngineHits;
-        this.currentToHitExtreme = this.currentSkill + 6 + this.currentHeat + currentFCHits * 2 + movementToHit; // + currentEngineHits;
+        this.currentToHitShort = this.currentSkill + heatValue + currentFCHits * 2 + movementToHit; // + currentEngineHits;
+        this.currentToHitMedium = this.currentSkill + 2 + heatValue + currentFCHits * 2 + movementToHit; // + currentEngineHits;
+        this.currentToHitLong = this.currentSkill + 4 + heatValue + currentFCHits * 2 + movementToHit; // + currentEngineHits;
+        this.currentToHitExtreme = this.currentSkill + 6 + heatValue + currentFCHits * 2 + movementToHit; // + currentEngineHits;
 
-        this.currentHeat = this.currentHeat / 1;
-
-        // Engine Hit Heat Effects
-        // if( currentEngineHits === 1 )
-        //     if( this.currentHeat < 1)
-        //         this.currentHeat = 1;
-
-        if( this.currentHeat < 0 )
-            this.currentHeat = 0;
-
-        if( this.currentHeat > 4 )
-            this.currentHeat = 4;
-
-        if( currentEngineHits > 1 )
+        if( currentEngineHits > 1 ) {
             this.active = false;
+        } else {
+            this.active = true;
+        }
 
         // Here we do the attacks!
         this.attacks = [];
@@ -1727,6 +1719,7 @@ export class AlphaStrikeUnit {
             this.currentHeat = 0;
         }
         this.roundHeat = 0;
+        console.log('currentHeat', this.currentHeat);
 
         for(let pointIndex = 0; pointIndex < this.roundArmor.length; pointIndex++) {
             if (this.roundArmor[pointIndex]) {
@@ -1944,11 +1937,12 @@ export class AlphaStrikeUnit {
             toHit += 1;
         }
         
+        let heatValue = this.hasPilotAbility('Hot Dog') && this.currentHeat > 0 ? this.currentHeat - 1 : this.currentHeat;
         if (type !== 'physical') {
             // -- Fire Control Hits
             toHit += this.getFireControlHits();
             // -- Heat
-            toHit += this.currentHeat;
+            toHit += heatValue;
         } else {
             // -- Charge or DFA
             if (type.toLowerCase() === 'charge' || type.toLowerCase() === 'death from above') {
