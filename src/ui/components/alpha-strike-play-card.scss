@@ -270,6 +270,7 @@
             padding: 4px;
             .button {
                 font-weight: 600;
+                white-space: nowrap;
             }
             .data-pair {
                 margin-bottom: 6px;
@@ -414,6 +415,121 @@
             background-color: darken(plum, 10%);
         }
     }
+    .attack-overlay {
+        font-size: .825rem;
+        // gap: 4px; // Figure this out later with container sizing 
+        h2 {
+            margin-bottom: -4px;
+            button {
+                color: #000;
+                background-color: transparent;
+                border: none;
+                display: flex;
+                justify-content: center;
+                flex-direction: column;
+                padding: 4px 4px;
+                border-radius: 50%;
+                font-size: 24px;
+                &:hover {
+                    background-color: rgba(0,0,0,0.2);
+                }
+            }
+        }
+        .label {
+            font-weight: 500;
+        }
+        button {
+            padding: 2px 8px;
+            min-width: 30px;
+            border: 1px solid #bababa;
+            background-color: #eee;
+            &:hover {
+                background-color: darken(#eee, 5%);
+            }
+            &.staged {
+                background-color: lightblue;
+                &:not(:disabled):hover {
+                    background-color: darken(lightblue, 10%);
+                }
+            }
+            &#roll-dice {
+                background-color: #dfab2d;
+                border: none;
+                &:not(:disabled):hover {
+                    background-color: #b48a25;
+                }
+            }
+        }
+        .button-group button {
+            border-radius: 0;
+            &:first-child {
+                border-radius: 4px 0 0 4px;
+            }
+            &:last-child {
+                border-radius: 0 4px 4px 0;
+            }
+        }
+        .row {
+            gap: 0 12px;
+            &.button-group {
+                gap: 0;
+            }
+            .column + .column {
+                // margin-left: 8px;
+            }
+        }
+        .data-pair {
+            &.fancy {
+                font-size: 2rem;
+                line-height: 1.8rem;
+                span {
+                    font-size: .8rem;
+                    line-height: 1.2rem;
+                }
+            }
+        }
+        .die-pair {
+            height: 20px;
+        }
+        .die {
+            display: inline-block;
+            font-size: 1.25rem;
+            line-height: 1.25rem;
+            // height: 1.25rem;
+            &.miss {
+                opacity: .3;
+            }
+            &.damage {
+                color: crimson;
+            }
+            &.minimal {
+                color: lightseagreen;
+            }
+            svg {
+                vertical-align: baseline;
+            }
+        }
+        .results {
+            margin-top: 4px;
+            .row {
+                gap: 8px;
+                &#damage-dice {
+                    gap: 4px;
+                }
+            }
+            > .column {
+                flex-shrink: 1;
+            }
+            &.single-roll .die {
+                font-size: 3rem;
+                line-height: 3rem;
+            }
+        }
+        .end {
+            margin-top: auto;
+            margin-left: auto;
+        }
+    }
 }
 
 .token-wrapper {
@@ -538,16 +654,4 @@
     }
 }
 
-.die {
-    font-size: 2rem;
-    &.miss {
-        opacity: .3;
-    }
-    &.damage {
-        color: crimson;
-    }
-    &.minimal {
-        color: lightseagreen;
-    }
-}
 

@@ -1942,6 +1942,12 @@ export class AlphaStrikeUnit {
             toHit += this.getFireControlHits();
             // -- Heat
             toHit += heatValue;
+
+            // Golden Goose reduces toHit for bombs
+            if (type.toLowerCase() === 'bomb' && this.hasPilotAbility('Golden Goose')) {
+                toHit += -2;
+            }
+
         } else {
             // -- Charge or DFA
             if (type.toLowerCase() === 'charge' || type.toLowerCase() === 'death from above') {
@@ -1960,11 +1966,6 @@ export class AlphaStrikeUnit {
             if (this.isInfantry && this.hasAbility('AM')) {
                 toHit += this.type.toLowerCase() === 'ci' ? 3 : 1;
             }
-        }
-
-        // Golden Goose reduces toHit for bombs
-        if (type.toLowerCase() === 'bomb' && this.hasPilotAbility('Golden Goose')) {
-            toHit += -2;
         }
 
         // Add Range
