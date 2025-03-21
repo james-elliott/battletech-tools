@@ -1505,8 +1505,8 @@ export class AlphaStrikeAttackOverlay extends React.Component<AlphaStrikeAttackO
             if (this.props.appGlobals.appSettings.alphaStrikeVariableDamage === 'damage') {
                 // Need to make sure there are enough damage dice
                 let needed = this.state.minimal ? this.maxDamage + 1 : this.maxDamage;
-                if (needed > this.damageRollResults.length) {
-                    this.damageRollResults = [this._rollDamage(3), ...this.damageRollResults];
+                while (needed > this.damageRollResults.length) {
+                    this.damageRollResults = [...this.damageRollResults, this._rollDamage(3)];
                 }
                 if (this.toHitRollResults.length > 0 && this.toHitRollResults[0].hit && this.damageRollResults.length > 0) {
                     for(let index = 0; index < this.maxDamage; index++) {
