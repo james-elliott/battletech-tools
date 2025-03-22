@@ -43,6 +43,12 @@ export default class SettingsHome extends React.Component<ISettingsHomeProps, IS
       })
     }
 
+    setAlphaStrikeAIMode = ( event: React.FormEvent<HTMLInputElement>): void => {
+      let appSettingsHome = this.props.appGlobals.appSettings;
+      appSettingsHome.alphaStrikeAIMode = event.currentTarget.checked;
+      this.props.appGlobals.saveAppSettings( appSettingsHome );
+    }
+
     setAlphaStrikeVariableDamage = (event: React.FormEvent<HTMLSelectElement> ): void => {
       let appSettingsHome = this.props.appGlobals.appSettings;
       appSettingsHome.alphaStrikeVariableDamage = event.currentTarget.value;
@@ -93,6 +99,12 @@ export default class SettingsHome extends React.Component<ISettingsHomeProps, IS
                       <option value="attack">Multiple Attack Rolls</option>
                     </select>
                   </label>
+
+                  <InputCheckbox
+                    label='Alpha Strike: Use AI Mode'
+                    checked={this.props.appGlobals.appSettings.alphaStrikeAIMode}
+                    onChange={this.setAlphaStrikeAIMode}
+                  />
 
                 </fieldset>
 

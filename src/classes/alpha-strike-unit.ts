@@ -129,6 +129,7 @@ export interface IAlphaStrikeUnitExport {
     roundVehicleMotive12?: boolean;
     roundHeat?: number;
     hullDown?: boolean;
+    currentBehavior?: OpForBehavior;
 
     attacks?: IASAttack[];
 
@@ -617,6 +618,11 @@ export class AlphaStrikeUnit {
             this.hullDown = incomingMechData.hullDown
         }
 
+        if (incomingMechData.currentBehavior) {
+            console.log(incomingMechData.currentBehavior.name);
+            this.currentBehavior = incomingMechData.currentBehavior;
+        }
+
         if (incomingMechData.altitude) {
             this.altitude = incomingMechData.altitude >= 0 ? incomingMechData.altitude : 0;
         }
@@ -751,7 +757,7 @@ export class AlphaStrikeUnit {
 
     }
 
-    getOpForBehavior(): OpForBehavior {
+    public rollOpForBehavior(): void {
         if (this.currentBehavior.name === "" && this.behaviors.length > 0) {
             let index = Math.floor(Math.random() * 8);
             let IF = false;
@@ -778,8 +784,6 @@ export class AlphaStrikeUnit {
                 }
             }
         }
-
-        return this.currentBehavior;
     }
 
     private _getRawNumber( incomingString: string ): number {
@@ -2072,6 +2076,14 @@ export class AlphaStrikeUnit {
         let _roundHeat = 0;
         let _hullDown = false;
 
+        let _behavior: OpForBehavior = {
+            name: "",
+            quarry: "",
+            movement: "",
+            attack: "",
+            reroll: false
+        };
+
         if( !noInPlayVariables ) {
             _currentArmor = this.currentArmor;
             _currentHeat = this.currentHeat;
@@ -2095,6 +2107,7 @@ export class AlphaStrikeUnit {
             _roundVehicleMotive12 = this.roundVehicleMotive12;
             _roundHeat = this.roundHeat;
             _hullDown = this.hullDown;
+            _behavior = this.currentBehavior;
         }
 
         let rv:  IAlphaStrikeUnitExport = {
@@ -2120,6 +2133,7 @@ export class AlphaStrikeUnit {
             roundVehicleMotive12: _roundVehicleMotive12,
             roundHeat: _roundHeat,
             hullDown: _hullDown,
+            currentBehavior: _behavior,
             classification:  this.classification,
             class:  this.class?? "",
             costCR:  this.costCR,

@@ -160,7 +160,7 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
     }
 
     showOpForBehavior = (
-      e: React.FormEvent<SVGTextElement>,
+      e: React.FormEvent<HTMLAnchorElement>,
       behavior: OpForBehavior,
     ): void => {
       e.preventDefault();
@@ -169,20 +169,7 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
       })
     };
 
-    closeOpForBehavior = (
-      e: React.FormEvent<HTMLButtonElement>
-    ): void => {
-      if( e && e.preventDefault ) e.preventDefault();
-
-      this.setState({
-        showOpForBehavior: null,
-      })
-    }
-
-    reRollOpForBehavior = (
-      e: React.FormEvent<HTMLSpanElement>
-    ): void => {
-      if( e && e.preventDefault ) e.preventDefault();
+    reRollOpForBehavior = (): void => {
       if (this.props.appGlobals.currentASForce) {
         for (let group of this.props.appGlobals.currentASForce?.groups) {
           for (let unit of group.members) {
@@ -194,10 +181,11 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
                 attack: "",
                 reroll: false
               }
+              unit.rollOpForBehavior();
             }
           }
         }
-        // Force a re-render of all the unit cards.
+        // Save the behaviors.
         this.props.appGlobals.saveCurrentASForce( this.props.appGlobals.currentASForce );
       }
     }
@@ -282,6 +270,10 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
         <header className="play-bar flex-grid justified">
           <Link title="Click here to leave Play Mode (don't worry, you won't lose your current mech statuses)" className="current" to={`${process.env.PUBLIC_URL}/alpha-strike-roster`}><FaArrowCircleLeft /></Link>
           
+          {this.props.appGlobals.appSettings.alphaStrikeAIMode ? (
+            <button title="Roll behaviors for all units" className="" onClick={this.reRollOpForBehavior}>Generate Behaviors</button>
+          ) : null }
+
           <button title="Apply damage and heat changes to end the round and start another" className="" onClick={this.nextRound}>Next Round</button>
 
           <button title="Toggle between measurements in inches or hexes" onClick={(e) => this.toggleAlphaStrikeMeasurementsInHexes(e)}>

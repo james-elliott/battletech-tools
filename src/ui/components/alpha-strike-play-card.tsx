@@ -1044,24 +1044,22 @@ export default class AlphaStrikeUnitCard extends React.Component<IAlphaStrikeUni
         return heat;
     }
 
-    private _GetBehavior = (
-        
-    ): JSX.Element => {
-        let behavior = this.props.asUnit ? this.props.asUnit.getOpForBehavior() : null;
+    private _GetBehavior = (): JSX.Element => {
+        let behavior = this.props.asUnit ? this.props.asUnit.currentBehavior : null;
         let name = behavior ? behavior.name : "";
 
         let fragment = 
-            <React.Fragment>
-                <text className="cursor-pointer behavior" onClick={(e) => this._showOpForBehavior(e, behavior)} x={112} y={195} textAnchor="left" width="150" fontFamily="sans-serif" fontSize={20} fill='rgb(200,0,0)'>{name}</text>
-                {behavior?.reroll ? (<FaDiceSix className="cursor-pointer behavior" onClick={(e) => this._rerollBehavior(e)} x={80} y={176} fontSize={24} fill='rgb(100,100,100)' />) : null }
-            </React.Fragment>
+            <span>
+                {behavior?.reroll ? (<><FaDice className="cursor-pointer behavior" onClick={(e) => this._rerollBehavior(e)} fontSize={20}/>&nbsp;</>) : null }
+                <a className="behavior" onClick={(e) => this._showOpForBehavior(e, behavior)} href="/">{name}</a>
+            </span>
         ;
 
         return fragment;
     }
 
     private _showOpForBehavior = (
-        e: React.MouseEvent<SVGTextElement, MouseEvent>,
+        e: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
         behavior: OpForBehavior | null,
     ) => {
         if( e && e.preventDefault ) e.preventDefault();
@@ -1082,7 +1080,10 @@ export default class AlphaStrikeUnitCard extends React.Component<IAlphaStrikeUni
                 attack: "",
                 reroll: false
             };
-            this.setState(this.state);
+            
+            this.props.asUnit.rollOpForBehavior();
+            
+            this.props.appGlobals.saveCurrentASForce( this.props.appGlobals.currentASForce );
         }
     }
 
@@ -1146,7 +1147,10 @@ export default class AlphaStrikeUnitCard extends React.Component<IAlphaStrikeUni
                         <div className='data-pair'><span>PV</span>{this.props.asUnit.currentPoints}</div>
                     </div>
                     <div className='variant row justified'>
-                        {!this.props.asUnit.customName && this.props.asUnit.variant !== ' ' ? this.props.asUnit.variant : this.props.asUnit.name}
+                        <span>{!this.props.asUnit.customName && this.props.asUnit.variant !== ' ' ? this.props.asUnit.variant : this.props.asUnit.name}</span>
+                        {this.props.appGlobals.appSettings.alphaStrikeAIMode ? (
+                            <span>{this._GetBehavior()}</span>
+                        ) : null }
                     </div>
                     <div className='row justified'>
                         <div className='data-pair'><span>Role</span>{this.props.asUnit.role}</div>
@@ -1366,7 +1370,7 @@ interface IAlphaStrikeUnitCardProps {
     showExtreme?: boolean;
     measurementsInHexes: boolean;
     showPilotAbility( ability: IASPilotAbility ): void;
-    showOpForBehavior?(e: React.FormEvent<SVGTextElement>, behavior: OpForBehavior): void;
+    showOpForBehavior?(e: React.FormEvent<HTMLAnchorElement>, behavior: OpForBehavior): void;
     showSpecialAbility?(
         e: React.FormEvent<HTMLAnchorElement>,
         ability: IASSpecialAbility | null
