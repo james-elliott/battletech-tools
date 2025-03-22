@@ -1646,6 +1646,7 @@ export class AlphaStrikeAttackOverlay extends React.Component<AlphaStrikeAttackO
                 },
                 baseDamage: value.damage > -1 && !this.state.indirect.enabled ? value.damage : this.props.attack.damage,
                 minimal: value.minimal && !this.state.indirect.enabled ? value.minimal : this.props.attack.minimal,
+                narc: this.state.indirect.enabled ? false : this.state.narc,
             });
         }
     }
