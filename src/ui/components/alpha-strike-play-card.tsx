@@ -1394,7 +1394,7 @@ export class AlphaStrikeAttackOverlay extends React.Component<AlphaStrikeAttackO
     // Create Private variables from this.props.attack
     private maxDamage: number = 0;
     private targetNumber: number = 0;
-    private tmmRange = this.props.attack.type === 'a2a' ? [-2,-1,1,2] : [-4,-2,-1,0,1,2,3,4,5];
+    private tmmRange = this.props.attack.type === 'a2a' ? [-2,-1,0,1,2] : [-4,-3,-2,-1,0,1,2,3,4,5];
     private toHitRollResults: RollResult[] = [];
     private damageRollResults: RollResult[] = [];
     private totalDamage = 0;
@@ -1945,185 +1945,190 @@ export class AlphaStrikeAttackOverlay extends React.Component<AlphaStrikeAttackO
         
         this._calcAttack();
 
-        return <>
-            <div className='overlay column attack-overlay'>
-                <h2 className='row justified'>
-                    <span>{this.props.attack.name}</span>
-                    <button onClick={this.props.close}><FiX /></button>
-                </h2>
+        if (!this.props.unit || !this.props.attack) {
+            return <></>;
+        } else {
+            return <>
+                <div className='overlay column attack-overlay'>
+                    <h3 className='row justified'>
+                        <span>{this.props.attack.name}</span>
+                        <button onClick={this.props.close}><FiX /></button>
+                    </h3>
 
-                {this.props.attack.type !== 'physical' ? (
+                    {this.props.attack.type !== 'physical' ? (
+                        <div className='row'>
+                            <div className='column'>
+                                <span className='label'>Attack Mods</span>
+                                <div className='row'>
+                                    {this._attackOptions()}
+                                </div>
+                            </div>
+                        {this.props.attack.type === 'weapon' && (this.props.unit?.hasPilotAbility('Multi-Tasker') || this.props.appGlobals.appSettings.alphaStrikeVariableDamage === 'attack') ? (
+                            <div className='column'>
+                                <span className='label'>Multi-Target</span>
+                                <div className='row button-group'>
+                                    {this._multiAttack()}
+                                </div>
+                            </div>
+                        ) : null }
+                        </div>
+                    ) : null }
+
+                    {this.state.indirect.enabled ? (
                     <div className='row'>
                         <div className='column'>
-                            <span className='label'>Attack Mods</span>
+                            <span className='label'>Spotter Mods</span>
                             <div className='row'>
-                                {this._attackOptions()}
+                                {this.props.unit?.hasPilotAbility('Oblique Attacker') ? (
+                                    <button className={this.state.indirect.noSpotter ? 'staged' : ''} onClick={() => this._toggleSpotter('noSpotter')}>None</button>
+                                ) : null }
+                                <button className={this.state.indirect.spotterAttacked ? 'staged' : ''} disabled={this.state.indirect.noSpotter} onClick={() => this._toggleSpotter('spotterAttacked')}>Attacked</button>
+                                <button className={this.state.indirect.tag ? 'staged' : ''} disabled={this.state.indirect.noSpotter} onClick={() => this._toggleSpotter('tag')}>Tag</button>
                             </div>
                         </div>
-                    {this.props.attack.type === 'weapon' && (this.props.unit?.hasPilotAbility('Multi-Tasker') || this.props.appGlobals.appSettings.alphaStrikeVariableDamage === 'attack') ? (
                         <div className='column'>
-                            <span className='label'>Multi-Target</span>
-                            <div className='row button-group'>
-                                {this._multiAttack()}
+                            <span className='label'>Spotter Movement Mod</span>
+                            <div className='button-group'>
+                                <button className={this.state.indirect.spotterMove === -1 ? 'staged' : ''} disabled={this.state.indirect.noSpotter} onClick={() => {this._setSpotterMovement(-1)}}>-1</button>
+                                <button className={this.state.indirect.spotterMove === 0 ? 'staged' : ''} disabled={this.state.indirect.noSpotter} onClick={() => {this._setSpotterMovement(0)}}>0</button>
+                                <button className={this.state.indirect.spotterMove === 1 ? 'staged' : ''} disabled={this.state.indirect.noSpotter} onClick={() => {this._setSpotterMovement(1)}}>1</button>
+                                <button className={this.state.indirect.spotterMove === 2 ? 'staged' : ''} disabled={this.state.indirect.noSpotter} onClick={() => {this._setSpotterMovement(2)}}>2</button>
+                            </div>
+                        </div>
+                    </div>
+                    ) : null }
+
+                    {!this.state.artillery && this.state.bombs.max === 0 ? (
+                        <div className='row'>
+                            <div className='column'>
+                                <span className='label'>Target TMM + Other &gt; Target</span>
+                                <div className='button-group'>
+                                    {this.tmmRange.map( (value) => {
+                                        let classes = [];
+                                        if (value === this.state.tmm) {
+                                            classes.push('staged');
+                                        }
+                                        return <button key={value} className={classes.join(' ')} disabled={this.state.artillery} onClick={() => this._adjustTMM(value)}>{value}</button>;
+                                    })}
+                                </div>
+                            </div>
+                            <div className='column'>
+                                <span className='label'>Target Stealth</span>
+                                <div className='button-group'>
+                                    <button className={this.state.stealth === 1 ? 'staged' : ''} disabled={this.state.artillery} onClick={() => this._targetStealth(1)}>+1</button>
+                                    <button className={this.state.stealth === 2 ? 'staged' : ''} disabled={this.state.artillery} onClick={() => this._targetStealth(2)}>+2</button>
+                                </div>
                             </div>
                         </div>
                     ) : null }
-                    </div>
-                ) : null }
+                    
+                    {this.state.bombs.max === 0 && this.props.attack.type !== 'a2a' ? (
+                        <div className='column'>
+                            <span className='label'>{this.state.indirect.enabled ? 'Spotter ' : '' }Terrain:</span>
+                            <div className='row'>
+                                <button className={this.state.terrain[0] ? 'staged' : ''} onClick={() => this._toggleTerrain(0)}>Woods</button>
+                                <button className={this.state.terrain[2] ? 'staged' : ''} onClick={() => this._toggleTerrain(2)}>Partial Cover</button>
+                                <button className={this.state.terrain[1] ? 'staged' : ''} onClick={() => this._toggleTerrain(1)}>Underwater</button>
+                            </div>
+                        </div>
+                    ) : null }
 
-                {this.state.indirect.enabled ? (
-                <div className='row'>
-                    <div className='column'>
-                        <span className='label'>Spotter Mods</span>
+                    
                         <div className='row'>
-                            {this.props.unit?.hasPilotAbility('Oblique Attacker') ? (
-                                <button className={this.state.indirect.noSpotter ? 'staged' : ''} onClick={() => this._toggleSpotter('noSpotter')}>None</button>
+                            {!this.state.artillery && !this.props.unit?.isAerospace ? (
+                                <div className='column'>
+                                    <span className='label'>Damage Mods</span>
+                                    <div className='row'>
+                                        {this._damageOptions()}
+                                    </div>
+                                </div>
                             ) : null }
-                            <button className={this.state.indirect.spotterAttacked ? 'staged' : ''} disabled={this.state.indirect.noSpotter} onClick={() => this._toggleSpotter('spotterAttacked')}>Attacked</button>
-                            <button className={this.state.indirect.tag ? 'staged' : ''} disabled={this.state.indirect.noSpotter} onClick={() => this._toggleSpotter('tag')}>Tag</button>
-                        </div>
-                    </div>
-                    <div className='column'>
-                        <span className='label'>Spotter Movement Mod</span>
-                        <div className='button-group'>
-                            <button className={this.state.indirect.spotterMove === -1 ? 'staged' : ''} disabled={this.state.indirect.noSpotter} onClick={() => {this._setSpotterMovement(-1)}}>-1</button>
-                            <button className={this.state.indirect.spotterMove === 0 ? 'staged' : ''} disabled={this.state.indirect.noSpotter} onClick={() => {this._setSpotterMovement(0)}}>0</button>
-                            <button className={this.state.indirect.spotterMove === 1 ? 'staged' : ''} disabled={this.state.indirect.noSpotter} onClick={() => {this._setSpotterMovement(1)}}>1</button>
-                            <button className={this.state.indirect.spotterMove === 2 ? 'staged' : ''} disabled={this.state.indirect.noSpotter} onClick={() => {this._setSpotterMovement(2)}}>2</button>
-                        </div>
-                    </div>
-                </div>
-                ) : null }
-
-                {!this.state.artillery && this.state.bombs.max === 0 ? (
-                    <div className='row'>
-                        <div className='column'>
-                            <span className='label'>Target TMM</span>
-                            <div className='button-group'>
-                                {this.tmmRange.map( (value) => {
-                                    let classes = [];
-                                    if (value === this.state.tmm) {
-                                        classes.push('staged');
-                                    }
-                                    return <button key={value} className={classes.join(' ')} disabled={this.state.artillery} onClick={() => this._adjustTMM(value)}>{value}</button>;
-                                })}
-                            </div>
-                        </div>
-                        <div className='column'>
-                            <span className='label'>Target Stealth</span>
-                            <div className='button-group'>
-                                <button className={this.state.stealth === 1 ? 'staged' : ''} disabled={this.state.artillery} onClick={() => this._targetStealth(1)}>+1</button>
-                                <button className={this.state.stealth === 2 ? 'staged' : ''} disabled={this.state.artillery} onClick={() => this._targetStealth(2)}>+2</button>
-                            </div>
-                        </div>
-                    </div>
-                ) : null }
-                
-                {this.state.bombs.max === 0 && this.props.attack.type !== 'a2a' ? (
-                    <div className='column'>
-                        <span className='label'>{this.state.indirect.enabled ? 'Spotter ' : '' }Terrain:</span>
-                        <div className='row'>
-                            <button className={this.state.terrain[0] ? 'staged' : ''} onClick={() => this._toggleTerrain(0)}>Woods</button>
-                            <button className={this.state.terrain[1] ? 'staged' : ''} onClick={() => this._toggleTerrain(1)}>Underwater</button>
-                            <button className={this.state.terrain[2] ? 'staged' : ''} onClick={() => this._toggleTerrain(2)}>Partial Cover</button>
-                        </div>
-                    </div>
-                ) : null }
-
-                
-                    <div className='row'>
-                        {!this.state.artillery && !this.props.unit?.isAerospace ? (
-                            <div className='column'>
-                                <span className='label'>Damage Mods</span>
-                                <div className='row'>
-                                    {this._damageOptions()}
+                            {!this.state.artillery && this.props.attack.type !== 'physical' && this.props.unit && this.props.unit.overheat > 0 && (this.state.range < 2 || (this.props.unit.hasAbility('OVL') && this.state.range < 3)) ? (
+                                <div className='column'>
+                                    <span className='label'>Overheat</span>
+                                    <div>
+                                        {this._overheatOptions()}
+                                    </div>
                                 </div>
-                            </div>
-                        ) : null }
-                        {!this.state.artillery && this.props.attack.type !== 'physical' && this.props.unit && this.props.unit.overheat > 0 && (this.state.range < 2 || (this.props.unit.hasAbility('OVL') && this.state.range < 3)) ? (
-                            <div className='column'>
-                                <span className='label'>Overheat</span>
-                                <div>
-                                    {this._overheatOptions()}
-                                </div>
-                            </div>
-                        ) : null }
-                    </div>
-
-                {this.state.bombs.max > 1 ? (
-                    <div className='column'>
-                        <span className='label'>Number of bombs</span>
-                        <div>
-                            {this._bombOptions()}
+                            ) : null }
                         </div>
-                    </div>
-                ) : null }
 
-                <div className='end'>
-                    <div className='row justified'>
-                        <div className='data-pair'><span>TN</span>{this.targetNumber}</div>
-                        <div className='data-pair'><span>{this.props.attack.type === 'bomb' || this.state.artillery ? 'Number of Strikes' : 'Potential Damage'}</span>{this.maxDamage}{this.state.minimal ? '*' : ''}</div>
-                    </div>
+                    {this.state.bombs.max > 1 ? (
+                        <div className='column'>
+                            <span className='label'>Number of bombs</span>
+                            <div>
+                                {this._bombOptions()}
+                            </div>
+                        </div>
+                    ) : null }
 
-                    <div className={'row results nowrap' + (this.props.appGlobals.appSettings.alphaStrikeVariableDamage.length === 0 ? ' single-roll' : '')}>
-                        <button id='roll-dice' className='button' onClick={() => this._rollAttack()}><FaDice /></button>
+                    <div className='end'>
+                        <div className='row justified'>
+                            <div className='data-pair'><span>TN</span>{this.targetNumber}</div>
+                            <div className='data-pair'><span>{this.props.attack.type === 'bomb' || this.state.artillery ? 'Number of Strikes' : 'Potential Damage'}</span>{this.maxDamage}{this.state.minimal ? '*' : ''}</div>
+                        </div>
 
-                        <div className='column justified'>
-                            {this.toHitRollResults.length > 0 ? (
-                                    <div id='hit-dice' className='row'>
-                                        {this.toHitRollResults.map( (result, resultIndex) => {
-                                            if ((this.props.attack.type !== 'physical' && resultIndex < this.maxDamage) || this.state.artillery) {
-                                                let scatter = this.damageRollResults[resultIndex];
-                                                return <div key={resultIndex} className='die-pair'>
-                                                    <DiceIcon classes={result.hit ? '' : 'miss'} roll={result.roll1}></DiceIcon>
-                                                    <DiceIcon classes={result.hit ? '' : 'miss'} roll={result.roll2}></DiceIcon>
-                                                    {(this.state.artillery || this.state.bombs.max > 0) && !result.hit ? (<div><DiceIcon classes={'damage'} roll={scatter.roll1}></DiceIcon> <span>Scatter {this.targetNumber - result.roll1 - result.roll2}"</span></div>) : null }
-                                                </div>;
+                        <div className={'row results nowrap' + (this.props.appGlobals.appSettings.alphaStrikeVariableDamage.length === 0 ? ' single-roll' : '')}>
+                            <button id='roll-dice' className='button' onClick={() => this._rollAttack()}><FaDice /></button>
+
+                            <div className='column justified'>
+                                {this.toHitRollResults.length > 0 ? (
+                                        <div id='hit-dice' className='row'>
+                                            {this.toHitRollResults.map( (result, resultIndex) => {
+                                                if ((this.props.attack.type !== 'physical' && resultIndex < this.maxDamage) || this.state.artillery) {
+                                                    let scatter = this.damageRollResults[resultIndex];
+                                                    return <div key={resultIndex} className='die-pair'>
+                                                        <DiceIcon classes={result.hit ? '' : 'miss'} roll={result.roll1}></DiceIcon>
+                                                        <DiceIcon classes={result.hit ? '' : 'miss'} roll={result.roll2}></DiceIcon>
+                                                        {(this.state.artillery || this.state.bombs.max > 0) && !result.hit ? (<div><DiceIcon classes={'damage'} roll={scatter.roll1}></DiceIcon> <span>Scatter {this.targetNumber - result.roll1 - result.roll2}"</span></div>) : null }
+                                                    </div>;
+                                                } else {
+                                                    return null;
+                                                }
+                                            })}
+                                            {this.props.attack.type === 'physical' && this.maxDamage > 0 ? (
+                                                <div key={"physical"} className='die-pair'>
+                                                    <DiceIcon classes={this.toHitRollResults[0].hit ? '' : 'miss'} roll={this.toHitRollResults[0].roll1}></DiceIcon>
+                                                    <DiceIcon classes={this.toHitRollResults[0].hit ? '' : 'miss'} roll={this.toHitRollResults[0].roll2}></DiceIcon>
+                                                </div>
+                                            ) : null }
+                                            {this.state.minimal && this.maxDamage === 0 ? (
+                                                <div key={"minimal"} className='die-pair'>
+                                                    <DiceIcon classes={this.toHitRollResults[this.toHitRollResults.length - 1].hit ? 'minimal' : 'minimal miss'} roll={this.toHitRollResults[this.toHitRollResults.length - 1].roll1}></DiceIcon>
+                                                    <DiceIcon classes={this.toHitRollResults[this.toHitRollResults.length - 1].hit ? 'minimal' : 'minimal miss'} roll={this.toHitRollResults[this.toHitRollResults.length - 1].roll2}></DiceIcon>
+                                                </div>
+                                            ) : null }
+                                        </div>
+                                ) : null }
+
+                                {this._showDamageDice() ? (
+                                    <div id='damage-dice' className='row'>
+                                        {this.props.appGlobals.appSettings.alphaStrikeVariableDamage !== 'attack' && this.props.attack.type !== 'physical' ? this.damageRollResults.map( (result,resultIndex) => {
+                                            if (resultIndex < this.maxDamage && this.props.appGlobals.appSettings.alphaStrikeVariableDamage !== 'attack') {
+                                                return <DiceIcon key={resultIndex} classes={result.hit ? 'damage' : 'damage miss'} roll={result.roll1}></DiceIcon>;
                                             } else {
                                                 return null;
                                             }
-                                        })}
-                                        {this.props.attack.type === 'physical' && this.maxDamage > 0 ? (
-                                            <div key={"physical"} className='die-pair'>
-                                                <DiceIcon classes={this.toHitRollResults[0].hit ? '' : 'miss'} roll={this.toHitRollResults[0].roll1}></DiceIcon>
-                                                <DiceIcon classes={this.toHitRollResults[0].hit ? '' : 'miss'} roll={this.toHitRollResults[0].roll2}></DiceIcon>
-                                            </div>
-                                        ) : null }
-                                        {this.state.minimal && this.maxDamage === 0 ? (
-                                            <div key={"minimal"} className='die-pair'>
-                                                <DiceIcon classes={this.toHitRollResults[this.toHitRollResults.length - 1].hit ? 'minimal' : 'minimal miss'} roll={this.toHitRollResults[this.toHitRollResults.length - 1].roll1}></DiceIcon>
-                                                <DiceIcon classes={this.toHitRollResults[this.toHitRollResults.length - 1].hit ? 'minimal' : 'minimal miss'} roll={this.toHitRollResults[this.toHitRollResults.length - 1].roll2}></DiceIcon>
-                                            </div>
+                                        }) : null }
+                                        {this.state.minimal ? (
+                                            <DiceIcon key={"minimal"} classes={this.damageRollResults[this.damageRollResults.length - 1].hit ? 'damage' : 'damage miss'} roll={this.damageRollResults[this.damageRollResults.length - 1].roll1}></DiceIcon>
                                         ) : null }
                                     </div>
-                            ) : null }
-
-                            {this._showDamageDice() ? (
-                                <div id='damage-dice' className='row'>
-                                    {this.props.appGlobals.appSettings.alphaStrikeVariableDamage !== 'attack' && this.props.attack.type !== 'physical' ? this.damageRollResults.map( (result,resultIndex) => {
-                                        if (resultIndex < this.maxDamage && this.props.appGlobals.appSettings.alphaStrikeVariableDamage !== 'attack') {
-                                            return <DiceIcon key={resultIndex} classes={result.hit ? 'damage' : 'damage miss'} roll={result.roll1}></DiceIcon>;
-                                        } else {
-                                            return null;
-                                        }
-                                    }) : null }
-                                    {this.state.minimal ? (
-                                        <DiceIcon key={"minimal"} classes={this.damageRollResults[this.damageRollResults.length - 1].hit ? 'damage' : 'damage miss'} roll={this.damageRollResults[this.damageRollResults.length - 1].roll1}></DiceIcon>
-                                    ) : null }
-                                </div>
-                            ) : null }
+                                ) : null }
+                            </div>
+                        
+                        {!this.state.artillery && this.state.bombs.max === 0 ? (
+                            <div className='end row'>
+                                <div className='column text-center justified data-pair fancy'>{this.totalDamage}<span>Damage</span></div>
+                                {this.props.unit.getAbilityValues('FLK', this.props.attack.range).damage > -1 && this.toHitRollResults[0] && this.toHitRollResults[0].roll1 + this.toHitRollResults[0].roll2 < this.targetNumber && this.toHitRollResults[0].roll1 + this.toHitRollResults[0].roll2 >= this.targetNumber - 2 ? (<div className='column text-center justified data-pair fancy'>{this.props.unit.getAbilityValues('FLK', this.props.attack.range).damage}<span>FLK</span></div>) : null }
+                            </div>
+                        ) : null }
+                        
                         </div>
-                    
-                    {!this.state.artillery && this.state.bombs.max === 0 ? (
-                        <div className='end'>
-                            <div className='column text-center justified data-pair fancy'>{this.totalDamage}<span>Damage</span></div>
-                        </div>
-                    ) : null }
-                    
                     </div>
                 </div>
-            </div>
-        </>;
+            </>;
+        }
     }
 }
 

@@ -126,6 +126,7 @@ export interface IAlphaStrikeUnitExport {
     roundVehicleMotive11?: boolean[];
     roundVehicleMotive12?: boolean;
     roundHeat?: number;
+    hullDown?: boolean;
 
     attacks?: IASAttack[];
 
@@ -281,17 +282,7 @@ export class AlphaStrikeUnit {
     public roundVehicleMotive910: boolean[] = [];
     public roundVehicleMotive11: boolean[] = [];
     public roundVehicleMotive12: boolean = false;
-
-    public roundHeat: number = 0;
-    public roundArmor: boolean[] = [];
-    public roundStructure: boolean[] = [];
-    public roundEngineHits: boolean[] = [];
-    public roundFireControlHits: boolean[] = [];
-    public roundMpControlHits: boolean[] = [];
-    public roundWeaponHits: boolean[] = [];
-    public roundVehicleMotive910: boolean[] = [];
-    public roundVehicleMotive11: boolean[] = [];
-    public roundVehicleMotive12: boolean = false;
+    public hullDown: boolean = false;
 
     private _pilot: Pilot = new Pilot( {
         name: "",
@@ -604,6 +595,10 @@ export class AlphaStrikeUnit {
 
         if (incomingMechData.moveToken) {
             this.moveToken = incomingMechData.moveToken;
+        }
+
+        if (incomingMechData.hullDown) {
+            this.hullDown = incomingMechData.hullDown
         }
 
         if (incomingMechData.altitude) {
@@ -1014,6 +1009,7 @@ export class AlphaStrikeUnit {
         this.roundVehicleMotive910 = [];
         this.roundVehicleMotive11 = [];
         this.roundVehicleMotive12 = false;
+        this.hullDown = false;
         this.calcCurrentValues();
     }
 
@@ -1751,6 +1747,13 @@ export class AlphaStrikeUnit {
             this.vehicleMotive11[index] = this.roundVehicleMotive11[index];
         }
 
+        // Set the unit to hull down, so next round if it is still hull down it gets the -1 toHit modifier
+        if (this.moveToken.type === 'hull down') {
+            this.hullDown = true;
+        } else {
+            this.hullDown = false;
+        }
+
         this.vehicleMotive12 = this.roundVehicleMotive12
     }
 
@@ -1909,7 +1912,7 @@ export class AlphaStrikeUnit {
 
         // Check Attacker Movement
         if (!this.isInfantry) {
-            if (this.moveToken.type === "standstill") {
+            if (this.moveToken.type === "standstill" || (this.hullDown && this.moveToken.type === 'hull down')) {
                 toHit -= 1;
             } else if (this.moveToken.type === "jump" || this.moveToken.type === 'dfa') {
                 toHit += this.hasPilotAbility('Jumping Jack') ? 1 : 2;
@@ -2013,16 +2016,7 @@ export class AlphaStrikeUnit {
         let _roundVehicleMotive11: boolean[] = [];
         let _roundVehicleMotive12: boolean = false;
         let _roundHeat = 0;
-        let _roundArmor: boolean[] = [];
-        let _roundStructure: boolean[] = [];
-        let _roundEngineHits: boolean[] = [];
-        let _roundFireControlHits: boolean[] = [];
-        let _roundMpControlHits: boolean[] = [];
-        let _roundWeaponHits: boolean[] = [];
-        let _roundVehicleMotive910: boolean[] = [];
-        let _roundVehicleMotive11: boolean[] = [];
-        let _roundVehicleMotive12: boolean = false;
-        let _roundHeat = 0;
+        let _hullDown = false;
 
         if( !noInPlayVariables ) {
             _currentArmor = this.currentArmor;
@@ -2046,6 +2040,7 @@ export class AlphaStrikeUnit {
             _roundVehicleMotive11 = this.roundVehicleMotive11;
             _roundVehicleMotive12 = this.roundVehicleMotive12;
             _roundHeat = this.roundHeat;
+            _hullDown = this.hullDown;
         }
 
         let rv:  IAlphaStrikeUnitExport = {
@@ -2070,16 +2065,7 @@ export class AlphaStrikeUnit {
             roundVehicleMotive11: _roundVehicleMotive11,
             roundVehicleMotive12: _roundVehicleMotive12,
             roundHeat: _roundHeat,
-            roundArmor: _roundArmor,
-            roundStructure: _roundStructure,
-            roundEngineHits: _roundEngineHits,
-            roundFireControlHits: _roundFireControlHits,
-            roundMpControlHits: _roundMpControlHits,
-            roundWeaponHits: _roundWeaponHits,
-            roundVehicleMotive910: _roundVehicleMotive910,
-            roundVehicleMotive11: _roundVehicleMotive11,
-            roundVehicleMotive12: _roundVehicleMotive12,
-            roundHeat: _roundHeat,
+            hullDown: _hullDown,
             classification:  this.classification,
             class:  this.class?? "",
             costCR:  this.costCR,

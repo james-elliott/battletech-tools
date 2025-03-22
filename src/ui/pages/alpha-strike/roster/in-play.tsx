@@ -124,13 +124,18 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
             for (let group of this.props.appGlobals.currentASForce.groups) {
               for( let unit of group.members ) {
                 unit.applyRound();
-                unit.moveToken = {
+
+                // Leave units in hull down, otherwise reset their token
+                if (unit.moveToken.type !== 'hull down') {
+                  unit.moveToken = {
                     move: 0,
                     currentMove: 0,
                     currentSprint: 0,
                     type: '',
                     tmm: 0,
+                  }
                 }
+                
                 // Apply HarJel where applicable
                 let harjel = unit.getAbilityValues('BHJ').damage - 1;
                 if (harjel > 0 && unit.getCurrentArmor() > 0) {
