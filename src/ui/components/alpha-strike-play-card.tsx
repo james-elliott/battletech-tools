@@ -6,6 +6,7 @@ import { IAppGlobals } from '../app-router';
 import './alpha-strike-play-card.scss';
 import { FaDice, FaDiceFive, FaDiceFour, FaDiceOne, FaDiceSix, FaDiceThree, FaDiceTwo, FaShieldVirus } from 'react-icons/fa';
 import { FiX } from 'react-icons/fi';
+import { OpForBehavior } from '../../data/bryms-opfor-behaviors';
 
 export default class AlphaStrikeUnitCard extends React.Component<IAlphaStrikeUnitCardProps, IAlphaStrikeUnitCardState> {
 
@@ -1043,6 +1044,48 @@ export default class AlphaStrikeUnitCard extends React.Component<IAlphaStrikeUni
         return heat;
     }
 
+    private _GetBehavior = (
+        
+    ): JSX.Element => {
+        let behavior = this.props.asUnit ? this.props.asUnit.getOpForBehavior() : null;
+        let name = behavior ? behavior.name : "";
+
+        let fragment = 
+            <React.Fragment>
+                <text className="cursor-pointer behavior" onClick={(e) => this._showOpForBehavior(e, behavior)} x={112} y={195} textAnchor="left" width="150" fontFamily="sans-serif" fontSize={20} fill='rgb(200,0,0)'>{name}</text>
+                {behavior?.reroll ? (<FaDiceSix className="cursor-pointer behavior" onClick={(e) => this._rerollBehavior(e)} x={80} y={176} fontSize={24} fill='rgb(100,100,100)' />) : null }
+            </React.Fragment>
+        ;
+
+        return fragment;
+    }
+
+    private _showOpForBehavior = (
+        e: React.MouseEvent<SVGTextElement, MouseEvent>,
+        behavior: OpForBehavior | null,
+    ) => {
+        if( e && e.preventDefault ) e.preventDefault();
+        if( this.props.showOpForBehavior && behavior ) {
+            this.props.showOpForBehavior(e, behavior );
+        }
+    }
+
+    private _rerollBehavior = (
+        e: React.MouseEvent<SVGElement, MouseEvent>
+    ) => {
+        if( e && e.preventDefault ) e.preventDefault();
+        if (this.props.asUnit) {
+            this.props.asUnit.currentBehavior = {
+                name: "",
+                quarry: "",
+                movement: "",
+                attack: "",
+                reroll: false
+            };
+            this.setState(this.state);
+        }
+    }
+
     render = (): JSX.Element => {
         if( !this.props.asUnit ) {
             return <></>
@@ -1323,6 +1366,7 @@ interface IAlphaStrikeUnitCardProps {
     showExtreme?: boolean;
     measurementsInHexes: boolean;
     showPilotAbility( ability: IASPilotAbility ): void;
+    showOpForBehavior?(e: React.FormEvent<SVGTextElement>, behavior: OpForBehavior): void;
     showSpecialAbility?(
         e: React.FormEvent<HTMLAnchorElement>,
         ability: IASSpecialAbility | null

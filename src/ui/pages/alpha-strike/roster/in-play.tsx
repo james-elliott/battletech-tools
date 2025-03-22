@@ -12,6 +12,7 @@ import StandardModal from '../../../components/standard-modal';
 import AlphaStrikeUnitCard from '../../../components/alpha-strike-play-card';
 import './in-play.scss';
 import { IFormationBonus } from '../../../../data/formation-bonuses';
+import { OpForBehavior } from '../../../../data/bryms-opfor-behaviors';
 
 export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProps, IInPlayState> {
 
@@ -23,7 +24,8 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
             showPilotAbility: null,
             showSpecialAbility: null,
             settingsOpen: false,
-            showFormationBonus: null
+            showFormationBonus: null,
+            showOpForBehavior: null,
         };
 
         this.props.appGlobals.makeDocumentTitle("Playing Alpha Strike");
@@ -106,6 +108,7 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
         showSpecialAbility: null,
         showFormationBonus: null,
         showPilotAbility: null,
+        showOpForBehavior: null,
       })
     }
 
@@ -156,6 +159,54 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
       )
     }
 
+    showOpForBehavior = (
+      e: React.FormEvent<SVGTextElement>,
+      behavior: OpForBehavior,
+    ): void => {
+      e.preventDefault();
+      this.setState({
+        showOpForBehavior: behavior,
+      })
+    };
+
+    closeOpForBehavior = (
+      e: React.FormEvent<HTMLButtonElement>
+    ): void => {
+      if( e && e.preventDefault ) e.preventDefault();
+
+      this.setState({
+        showOpForBehavior: null,
+      })
+    }
+
+    reRollOpForBehavior = (
+      e: React.FormEvent<HTMLSpanElement>
+    ): void => {
+      if( e && e.preventDefault ) e.preventDefault();
+      if (this.props.appGlobals.currentASForce) {
+        for (let group of this.props.appGlobals.currentASForce?.groups) {
+          for (let unit of group.members) {
+            if (unit && unit.currentBehavior) {
+              unit.currentBehavior = {
+                name: "",
+                quarry: "",
+                movement: "",
+                attack: "",
+                reroll: false
+              }
+            }
+          }
+        }
+        // Force a re-render of all the unit cards.
+        this.props.appGlobals.saveCurrentASForce( this.props.appGlobals.currentASForce );
+      }
+    }
+
+    // This is really gross, but I'm not sure else how to turn the behavior strings into HTML so they can use italics and bold.
+    behaviorHTML = (text: string) => {
+      return { __html: text};
+    }
+
     render = (): JSX.Element => {
       if(!this.props.appGlobals.currentASForce) {
         return <></>;
@@ -202,6 +253,31 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
 {this.state.showFormationBonus.BonusDescription}
 </StandardModal>
 ) : null}
+
+
+{this.state.showOpForBehavior ? (
+<StandardModal
+  title={this.state.showOpForBehavior.name}
+  show={true}
+  onClose={this.closeModal}
+>
+  <div className=''>
+    <h3>Quarry</h3>
+    <p dangerouslySetInnerHTML={this.behaviorHTML(this.state.showOpForBehavior.quarry)}></p>
+  </div>
+
+  <div className=''>
+    <h3>Movement</h3>
+    <p dangerouslySetInnerHTML={this.behaviorHTML(this.state.showOpForBehavior.movement)}></p>
+  </div>
+
+  <div className=''>
+    <h3>Attack</h3>
+    <p dangerouslySetInnerHTML={this.behaviorHTML(this.state.showOpForBehavior.attack)}></p>
+  </div>
+  
+</StandardModal>
+) : null }
 
         <header className="play-bar flex-grid justified">
           <Link title="Click here to leave Play Mode (don't worry, you won't lose your current mech statuses)" className="current" to={`${process.env.PUBLIC_URL}/alpha-strike-roster`}><FaArrowCircleLeft /></Link>
@@ -265,6 +341,7 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
                           measurementsInHexes={this.props.appGlobals.appSettings.alphaStrikeMeasurementsInHexes}
                           showSpecialAbility={this.showSpecialAbility}
                           showPilotAbility={this.showPilotAbility}
+                          showOpForBehavior={this.showOpForBehavior}
                         />
                       </div>
                     </React.Fragment>
@@ -303,5 +380,6 @@ interface IInPlayState {
   showPilotAbility: IASPilotAbility | null,
   showSpecialAbility: IASSpecialAbility | null,
   showFormationBonus: IFormationBonus | null;
+  showOpForBehavior: OpForBehavior | null,
   settingsOpen: boolean;
 }

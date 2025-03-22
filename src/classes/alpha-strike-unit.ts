@@ -3,6 +3,8 @@ import { CONST_AS_SPECIAL_ABILITIES, IASSpecialAbility } from "../data/alpha-str
 import { IAlphaStrikeExport } from "../utils/calculateAlphaStrikeValue";
 import { generateUUID } from "../utils/generateUUID";
 import Pilot, { IPilot } from "./pilot";
+import { CONST_AS_OPFOR_BEHAVIORS, OpForBehavior } from "../data/bryms-opfor-behaviors";
+import { CONST_AS_BEHAVIOR_TABLE } from "../data/bryms-opfor-behaviors";
 
 export interface IAlphaStrikeDamage {
     short: number;
@@ -283,6 +285,14 @@ export class AlphaStrikeUnit {
     public roundVehicleMotive11: boolean[] = [];
     public roundVehicleMotive12: boolean = false;
     public hullDown: boolean = false;
+    public behaviors:string[] = [];
+    public currentBehavior: OpForBehavior = {
+        name: "",
+        quarry: "",
+        movement: "",
+        attack: "",
+        reroll: false
+    };
 
     private _pilot: Pilot = new Pilot( {
         name: "",
@@ -456,6 +466,12 @@ export class AlphaStrikeUnit {
             this.tro = incomingMechData.tro;
 
             this.role =  incomingMechData.role;
+
+            for (let table of CONST_AS_BEHAVIOR_TABLE) {
+                if (table.role === this.role) {
+                    this.behaviors = table.behavior;
+                }
+            }
 
             this.tonnage = incomingMechData.tonnage / 1;
 
@@ -735,6 +751,37 @@ export class AlphaStrikeUnit {
 
     }
 
+    getOpForBehavior(): OpForBehavior {
+        if (this.currentBehavior.name === "" && this.behaviors.length > 0) {
+            let index = Math.floor(Math.random() * 8);
+            let IF = false;
+            // Automatically reroll Indirect Fire behavior for Sniper and Missile Boat without IF#
+            if (this.role === "Sniper" || this.role === "Missile Boat") {
+                // See if any abilities are IF#
+                for (let ability of this.abilities) {
+                    if (ability.substring(0,2) === "IF") {
+                        IF = true;
+                    }
+                }
+                // Reroll until we get an new random number besides 2,3,4
+                if (!IF) {
+                    while (index > 1 && index < 5) {
+                        index = Math.floor(Math.random() * 8);
+                    }
+                }
+                
+            }
+
+            for (let action of CONST_AS_OPFOR_BEHAVIORS) {
+                if (action.name === this.behaviors[index]) {
+                    this.currentBehavior = action;
+                }
+            }
+        }
+
+        return this.currentBehavior;
+    }
+
     private _getRawNumber( incomingString: string ): number {
         let myString = incomingString.replace(/\D/g,'');
         return +myString / 1;
@@ -1010,6 +1057,13 @@ export class AlphaStrikeUnit {
         this.roundVehicleMotive11 = [];
         this.roundVehicleMotive12 = false;
         this.hullDown = false;
+        this.currentBehavior = {
+            name: "",
+            quarry: "",
+            movement: "",
+            attack: "",
+            reroll: false
+        };
         this.calcCurrentValues();
     }
 
