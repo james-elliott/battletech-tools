@@ -7,6 +7,7 @@ import './alpha-strike-play-card.scss';
 import { FaDice, FaDiceFive, FaDiceFour, FaDiceOne, FaDiceSix, FaDiceThree, FaDiceTwo, FaShieldVirus } from 'react-icons/fa';
 import { FiX } from 'react-icons/fi';
 import { OpForBehavior } from '../../data/bryms-opfor-behaviors';
+import { GiCartwheel } from 'react-icons/gi';
 
 export default class AlphaStrikeUnitCard extends React.Component<IAlphaStrikeUnitCardProps, IAlphaStrikeUnitCardState> {
 
@@ -17,6 +18,7 @@ export default class AlphaStrikeUnitCard extends React.Component<IAlphaStrikeUni
             showMovementOptions: false,
             showAttackOverlay: null,
             showCriticalOverlay: null,
+            showMotiveOverlay: null,
         }
     }
 
@@ -126,52 +128,36 @@ export default class AlphaStrikeUnitCard extends React.Component<IAlphaStrikeUni
         }
     }
 
-    private _toggleVehicle910 = (): void =>  {
-        if(this.props.asUnit ) {
-
-            let hits = 0;
-            for (let hit of this.props.asUnit.roundVehicleMotive910) {
-                hits = hit ? hits + 1 : hits;
+    private _toggleVehicle910 = (rollover : boolean = true): void =>  {
+        if(this.props.asUnit) {
+            let max = this.props.asUnit.move[0].move / 2;
+            if (this.props.asUnit.roundVehicleMotive910 < max) {   
+                this.props.asUnit.roundVehicleMotive910++;
+            } else if (rollover) {
+                this.props.asUnit.roundVehicleMotive910 = 0;
             }
 
-            if (hits >= this.props.asUnit.roundVehicleMotive910.length) {
-                for (let index = 0; index < this.props.asUnit.roundVehicleMotive910.length; index++) {
-                    this.props.asUnit.roundVehicleMotive910[index] = false;
-                }
-            } else {
-                this.props.asUnit.roundVehicleMotive910[hits] = true;
-            }
-
-            this.props.asUnit.calcCurrentValues();
             this.props.appGlobals.saveCurrentASForce( this.props.appGlobals.currentASForce );
         }
     }
 
-    private _toggleVehicle11 = (): void =>  {
-        if(this.props.asUnit ) {
-
-            let hits = 0;
-            for (let hit of this.props.asUnit.roundVehicleMotive11) {
-                hits = hit ? hits + 1 : hits;
+    private _toggleVehicle11 = (rollover : boolean = true): void =>  {
+        if(this.props.asUnit) {
+            let max = this.props.asUnit.move[0].move / 2;
+            if (this.props.asUnit.roundVehicleMotive11 < max) {   
+                this.props.asUnit.roundVehicleMotive11++;
+            } else if (rollover) {
+                this.props.asUnit.roundVehicleMotive11 = 0;
             }
 
-            if (hits >= this.props.asUnit.roundVehicleMotive11.length) {
-                for (let index = 0; index < this.props.asUnit.roundVehicleMotive11.length; index++) {
-                    this.props.asUnit.roundVehicleMotive11[index] = false;
-                }
-            } else {
-                this.props.asUnit.roundVehicleMotive11[hits] = true;
-            }
-
-            this.props.asUnit.calcCurrentValues();
             this.props.appGlobals.saveCurrentASForce( this.props.appGlobals.currentASForce );
         }
     }
 
-    private _toggleVehicle12 = (): void => {
+    private _toggleVehicle12 = (rollover : boolean = true): void => {
         if(this.props.asUnit ) {
 
-            this.props.asUnit.roundVehicleMotive12 = !this.props.asUnit.roundVehicleMotive12;
+            this.props.asUnit.roundVehicleMotive12 = rollover ? !this.props.asUnit.roundVehicleMotive12 : true;
             this.props.asUnit.calcCurrentValues();
             this.props.appGlobals.saveCurrentASForce( this.props.appGlobals.currentASForce );
 
@@ -449,6 +435,38 @@ export default class AlphaStrikeUnitCard extends React.Component<IAlphaStrikeUni
         this._takeDamage(100);
     }
 
+    private _rollMotive = () : void => {
+        if (this.state.showMotiveOverlay) {
+            this.setState({
+                showMotiveOverlay: null,
+            });
+        } else if(this.props.asUnit && !this.props.asUnit.isWrecked()) {
+            let result = 'No Hit';
+            let roll1 = Math.ceil(Math.random()*6);
+            let roll2 = Math.ceil(Math.random()*6);
+
+            let roll = roll1 + roll2;
+            if (roll > 11) {
+                this._toggleVehicle12(false);
+                result = 'Unit Immobilized';
+            } else if (roll > 10) {
+                this._toggleVehicle11(false);
+                result = '-50% move, -50% TMM';
+            } else if (roll > 8) {
+                this._toggleVehicle910(false);
+                result = this.props.measurementsInHexes ? '-1 hex move, -1 TMM' : '-2" move, -1 TMM';
+            }
+
+            this.setState({
+                showMotiveOverlay: {
+                    roll1: roll1,
+                    roll2: roll2,
+                    result: result,
+                }
+            });
+        }
+    }
+
     private _showPilotAbility = (
         e: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
         ability: IASPilotAbility | null,
@@ -484,8 +502,8 @@ export default class AlphaStrikeUnitCard extends React.Component<IAlphaStrikeUni
             this.props.asUnit.roundFireControlHits = [];
             this.props.asUnit.roundMpControlHits = [];
             this.props.asUnit.roundWeaponHits = [];
-            this.props.asUnit.roundVehicleMotive910 = [];
-            this.props.asUnit.roundVehicleMotive11 = [];
+            this.props.asUnit.roundVehicleMotive910 = this.props.asUnit.vehicleMotive910;
+            this.props.asUnit.roundVehicleMotive11 = this.props.asUnit.vehicleMotive11;
             this.props.asUnit.roundVehicleMotive12 = false;
         }
         this.props.appGlobals.saveCurrentASForce( this.props.appGlobals.currentASForce );
@@ -1094,24 +1112,6 @@ export default class AlphaStrikeUnitCard extends React.Component<IAlphaStrikeUni
 
         let showHeat = this.props.asUnit.type.toLocaleLowerCase() === "bm" || this.props.asUnit.type.toLocaleLowerCase() === "af" || this.props.asUnit.type.toLocaleLowerCase() === "im";
 
-        let motive910 = 0;
-        for (let hit of this.props.asUnit.vehicleMotive910) {
-            motive910 = hit ? motive910 + 1 : motive910;
-        }
-        let roundMotive910 = 0;
-        for (let hit of this.props.asUnit.roundVehicleMotive910) {
-            roundMotive910 = hit ? roundMotive910 + 1 : roundMotive910;
-        }
-
-        let motive11 = 0;
-        for (let hit of this.props.asUnit.vehicleMotive11) {
-            motive11 = hit ? motive11 + 1 : motive11;
-        }
-        let roundMotive11 = 0;
-        for (let hit of this.props.asUnit.roundVehicleMotive11) {
-            roundMotive11 = hit ? roundMotive11 + 1 : roundMotive11;
-        }
-
         let motive12 = this.props.asUnit.vehicleMotive12 ? 1 : 0;
         if (this.props.asUnit.vehicleMotive12 !== this.props.asUnit.roundVehicleMotive12) {
             motive12 = this.props.asUnit.roundVehicleMotive12 ? 1 : 0;
@@ -1320,24 +1320,41 @@ export default class AlphaStrikeUnitCard extends React.Component<IAlphaStrikeUni
                             {this.props.asUnit.type.toLowerCase() === 'cv' ||  this.props.asUnit.type.toLowerCase() === 'sv'? (
                                 <div className='vehicle data-pair row justified'>
                                     <span>Motive</span>
-                                    <a href="#motive910crit" className={roundMotive910 !== motive910 ? 'staged' : ''} onClick={() => this._toggleVehicle910()}>{roundMotive910 !== motive910 ? roundMotive910 : motive910}</a>
-                                    <a href="#motive11crit" className={roundMotive11 !== motive11 ? 'staged' : ''} onClick={() => this._toggleVehicle11()}>{roundMotive11 !== motive11 ? roundMotive11 : motive11}</a>
+                                    <a href="#motive910crit" className={this.props.asUnit.roundVehicleMotive910 !== this.props.asUnit.vehicleMotive910 ? 'staged' : ''} onClick={() => this._toggleVehicle910()}>{this.props.asUnit.roundVehicleMotive910 !== this.props.asUnit.vehicleMotive910 ? this.props.asUnit.roundVehicleMotive910 : this.props.asUnit.vehicleMotive910}</a>
+                                    <a href="#motive11crit" className={this.props.asUnit.roundVehicleMotive11 !== this.props.asUnit.vehicleMotive11 ? 'staged' : ''} onClick={() => this._toggleVehicle11()}>{this.props.asUnit.roundVehicleMotive11 !== this.props.asUnit.vehicleMotive11  ? this.props.asUnit.roundVehicleMotive11 : this.props.asUnit.vehicleMotive11}</a>
                                     <a href="#motive12crit" className={this.props.asUnit.vehicleMotive12 !== this.props.asUnit.roundVehicleMotive12 ? 'staged' : ''} onClick={() => this._toggleVehicle12()}>{motive12}</a>
                                 </div>
                             ) : null }
-                            <button className='button' title="Roll Critical Hit" onClick={() => this._rollCritical()}>
-                                <FaDice />
-                                {this.state.showCriticalOverlay ? (
-                                    <div className='overlay column evenly'>
-                                        <h2>Critical Hit!</h2>
-                                        <div className='row center'>
-                                            <div className='die'><DiceIcon roll={this.state.showCriticalOverlay.roll1}/></div>
-                                            <div className='die'><DiceIcon roll={this.state.showCriticalOverlay.roll2}/></div>
-                                            <span style={{lineHeight:'26px'}}>= {this.state.showCriticalOverlay.result}</span>
+                            <div id='crit-buttons' className='row justified'>
+                                <button className='button' title="Roll Critical Hit" onClick={() => this._rollCritical()}>
+                                    <FaDice />
+                                    {this.state.showCriticalOverlay ? (
+                                        <div className='overlay column evenly'>
+                                            <h2>Critical Hit!</h2>
+                                            <div className='row center'>
+                                                <div className='die'><DiceIcon roll={this.state.showCriticalOverlay.roll1}/></div>
+                                                <div className='die'><DiceIcon roll={this.state.showCriticalOverlay.roll2}/></div>
+                                                <span style={{lineHeight:'26px'}}>= {this.state.showCriticalOverlay.result}</span>
+                                            </div>
                                         </div>
-                                    </div>
+                                    ) : null }
+                                </button>
+                                {this.props.asUnit.type.toLowerCase() === 'cv' || this.props.asUnit.type.toLowerCase() === 'sv' ? (
+                                    <button className='button' title='Roll for motive hit' onClick={() => this._rollMotive()}>
+                                        <GiCartwheel />
+                                        {this.state.showMotiveOverlay ? (
+                                            <div className='overlay column evenly'>
+                                                <h2>Motive Hit</h2>
+                                                <div className='row center'>
+                                                    <div className='die'><DiceIcon roll={this.state.showMotiveOverlay.roll1}/></div>
+                                                    <div className='die'><DiceIcon roll={this.state.showMotiveOverlay.roll2}/></div>
+                                                    <span style={{lineHeight:'26px'}}>= {this.state.showMotiveOverlay.result}</span>
+                                                </div>
+                                            </div>
+                                        ) : null }
+                                    </button>
                                 ) : null }
-                            </button>
+                            </div>
                         </div>
                     ) : null }
 
@@ -1382,6 +1399,11 @@ interface IAlphaStrikeUnitCardState {
     showMovementOptions: boolean;
     showAttackOverlay: IASAttack | null;
     showCriticalOverlay: {
+        roll1: number,
+        roll2: number,
+        result: string,
+    } | null;
+    showMotiveOverlay: {
         roll1: number,
         roll2: number,
         result: string,
@@ -2117,7 +2139,7 @@ export class AlphaStrikeAttackOverlay extends React.Component<AlphaStrikeAttackO
                             <div className='data-pair'><span>{this.props.attack.type === 'bomb' || this.state.artillery ? 'Number of Strikes' : 'Potential Damage'}</span>{this.maxDamage}{this.state.minimal ? '*' : ''}</div>
                         </div>
 
-                        <div className={'row results nowrap' + (this.props.appGlobals.appSettings.alphaStrikeVariableDamage.length === 0 ? ' single-roll' : '')}>
+                        <div className={'row results nowrap' + (this.props.appGlobals.appSettings.alphaStrikeVariableDamage.length === 0 && !this.state.artillery && this.props.attack.type !== 'bomb'? ' single-roll' : '')}>
                             <button id='roll-dice' className='button' onClick={() => this._rollAttack()}><FaDice /></button>
 
                             <div className='column justified'>
@@ -2170,6 +2192,7 @@ export class AlphaStrikeAttackOverlay extends React.Component<AlphaStrikeAttackO
                             <div className='end row'>
                                 <div className='column text-center justified data-pair fancy'>{this.totalDamage}<span>Damage</span></div>
                                 {this.props.unit.getAbilityValues('FLK', this.props.attack.range).damage > -1 && this.toHitRollResults[0] && this.toHitRollResults[0].roll1 + this.toHitRollResults[0].roll2 < this.targetNumber && this.toHitRollResults[0].roll1 + this.toHitRollResults[0].roll2 >= this.targetNumber - 2 ? (<div className='column text-center justified data-pair fancy'>{this.props.unit.getAbilityValues('FLK', this.props.attack.range).damage}<span>FLK</span></div>) : null }
+                                {this.props.unit.getAbilityValues('HT', this.props.attack.range).damage > -1 && this.toHitRollResults[0] && this.toHitRollResults[0].roll1 + this.toHitRollResults[0].roll2 >= this.targetNumber ? (<div className='column text-center justified data-pair fancy'>{this.props.unit.getAbilityValues('HT', this.props.attack.range).damage}<span>HT</span></div>) : null }
                             </div>
                         ) : null }
                         

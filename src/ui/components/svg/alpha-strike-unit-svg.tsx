@@ -93,23 +93,11 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
     }
 
     private _toggleVehicle910 = (indexNumber: number ): void =>  {
-        if( this.props.inPlay && this.props.asUnit ) {
 
-            if( this.props.asUnit.roundVehicleMotive910.length > indexNumber) {
-                this.props.asUnit.roundVehicleMotive910[indexNumber] = !this.props.asUnit.roundVehicleMotive910[indexNumber];
-                this.props.appGlobals.saveCurrentASForce( this.props.appGlobals.currentASForce );
-            }
-        }
     }
 
     private _toggleVehicle11 = (indexNumber: number ): void =>  {
-        if( this.props.inPlay && this.props.asUnit ) {
 
-            if( this.props.asUnit.roundVehicleMotive11.length > indexNumber) {
-                this.props.asUnit.roundVehicleMotive11[indexNumber] = !this.props.asUnit.roundVehicleMotive11[indexNumber];
-                this.props.appGlobals.saveCurrentASForce( this.props.appGlobals.currentASForce );
-            }
-        }
     }
 
     private _toggleVehicle12 = (): void => {
@@ -686,14 +674,14 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
                             <text x="16" y="0" textAnchor="start" className='crit-label'>MOTIVE</text>
 
                             <g transform='translate(112, 0)'>
-                                <circle onClick={() => this._toggleVehicle910(0)} className="" cx="0" cy={this.buttonRadius - 23} r={this.buttonRadius - 3} fill={this.props.asUnit.vehicleMotive910[0] ? this.activeDotColor : "rgb(255,255,255)"} stroke='rgb(0,0,0)' strokeWidth={2}></circle>
-                                <circle onClick={() => this._toggleVehicle910(1)} className="" cx="28" cy={this.buttonRadius - 23} r={this.buttonRadius - 3} fill={this.props.asUnit.vehicleMotive910[1] ? this.activeDotColor : "rgb(255,255,255)"} stroke='rgb(0,0,0)' strokeWidth={2}></circle>
+                                <circle onClick={() => this._toggleVehicle910(0)} className="" cx="0" cy={this.buttonRadius - 23} r={this.buttonRadius - 3} fill={"rgb(255,255,255)"} stroke='rgb(0,0,0)' strokeWidth={2}></circle>
+                                <circle onClick={() => this._toggleVehicle910(1)} className="" cx="28" cy={this.buttonRadius - 23} r={this.buttonRadius - 3} fill={"rgb(255,255,255)"} stroke='rgb(0,0,0)' strokeWidth={2}></circle>
                                 <text x="44" y="0" textAnchor="start" className='crit-description'>-2 MV</text>
                             </g>
 
                             <g transform='translate(230, 0)'>
-                                <circle onClick={() => this._toggleVehicle11(0)} className="" cx="0" cy={this.buttonRadius - 23} r={this.buttonRadius - 3} fill={this.props.asUnit.vehicleMotive11[0] ? this.activeDotColor : "rgb(255,255,255)"} stroke='rgb(0,0,0)' strokeWidth={2}></circle>
-                                <circle onClick={() => this._toggleVehicle11(1)} className="" cx="28" cy={this.buttonRadius - 23} r={this.buttonRadius - 3} fill={this.props.asUnit.vehicleMotive11[1] ? this.activeDotColor : "rgb(255,255,255)"} stroke='rgb(0,0,0)' strokeWidth={2}></circle>
+                                <circle onClick={() => this._toggleVehicle11(0)} className="" cx="0" cy={this.buttonRadius - 23} r={this.buttonRadius - 3} fill={"rgb(255,255,255)"} stroke='rgb(0,0,0)' strokeWidth={2}></circle>
+                                <circle onClick={() => this._toggleVehicle11(1)} className="" cx="28" cy={this.buttonRadius - 23} r={this.buttonRadius - 3} fill={"rgb(255,255,255)"} stroke='rgb(0,0,0)' strokeWidth={2}></circle>
                                 <text x="44" y="0" textAnchor="start" className='crit-description'>½ MV</text>
                             </g>
                             

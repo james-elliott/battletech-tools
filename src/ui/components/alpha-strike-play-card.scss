@@ -156,9 +156,9 @@
         }
         &.staged,
         .staged {
-            color: lightblue;
+            color: plum;
             &:hover {
-                color: darken(lightblue, 10%);
+                color: darken(plum, 10%);
             }
         }
     }
@@ -202,6 +202,7 @@
                 background-color: darken(#eee, 5%);
             }
             &.staged {
+                background-color: plum;
                 border-color: #000;
                 box-shadow: violet 0px 0px 4px inset;
             }
@@ -386,16 +387,18 @@
     .staged-actions {
         position: absolute;
         top: 0;
-        left: 50%;
-        transform: translate(-50%, -25%);
+        left: 0;
+        right: 0;
+        transform: translate(0, -25%);
+        text-align: center;
         button {
-            background-color: lightblue;
+            background-color: plum;
             box-shadow: 0px 1px 4px rgba(0,0,0,.45);;
             &:last-child {
                 background-color: #eee;
             }
             &:hover {
-                background-color: darken(lightblue, 10%) !important;
+                background-color: darken(plum, 10%) !important;
             }
         }
     }
@@ -413,6 +416,12 @@
         background-color: plum;
         &:not(:disabled):hover {
             background-color: darken(plum, 10%);
+        }
+    }
+    #crit-buttons {
+        gap: 8px;
+        > * {
+            flex-grow: 1;
         }
     }
     .attack-overlay {
@@ -447,14 +456,15 @@
                 background-color: darken(#eee, 5%);
             }
             &.staged {
-                background-color: lightblue;
+                background-color: plum;
                 &:not(:disabled):hover {
-                    background-color: darken(lightblue, 10%);
+                    background-color: darken(plum, 10%);
                 }
             }
             &#roll-dice {
                 background-color: #dfab2d;
                 border: none;
+                min-height: 48px;
                 &:not(:disabled):hover {
                     background-color: #b48a25;
                 }
@@ -467,6 +477,9 @@
             }
             &:last-child {
                 border-radius: 0 4px 4px 0;
+            }
+            &:first-child:last-child {
+                border-radius: 4px;
             }
         }
         .row {
@@ -519,7 +532,7 @@
             > .column {
                 flex-shrink: 1;
             }
-            &.single-roll .die {
+            &.single-roll .die .die:not(.minimal) {
                 font-size: 3rem;
                 line-height: 3rem;
             }
