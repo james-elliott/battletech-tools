@@ -148,9 +148,11 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
                       harjel--;
                     }
                   }
-                }
+                }   
               }
             }
+            // Roll new behaviors
+            this.reRollOpForBehavior();
 
             this.props.appGlobals.saveCurrentASForce( this.props.appGlobals.currentASForce );
 
