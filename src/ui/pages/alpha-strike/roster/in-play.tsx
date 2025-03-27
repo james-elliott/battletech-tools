@@ -1,6 +1,5 @@
 import React from 'react';
-import { FaArrowCircleLeft, FaRuler } from "react-icons/fa";
-import { FiHexagon } from 'react-icons/fi';
+import { FaArrowCircleLeft, FaCog } from "react-icons/fa";
 import { Link } from 'react-router-dom';
 import AlphaStrikeGroup from '../../../../classes/alpha-strike-group';
 import { CONST_BATTLETECH_URL } from '../../../../configVars';
@@ -13,6 +12,7 @@ import AlphaStrikeUnitCard from '../../../components/alpha-strike-play-card';
 import './in-play.scss';
 import { IFormationBonus } from '../../../../data/formation-bonuses';
 import { OpForBehavior } from '../../../../data/bryms-opfor-behaviors';
+import InputCheckbox from '../../../components/form_elements/input_checkbox';
 
 export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProps, IInPlayState> {
 
@@ -23,24 +23,12 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
             updated: false,
             showPilotAbility: null,
             showSpecialAbility: null,
-            settingsOpen: false,
+            showAlphaStrikeSettings: false,
             showFormationBonus: null,
             showOpForBehavior: null,
         };
 
         this.props.appGlobals.makeDocumentTitle("Playing Alpha Strike");
-    }
-
-    toggleCardMode = (
-      e: React.FormEvent<HTMLSpanElement>
-    ): void => {
-
-      if( e && e.preventDefault ) e.preventDefault();
-
-      let appSettings = this.props.appGlobals.appSettings;
-
-      this.props.appGlobals.saveAppSettings( appSettings );
-
     }
 
     resetGroup = (
@@ -109,6 +97,7 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
         showFormationBonus: null,
         showPilotAbility: null,
         showOpForBehavior: null,
+        showAlphaStrikeSettings: false,
       })
     }
 
@@ -197,6 +186,30 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
       return { __html: text};
     }
 
+    showSettings = (): void => {
+      this.setState({
+        showAlphaStrikeSettings: true,
+      });
+    }
+
+    setAlphaStrikeMeasurementsInHexes = ( event: React.FormEvent<HTMLInputElement>): void => {
+      let appSettingsHome = this.props.appGlobals.appSettings;
+      appSettingsHome.alphaStrikeMeasurementsInHexes = event.currentTarget.checked;
+      this.props.appGlobals.saveAppSettings( appSettingsHome );
+    }
+
+    setAlphaStrikeAIMode = ( event: React.FormEvent<HTMLInputElement>): void => {
+      let appSettingsHome = this.props.appGlobals.appSettings;
+      appSettingsHome.alphaStrikeAIMode = event.currentTarget.checked;
+      this.props.appGlobals.saveAppSettings( appSettingsHome );
+    }
+
+    setAlphaStrikeVariableDamage = (event: React.FormEvent<HTMLSelectElement> ): void => {
+      let appSettingsHome = this.props.appGlobals.appSettings;
+      appSettingsHome.alphaStrikeVariableDamage = event.currentTarget.value;
+      this.props.appGlobals.saveAppSettings( appSettingsHome );
+    }
+
     render = (): JSX.Element => {
       if(!this.props.appGlobals.currentASForce) {
         return <></>;
@@ -244,7 +257,6 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
 </StandardModal>
 ) : null}
 
-
 {this.state.showOpForBehavior ? (
 <StandardModal
   title={this.state.showOpForBehavior.name}
@@ -269,6 +281,42 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
 </StandardModal>
 ) : null }
 
+{this.state.showAlphaStrikeSettings ? (
+<StandardModal
+  title='Alpha Strike Settings'
+  show={true}
+  onClose={this.closeModal}
+>
+
+  <InputCheckbox
+    label='Display Measurements in Hexes'
+    checked={this.props.appGlobals.appSettings.alphaStrikeMeasurementsInHexes}
+    onChange={this.setAlphaStrikeMeasurementsInHexes}
+  />
+
+  <label>
+    Damage Calculations:
+    <select
+      value={this.props.appGlobals.appSettings.alphaStrikeVariableDamage}
+      onChange={this.setAlphaStrikeVariableDamage}
+    >
+      <option value="">Standard (one roll, full damage)</option>
+      <option value="damage">Multiple Damage Rolls</option>
+      <option value="attack">Multiple Attack Rolls</option>
+    </select>
+    <div className='small-text'>Choose between standard and variable damage rules.</div>
+  </label>
+
+  <InputCheckbox
+    label='Use AI Mode'
+    checked={this.props.appGlobals.appSettings.alphaStrikeAIMode}
+    onChange={this.setAlphaStrikeAIMode}
+    description="This will allow you to generate behaviors for units based on Brym's OpFor."
+  />
+  
+</StandardModal>
+) : null }
+
         <header className="play-bar flex-grid justified">
           <Link title="Click here to leave Play Mode (don't worry, you won't lose your current mech statuses)" className="current" to={`${process.env.PUBLIC_URL}/alpha-strike-roster`}><FaArrowCircleLeft /></Link>
           
@@ -278,12 +326,8 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
 
           <button title="Apply damage and heat changes to end the round and start another" className="" onClick={this.nextRound}>Next Round</button>
 
-          <button title="Toggle between measurements in inches or hexes" onClick={(e) => this.toggleAlphaStrikeMeasurementsInHexes(e)}>
-            {this.props.appGlobals.appSettings.alphaStrikeMeasurementsInHexes ? (
-                <FiHexagon />
-            ) : (
-                <FaRuler />
-            )}
+          <button title="Settings" onClick={() => this.showSettings()}>
+            <FaCog />
           </button>
 
         </header>
@@ -371,9 +415,9 @@ interface IInPlayProps {
 
 interface IInPlayState {
   updated: boolean;
-  showPilotAbility: IASPilotAbility | null,
-  showSpecialAbility: IASSpecialAbility | null,
+  showPilotAbility: IASPilotAbility | null;
+  showSpecialAbility: IASSpecialAbility | null;
   showFormationBonus: IFormationBonus | null;
-  showOpForBehavior: OpForBehavior | null,
-  settingsOpen: boolean;
+  showOpForBehavior: OpForBehavior | null;
+  showAlphaStrikeSettings: boolean;
 }

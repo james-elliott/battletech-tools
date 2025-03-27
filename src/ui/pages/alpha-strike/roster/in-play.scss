@@ -239,3 +239,7 @@ body:has(.play-bar) {
 .in-play-group + .in-play-group {
     border-top: 1px solid #999;
 }
+
+.modal-body label + label {
+    margin-top: 2rem;
+}

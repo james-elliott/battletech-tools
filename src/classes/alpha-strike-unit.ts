@@ -204,6 +204,7 @@ export class AlphaStrikeUnit {
 
     public currentMove: string = "";
     public currentMoveHexes: string = "";
+    public currentMoveSprint: string = "";
     public currentMoveHexesSprint: string = "";
     public currentTMM: string = "";
     public moveToken: IMoveNumber = {
@@ -1002,7 +1003,7 @@ export class AlphaStrikeUnit {
     }
 
     public isWrecked(): boolean {
-        this.calcCurrentValues()
+        this.calcCurrentValues();
         return !this.active;
     }
 
@@ -1376,6 +1377,10 @@ export class AlphaStrikeUnit {
         }
 
         let heatValue = this.hasPilotAbility('Hot Dog') && this.currentHeat > 0 ? this.currentHeat - 1 : this.currentHeat;
+        this.currentMove = "";
+        this.currentMoveHexes = "";
+        this.currentTMM = "";
+
         for( let moveC = 0; moveC < this.move.length; moveC++ ) {
             this.move[moveC].currentMove = this.move[moveC].move;
             if( this.move[moveC].move < 5 ) {
@@ -1470,9 +1475,25 @@ export class AlphaStrikeUnit {
             }
 
             this.immobile = this.move[moveC].currentMove > 0 ? false : true;
-        }
 
-        this.currentMoveHexes = "";
+            // Update strings for non-play mode
+            this.currentMove += this.move[moveC].currentMove.toString() + "\"" + this.move[moveC].type;
+            this.currentMoveHexes += ( this.move[moveC].currentMove / 2).toString() + "⬣" + this.move[moveC].type; 
+            
+            
+            if( moveC !== this.move.length - 1 ) {
+                this.currentTMM += this.move[moveC].tmm + "/";
+                this.currentMove += "/";
+                this.currentMoveHexes += "/";
+            } else {
+                this.currentTMM += this.move[moveC].tmm + this.move[moveC].type;
+            }
+        }
+        
+        this.currentMoveSprint = "" + (+this.move[0].currentMove * 1.5 ) + "\"";
+        this.currentMoveHexesSprint = "" + ( Math.ceil(( +this.move[0].currentMove / 2) * 1.5) )+ "⬣";
+
+
 
         // Update To-Hit with movement
         let movementToHit = 0;
@@ -1496,7 +1517,7 @@ export class AlphaStrikeUnit {
         this.currentToHitLong = this.currentSkill + 4 + heatValue + currentFCHits * 2 + movementToHit; // + currentEngineHits;
         this.currentToHitExtreme = this.currentSkill + 6 + heatValue + currentFCHits * 2 + movementToHit; // + currentEngineHits;
 
-        if( currentEngineHits > 1 ) {
+        if( currentEngineHits > 1 || this.getCurrentStructure() < 1) {
             this.active = false;
         } else {
             this.active = true;
@@ -1643,8 +1664,6 @@ export class AlphaStrikeUnit {
                 disabled: this.getHeightRange(this.moveToken.type) < 2 || this.moveToken.type === '',
             });
         }
-
-        // Add Tag attack type
     }
     /**
     * Returns a boolean if the unit is a ground unit. This is used for
@@ -1821,11 +1840,6 @@ export class AlphaStrikeUnit {
             }
         }
 
-        if( structPoints < 1 )
-            this.active = false;
-        else
-            this.active = true;
-
         return structPoints;
     }
 
@@ -1905,6 +1919,33 @@ export class AlphaStrikeUnit {
                 damage.minimal = turret.minimal;
             }
         }
+
+        // Sandblaster SPA check
+        if (this.hasPilotAbility('Sandblaster')) {
+            for(let SPA of ['AC', 'FLK', 'IATM', 'LRM', 'SRM', 'TOR']) {
+                if (this.getAbilityValues(SPA, range).damage > -1) {
+                    damage.value += range === 0 ? 2 : 1;
+                }
+            }
+        }
+
+        // SPA adjustments based on movement
+        if (this.moveToken.type === 'standstill' || this.moveToken.type === 'hull down') {
+            // Cluster Hitter SPA check
+            if (this.hasPilotAbility('Cluster Hitter')) {
+                for(let SPA of ['FLK', 'LRM', 'SRM']) {
+                    if (this.getAbilityValues(SPA, range).damage > -1) {
+                        damage.value += 1;
+                    }
+                }
+            }
+
+            // Half damage for unit with Marksman SPA that did not move
+            if (this.hasPilotAbility('Marksman')) {
+                damage.value = Math.floor(damage.value/2);
+                damage.value = damage.value < 1 ? 1 : damage.value;
+            }
+        }
         
         // Check for minimal damage
         if( damage.value < 0 ) {
@@ -1979,6 +2020,27 @@ export class AlphaStrikeUnit {
             // -- AM attack
             if (this.isInfantry && this.hasAbility('AM')) {
                 toHit += this.type.toLowerCase() === 'ci' ? 3 : 1;
+            }
+        }
+
+        // Adjust for Range Master
+        if (this.hasPilotAbility('Range Master (M)')) {
+            if (range === 0) {
+                toHit += 2;
+            } else if (range === 1) {
+                toHit += -2;
+            }
+        } else if (this.hasPilotAbility('Range Master (L)')) {
+            if (range === 0) {
+                toHit += 2;
+            } else if (range === 2) {
+                toHit += -2;
+            }
+        } else if (this.hasPilotAbility('Range Master (E)')) {
+            if (range === 0) {
+                toHit += 2;
+            } else if (range === 3) {
+                toHit += -2;
             }
         }
 

@@ -71,7 +71,7 @@
     button {
         border-radius: 4px;
         border: 1px solid #bababa;
-        background-color: lighten(#dfab2d, 40%);;
+        background-color: lighten(#dfab2d, 40%);
         &.physical {
             background-color: #eee;
             .button {
@@ -82,6 +82,7 @@
         &:not(:disabled):hover {
             background-color: rgba(#b48a25, .25);
             border-color: #888;
+            box-shadow: 0 1px 3px rgba(0,0,0,.25);
             &.physical {
                 background-color: #ccc;
                 .button {
@@ -502,6 +503,11 @@
         }
         .die-pair {
             height: 20px;
+            span:not(.die) {
+                font-size: 1rem;
+                position: relative;
+                top: -4px;
+            }
         }
         .die {
             display: inline-block;
@@ -532,7 +538,7 @@
             > .column {
                 flex-shrink: 1;
             }
-            &.single-roll .die .die:not(.minimal) {
+            &.single-roll .die:not(.minimal) {
                 font-size: 3rem;
                 line-height: 3rem;
             }

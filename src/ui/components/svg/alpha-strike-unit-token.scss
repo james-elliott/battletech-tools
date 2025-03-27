@@ -58,7 +58,8 @@
         max-width: 100%;
         top: 50%;
     }
-    &.bm {
+    &.bm,
+    &.im {
         width: 4in;
         order: 1000;
         img {
@@ -89,7 +90,8 @@
             max-width: 1in;
         }
     }
-    &.ba {
+    &.ba,
+    &.ci {
         img {
             left: 12px;
             top: 10px;
