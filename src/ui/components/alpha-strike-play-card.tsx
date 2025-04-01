@@ -162,15 +162,15 @@ export default class AlphaStrikeUnitCard extends React.Component<IAlphaStrikeUni
     private _toggleFireControlHit = ( reset: boolean = false ): void => {
         if(this.props.asUnit ) {
 
-            if (this.props.asUnit.getFireControlHits(true) < this.props.asUnit.roundFireControlHits.length) {
-                this.props.asUnit.roundFireControlHits[this.props.asUnit.getFireControlHits(true)] = true;
+            if (this.props.asUnit.roundFireControlHits < 6) {
+                console.log('add one');
+                this.props.asUnit.roundFireControlHits += 1;
             } else if (reset) {
-                for (let index = 0; index < this.props.asUnit.roundFireControlHits.length; index++) {
-                    this.props.asUnit.roundFireControlHits[index] = false;
-                }
+                this.props.asUnit.roundFireControlHits = 0;
             } else {
                 this._takeDamage(1);
             }
+            console.log(this.props.asUnit.name, this.props.asUnit.roundFireControlHits);
 
             this.props.asUnit.calcCurrentValues();
             this.props.appGlobals.saveCurrentASForce( this.props.appGlobals.currentASForce );
@@ -180,12 +180,10 @@ export default class AlphaStrikeUnitCard extends React.Component<IAlphaStrikeUni
     private _toggleMPHit = ( reset: boolean = false ): void => {
         if(this.props.asUnit ) {
 
-            if (this.props.asUnit.getMPHits(true) < this.props.asUnit.roundMpControlHits.length) {
-                this.props.asUnit.roundMpControlHits[this.props.asUnit.getMPHits(true)] = true;
+            if (this.props.asUnit.roundMpControlHits < this.props.asUnit.maxMPHits) {
+                this.props.asUnit.roundMpControlHits++;
             } else if (reset) {
-                for (let index = 0; index < this.props.asUnit.roundMpControlHits.length; index++) {
-                    this.props.asUnit.roundMpControlHits[index] = false;
-                }
+                this.props.asUnit.roundMpControlHits = 0;
             } else {
                 this._takeDamage(1);
             }
@@ -490,12 +488,12 @@ export default class AlphaStrikeUnitCard extends React.Component<IAlphaStrikeUni
 
     private _clearChanges = (): void => {
         if (this.props.asUnit) {
-            this.props.asUnit.roundHeat = 0;
+            this.props.asUnit.roundHeat = this.props.asUnit.currentHeat;
             this.props.asUnit.roundArmor = [];
             this.props.asUnit.roundStructure = [];
             this.props.asUnit.roundEngineHits = this.props.asUnit.engineHits;
-            this.props.asUnit.roundFireControlHits = [];
-            this.props.asUnit.roundMpControlHits = [];
+            this.props.asUnit.roundFireControlHits = 0;
+            this.props.asUnit.roundMpControlHits = 0;
             this.props.asUnit.roundWeaponHits = this.props.asUnit.engineHits;
             this.props.asUnit.roundVehicleMotive910 = this.props.asUnit.vehicleMotive910;
             this.props.asUnit.roundVehicleMotive11 = this.props.asUnit.vehicleMotive11;
@@ -1314,11 +1312,11 @@ export default class AlphaStrikeUnitCard extends React.Component<IAlphaStrikeUni
                             ) : null }
                             <a 
                                 href="#fireControlCrit"
-                                className={this.props.asUnit.getFireControlHits() !== this.props.asUnit.getFireControlHits(true) ? 'data-pair row justified staged' : 'data-pair row justified'} 
+                                className={this.props.asUnit.fireControlHits !== this.props.asUnit.roundFireControlHits ? 'data-pair row justified staged' : 'data-pair row justified'} 
                                 onClick={() => this._toggleFireControlHit(true)}
                                 >
                                     <span>Fire Control</span>
-                                    {this.props.asUnit.getFireControlHits() !== this.props.asUnit.getFireControlHits(true) ? this.props.asUnit.getFireControlHits(true) : this.props.asUnit.getFireControlHits()}
+                                    {this.props.asUnit.fireControlHits !== this.props.asUnit.roundFireControlHits ? this.props.asUnit.roundFireControlHits : this.props.asUnit.fireControlHits}
                             </a>
                             <a 
                                 href="#weaponCrit"
@@ -1331,11 +1329,11 @@ export default class AlphaStrikeUnitCard extends React.Component<IAlphaStrikeUni
                             {this.props.asUnit.type.toLowerCase() === 'bm' || this.props.asUnit.type.toLowerCase() === 'im' || this.props.asUnit.type.toLowerCase() === 'pm' ? (
                                 <a 
                                     href="#movementCrit"
-                                    className={this.props.asUnit.getMPHits() !== this.props.asUnit.getMPHits(true) ? 'data-pair row justified staged' : 'data-pair row justified'} 
+                                    className={this.props.asUnit.mpControlHits !== this.props.asUnit.roundMpControlHits ? 'data-pair row justified staged' : 'data-pair row justified'} 
                                     onClick={() => this._toggleMPHit(true)}
                                     >
                                         <span>Movement</span>
-                                        {this.props.asUnit.getMPHits() !== this.props.asUnit.getMPHits(true) ? this.props.asUnit.getMPHits(true) : this.props.asUnit.getMPHits()}
+                                        {this.props.asUnit.mpControlHits !== this.props.asUnit.roundMpControlHits ? this.props.asUnit.roundMpControlHits : this.props.asUnit.mpControlHits}
                                 </a>
                             ) : null }
                             {this.props.asUnit.type.toLowerCase() === 'cv' ||  this.props.asUnit.type.toLowerCase() === 'sv'? (

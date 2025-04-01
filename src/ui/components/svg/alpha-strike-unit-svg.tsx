@@ -401,50 +401,77 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
                 )}
 
                 <text x="144" y={critLineStart} textAnchor="end" className='crit-label'>FIRE CONTROL</text>
-                {this.props.asUnit.fireControlHits.map( (fcValue, fcIndex) => {
-                            let fillColor = this.props.inPlay && this.props.asUnit?.roundFireControlHits[fcIndex] ? this.roundDotColor : "rgb(255,255,255)";
-                            let strokeColor = this.props.inPlay && this.props.asUnit?.roundFireControlHits[fcIndex] ? this.roundStrokeColor : "rgb(0,0,0)";
-                            if( this.props.inPlay &&  fcValue ) {
-                                fillColor = this.props.asUnit?.roundFireControlHits[fcIndex] ? this.roundActiveColor : this.activeDotColor;
-                            }
-                            return (
-                                <React.Fragment key={fcIndex}>
-                                    <circle
-                                        cx={161 + (this.buttonRadius * 1.8 + 1) * fcIndex}
-                                        cy={critLineStart - 27 + this.buttonRadius + 4}
-                                        r={this.buttonRadius - 3}
-                                        fill={fillColor}
-                                        stroke="rgb(0,0,0)"
-                                        strokeWidth={2}
-                                    ></circle>
-                                </React.Fragment>
-                            )
-                })}
+                <circle
+                    cx={161}
+                    cy={critLineStart - 27 + this.buttonRadius + 4}
+                    r={this.buttonRadius - 3}
+                    fill={"rgb(255,255,255)"}
+                    stroke="rgb(0,0,0)"
+                    strokeWidth={2}
+                ></circle>
+                <circle
+                    cx={161 + (this.buttonRadius * 1.8 + 1)}
+                    cy={critLineStart - 27 + this.buttonRadius + 4}
+                    r={this.buttonRadius - 3}
+                    fill={"rgb(255,255,255)"}
+                    stroke="rgb(0,0,0)"
+                    strokeWidth={2}
+                ></circle>
+                <circle
+                    cx={161 + (this.buttonRadius * 1.8 + 1) * 2}
+                    cy={critLineStart - 27 + this.buttonRadius + 4}
+                    r={this.buttonRadius - 3}
+                    fill={"rgb(255,255,255)"}
+                    stroke="rgb(0,0,0)"
+                    strokeWidth={2}
+                ></circle>
+                <circle
+                    cx={161 + (this.buttonRadius * 1.8 + 1) * 3}
+                    cy={critLineStart - 27 + this.buttonRadius + 4}
+                    r={this.buttonRadius - 3}
+                    fill={"rgb(255,255,255)"}
+                    stroke="rgb(0,0,0)"
+                    strokeWidth={2}
+                ></circle>
+                
                 <text x={152 + (this.buttonRadius * 1.8)*4} y={critLineStart} textAnchor="start" className='crit-description'>+2 To Hit Each</text>
                 {critLineStart += critLineHeight}
 
                 {this.props.asUnit.type.toLowerCase() === 'bm' || this.props.asUnit.type.toLowerCase() === 'pm' ? (
                     <>
                         <text x="144" y={critLineStart} textAnchor="end" className='crit-label'>MP</text>
-                        {this.props.asUnit.mpControlHits.map( (mpValue, mpIndex) => {
-                            let fillColor = this.props.inPlay && this.props.asUnit?.roundMpControlHits[mpIndex] ? this.roundDotColor : "rgb(255,255,255)";
-                            let strokeColor = this.props.inPlay && this.props.asUnit?.roundMpControlHits[mpIndex] ? this.roundStrokeColor : "rgb(0,0,0)";
-                            if( this.props.inPlay &&  mpValue ) {
-                                fillColor = this.props.asUnit?.roundMpControlHits[mpIndex] ? this.roundActiveColor : this.activeDotColor;
-                            }
-                            return (
-                                <React.Fragment key={mpIndex}>
-                                    <circle
-                                        cx={161 + (this.buttonRadius * 1.8 + 1) * mpIndex}
-                                        cy={critLineStart - 27 + this.buttonRadius + 4}
-                                        r={this.buttonRadius - 3}
-                                        fill={fillColor}
-                                        stroke="rgb(0,0,0)"
-                                        strokeWidth={2}
-                                    ></circle>
-                                </React.Fragment>
-                            )
-                        })}
+                        <circle
+                            cx={161}
+                            cy={critLineStart - 27 + this.buttonRadius + 4}
+                            r={this.buttonRadius - 3}
+                            fill={"rgb(255,255,255)"}
+                            stroke="rgb(0,0,0)"
+                            strokeWidth={2}
+                        ></circle>
+                        <circle
+                            cx={161 + (this.buttonRadius * 1.8 + 1)}
+                            cy={critLineStart - 27 + this.buttonRadius + 4}
+                            r={this.buttonRadius - 3}
+                            fill={"rgb(255,255,255)"}
+                            stroke="rgb(0,0,0)"
+                            strokeWidth={2}
+                        ></circle>
+                        <circle
+                            cx={161 + (this.buttonRadius * 1.8 + 1) * 2}
+                            cy={critLineStart - 27 + this.buttonRadius + 4}
+                            r={this.buttonRadius - 3}
+                            fill={"rgb(255,255,255)"}
+                            stroke="rgb(0,0,0)"
+                            strokeWidth={2}
+                        ></circle>
+                        <circle
+                            cx={161 + (this.buttonRadius * 1.8 + 1) * 3}
+                            cy={critLineStart - 27 + this.buttonRadius + 4}
+                            r={this.buttonRadius - 3}
+                            fill={"rgb(255,255,255)"}
+                            stroke="rgb(0,0,0)"
+                            strokeWidth={2}
+                        ></circle>
                         <text x={153 + (this.buttonRadius * 1.8)*4} y={critLineStart} textAnchor="start" className='crit-description'>½ Move Each</text>
                         {critLineStart += critLineHeight}
                     </>
@@ -528,7 +555,7 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
 
                 {/* End Critical Hits */}
 
-                {this.props.asUnit.isWrecked() ? (
+                {this.props.inPlay && this.props.asUnit.isWrecked() ? (
                     <>
                     <text x="0" y="100" fontFamily="sans-serif" transform="rotate( 30, -100, 260)" fontSize="200" stroke="rgb(0,0,0)" strokeWidth="4" fill="rgb(200,0,0)" pointerEvents="none">WRECKED</text>
                     </>

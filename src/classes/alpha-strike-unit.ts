@@ -111,8 +111,8 @@ export interface IAlphaStrikeUnitExport {
     currentArmor?: boolean[];
     currentStructure?: boolean[];
     engineHits?: number;
-    fireControlHits?: boolean[];
-    mpControlHits?: boolean[];
+    fireControlHits?: number;
+    mpControlHits?: number;
     weaponHits?: number;
     vehicleMotive910?: number;
     vehicleMotive11?: number;
@@ -121,8 +121,8 @@ export interface IAlphaStrikeUnitExport {
     roundArmor?: boolean[];
     roundStructure?: boolean[];
     roundEngineHits?: number;
-    roundFireControlHits?: boolean[];
-    roundMpControlHits?: boolean[];
+    roundFireControlHits?: number;
+    roundMpControlHits?: number;
     roundWeaponHits?: number;
     roundVehicleMotive910?: number;
     roundVehicleMotive11?: number;
@@ -268,10 +268,11 @@ export class AlphaStrikeUnit {
     public currentArmor: boolean[] = [];
     public currentStructure: boolean[] = [];
     public engineHits: number = 0;
-    public fireControlHits: boolean[] = [];
-    public mpControlHits: boolean[] = [];
+    public fireControlHits: number = 0;
+    public mpControlHits: number = 0;
     public weaponHits: number = 0;
     public maxWeaponHits: number = 0;
+    public maxMPHits: number = 0;
 
     public vehicleMotive910: number = 0;
     public vehicleMotive11: number = 0;
@@ -281,8 +282,8 @@ export class AlphaStrikeUnit {
     public roundArmor: boolean[] = [];
     public roundStructure: boolean[] = [];
     public roundEngineHits: number = 0;
-    public roundFireControlHits: boolean[] = [];
-    public roundMpControlHits: boolean[] = [];
+    public roundFireControlHits: number = 0;
+    public roundMpControlHits: number = 0;
     public roundWeaponHits: number = 0;
     public roundVehicleMotive910: number = 0;
     public roundVehicleMotive11: number = 0;
@@ -826,11 +827,11 @@ export class AlphaStrikeUnit {
             return true;
         }
 
-        if( this.getFireControlHits() > 0 ) {
+        if( this.fireControlHits > 0 ) {
             return true;
         }
 
-        if( this.getMPHits() > 0 ) {
+        if( this.mpControlHits > 0 ) {
             return true;
         }
 
@@ -877,10 +878,10 @@ export class AlphaStrikeUnit {
         if (this.engineHits !== this.roundEngineHits) {
             return true;
         }
-        if (this.getFireControlHits() !== this.getFireControlHits(true)) {
+        if (this.fireControlHits !== this.roundFireControlHits) {
             return true;
         }
-        if (this.getMPHits() !== this.getMPHits(true)) {
+        if (this.mpControlHits !== this.roundMpControlHits) {
             return true;
         }
         if (this.weaponHits !== this.roundWeaponHits) {
@@ -958,36 +959,6 @@ export class AlphaStrikeUnit {
         return false;
     }
 
-    public getFireControlHits( round: boolean = false ): number {
-        let rv = 0;
-        let hitArray = round ? this.roundFireControlHits : this.fireControlHits;
-
-        if( hitArray ) {
-            for( let val of hitArray ) {
-                if( val ) {
-                    rv++;
-                }
-            }
-        }
-
-        return rv;
-    }
-
-    public getMPHits( round: boolean = false ): number {
-        let rv = 0;
-        let hitArray = round ? this.roundMpControlHits : this.mpControlHits;
-
-        if( hitArray ) {
-            for( let val of hitArray ) {
-                if( val ) {
-                    rv++;
-                }
-            }
-        }
-
-        return rv;
-    }
-
     public isWrecked(): boolean {
         this.calcCurrentValues();
         return !this.active;
@@ -998,9 +969,9 @@ export class AlphaStrikeUnit {
         this.currentStructure = [];
         this.currentHeat = 0;
         this.engineHits = 0;
-        this.fireControlHits = [];
+        this.fireControlHits = 0;
         this.weaponHits = 0;
-        this.mpControlHits = [];
+        this.mpControlHits = 0;
         this.vehicleMotive910 = 0;
         this.vehicleMotive11 = 0;
         this.vehicleMotive12 = false;
@@ -1016,9 +987,9 @@ export class AlphaStrikeUnit {
         this.roundStructure = [];
         this.roundHeat = 0;
         this.roundEngineHits = 0;
-        this.roundFireControlHits = [];
+        this.roundFireControlHits = 0;
         this.roundWeaponHits = 0;
-        this.roundMpControlHits = [];
+        this.roundMpControlHits = 0;
         this.roundVehicleMotive910 = 0;
         this.roundVehicleMotive11 = 0;
         this.roundVehicleMotive12 = false;
@@ -1045,16 +1016,6 @@ export class AlphaStrikeUnit {
             this._pilot.alphaStrikeAbilities[2] = 0;
         } else if( this.currentSkill > 1 ) {
             this._pilot.alphaStrikeAbilities[2] = 0;
-        }
-        if(
-            (this.type && this.type.trim().toLowerCase() === "sv")
-                ||
-            (this.type && this.type.trim().toLowerCase() === "cv")
-        ) {
-            while( this.mpControlHits.length < 5 ) {
-                this.mpControlHits.push( false );
-            }
-
         }
 
         this.isAerospace = false;
@@ -1192,19 +1153,12 @@ export class AlphaStrikeUnit {
             this.roundEngineHits = this.engineHits;
         }
 
-        if( typeof( this.fireControlHits ) === "undefined"  || this.fireControlHits.length === 0  ) {
-            this.fireControlHits = [];
-            for( let fcHitsCount = 0; fcHitsCount < 4; fcHitsCount++) {
-            for( let fcHitsCount = 0; fcHitsCount < 4; fcHitsCount++) {
-                this.fireControlHits.push( false );
-            }
+        if( typeof( this.fireControlHits ) !== "number" ) {
+            this.fireControlHits = 0;
         }
 
-        if( typeof( this.roundFireControlHits ) === "undefined"  || this.roundFireControlHits.length !== this.fireControlHits.length  ) {
-            this.roundFireControlHits = [];
-            for( let hit of this.fireControlHits ) {
-                this.roundFireControlHits.push( hit );
-            }
+        if( typeof( this.roundFireControlHits ) !== "number" ) {
+            this.roundFireControlHits = this.fireControlHits;
         }
 
         if( typeof(this.vehicleMotive910) !== "number" ) {
@@ -1212,48 +1166,37 @@ export class AlphaStrikeUnit {
         }
 
         if( typeof(this.roundVehicleMotive910) !== "number" ) {
-            this.roundVehicleMotive910 = 0;
+            this.roundVehicleMotive910 = this.vehicleMotive910;
         }
 
         if( typeof(this.vehicleMotive11) !== "number") {
             this.vehicleMotive11 = 0;
         }
 
-        if( typeof(this.roundVehicleMotive11) !== "number") {
-            this.roundVehicleMotive11 = 0;
+        if( typeof(this.roundVehicleMotive11) !== "number" ) {
+            this.roundVehicleMotive11 = this.vehicleMotive11;
         }
 
-        if( typeof( this.mpControlHits ) === "undefined"  || this.mpControlHits.length === 0  ) {
-            this.mpControlHits = [];
-            let numberOfHits = 4;
+        if( typeof( this.mpControlHits ) !== "number"  || this.maxMPHits === 0  ) {
+            this.mpControlHits = 0;
+            this.maxMPHits = 0;
             if(
                 ( this.type && this.type.toLowerCase() === "bm" )
                     ||
                 ( this.type && this.type.toLowerCase() === "im" )
             ) {
-                // mechs have 4 hits
-                numberOfHits = 4;
-            }
-            if(
-                ( this.type && this.type.trim().toLowerCase() === "sv" )
-                    ||
-                ( this.type && this.type.trim().toLowerCase() === "cv" )
-            ) {
-                // vehicles have 5 hits
-                numberOfHits = 5;
-            }
-
-            for( let mpHitsCount = 0; mpHitsCount < numberOfHits; mpHitsCount++) {
-            for( let mpHitsCount = 0; mpHitsCount < numberOfHits; mpHitsCount++) {
-                this.mpControlHits.push( false );
+                let move = this.move[0].move
+                for (move; move > 2; move = Math.floor(move / 2)) {
+                    this.maxMPHits++;
+                }
+                if (move <= 2 && move > 0) {
+                    this.maxMPHits++;
+                }
             }
         }
 
-        if( typeof( this.roundMpControlHits ) === "undefined"  || this.roundMpControlHits.length !== this.mpControlHits.length  ) {
-            this.roundMpControlHits = [];
-            for( let hit of this.mpControlHits ) {
-                this.roundMpControlHits.push( hit );
-            }
+        if( typeof( this.roundMpControlHits ) !== "number" ) {
+            this.roundMpControlHits = 0;
         }
 
         if( typeof( this.weaponHits ) !== "number" ) {
@@ -1265,7 +1208,7 @@ export class AlphaStrikeUnit {
         }
 
         let currentWeaponHits = this.weaponHits;
-        let currentFCHits = this.getFireControlHits();
+        let currentFCHits = this.fireControlHits;
         let currentEngineHits = this.engineHits;
 
         // Calculate Current Damage Values from Crits...
@@ -1350,7 +1293,7 @@ export class AlphaStrikeUnit {
 
             // Calculate BatteMech MP crit effects
             if(( this.type && this.type.toLowerCase() === "bm" ) || ( this.type && this.type.toLowerCase() === "im" )) {
-                for( let count = 0; count < this.getMPHits(); count++ ) {
+                for( let count = 0; count < this.mpControlHits; count++ ) {
                     // Reduce movement by half for each hit. We round up the amount we subract to round down the effect.
                     let moveHit = Math.ceil(this.move[moveC].currentMove / 2);
                     // Reduce by minimum 2"
@@ -1713,12 +1656,8 @@ export class AlphaStrikeUnit {
             }
         }
         this.engineHits = this.roundEngineHits;
-        for (let index = 0; index < this.fireControlHits.length; index++ ) {
-            this.fireControlHits[index] = this.roundFireControlHits[index];
-        }
-        for (let index = 0; index < this.mpControlHits.length; index++ ) {
-            this.mpControlHits[index] = this.roundMpControlHits[index];
-        }
+        this.fireControlHits = this.roundFireControlHits;
+        this.mpControlHits = this.roundMpControlHits;
         this.weaponHits = this.roundWeaponHits;
 
         this.vehicleMotive910 = this.roundVehicleMotive910;
@@ -1941,7 +1880,7 @@ export class AlphaStrikeUnit {
         let heatValue = this.hasPilotAbility('Hot Dog') && this.currentHeat > 0 ? this.currentHeat - 1 : this.currentHeat;
         if (type !== 'physical') {
             // -- Fire Control Hits
-            toHit += this.getFireControlHits();
+            toHit += this.fireControlHits*2;
             // -- Heat
             toHit += heatValue;
 
@@ -2016,8 +1955,8 @@ export class AlphaStrikeUnit {
         let _currentArmor: boolean[] = [];
         let _currentStructure: boolean[] = [];
         let _engineHits: number = 0;
-        let _fireControlHits: boolean[] = [];
-        let _mpControlHits: boolean[] = [];
+        let _fireControlHits: number = 0;
+        let _mpControlHits: number = 0;
         let _weaponHits: number = 0;
 
         let _vehicleMotive910: number = 0;
@@ -2029,8 +1968,8 @@ export class AlphaStrikeUnit {
         let _roundArmor: boolean[] = [];
         let _roundStructure: boolean[] = [];
         let _roundEngineHits: number = 0;
-        let _roundFireControlHits: boolean[] = [];
-        let _roundMpControlHits: boolean[] = [];
+        let _roundFireControlHits: number = 0;
+        let _roundMpControlHits: number = 0;
         let _roundWeaponHits: number = 0;
         let _roundVehicleMotive910: number = 0;
         let _roundVehicleMotive11: number = 0;

@@ -1,8 +1,24 @@
+$primary: var(--primary);
+$primaryHover: var(--primaryHover);
+$primaryText: var(--primaryText);
+$hoverText: var(--hoverText);
+$green: var(--green);
+$yellow: var(--yellow);
+$orange: var(--orange);
+$red: var(--red);
+$crimson: var(--crimson);
+$minimal: var(--minimal);
+$ht: var(--ht);
+$flk: var(--flk);
+$wrecked: var(--wrecked);
+$staged: var(--staged);
+$radius: var(--rad);
+
 .alpha-strike-play-card {
     background-color: #fff;
     color: #000;
     padding: 12px;
-    border-radius: 4px;
+    border-radius: $radius;
     box-sizing: border-box;
     display: flex;
     height: 100%;
@@ -11,9 +27,14 @@
     position: relative;
     container: card/inline-size;
     min-width: 300px;
-    // border: 1px solid #70787C;
+    a {
+        color: $primary;
+        &:hover {
+            color: $primaryHover;
+        }
+    }
     &.wrecked {
-        background-color: lightpink;
+        background-color: $wrecked;
     }
     h4 {
         line-height: 20px;
@@ -69,9 +90,9 @@
         }
     }
     button {
-        border-radius: 4px;
+        border-radius: $radius;
         border: 1px solid #bababa;
-        background-color: lighten(#dfab2d, 40%);
+        background-color: color-mix(in srgb,$primary, #fff 80%);
         &.physical {
             background-color: #eee;
             .button {
@@ -80,36 +101,44 @@
             }
         }
         &:not(:disabled):hover {
-            background-color: rgba(#b48a25, .25);
+            background-color: color-mix(in srgb,$primary, #fff 70%);
             border-color: #888;
             box-shadow: 0 1px 3px rgba(0,0,0,.25);
+            color: $hoverText;
             &.physical {
                 background-color: #ccc;
                 .button {
                     background-color: #444;
+                    color: #fff;
                 }
             }
             .button {
-                background-color: #b48a25;
+                background-color: $primaryHover;
+                color: $hoverText;
             }
         }
         .button,
         &.button {
-            background-color: #dfab2d;
-            border-radius: 4px;
+            background-color: $primary;
+            border-radius: $radius;
             border: none;
             font-weight: 600;
+            color: $primaryText;
             &:not(:disabled):hover {
-                background-color: #b48a25;
+                background-color: $primaryHover;
+                color: $hoverText;
             }
         }
         &:disabled .button {
+            opacity: .7;
             &:hover {
-                background-color: #dfab2d;
+                background-color: $primary;
+                color: $primaryText;
             }
             &.physical,
             &.physical:hover {
                 background-color: #bababa;
+                color: #fff;
             }
         }
         &:not(:disabled) .disabled {
@@ -120,11 +149,11 @@
         button:not(.button) {
             background-color: #fff;
             &.active {
-                background-color: red;
+                background-color: $red;
             }
             &.staged {
-                background-color: lightpink;
-                border-color: blueviolet;
+                background-color:color-mix(in srgb,$red, #fff 80%);
+                border-color: $staged;
                 &.active {
                     background-color: #fff;
                 }
@@ -133,10 +162,10 @@
         .structure button {
             background-color: #eee;
             &.active {
-                background-color: crimson;
+                background-color: $crimson;
             }
             &.staged {
-                background-color: darken(lightpink, 10%);
+                background-color: color-mix(in srgb,$red, #fff 60%);
                 &.active {
                     background-color: #eee;
                 }
@@ -157,9 +186,9 @@
         }
         &.staged,
         .staged {
-            color: plum;
+            color: $staged;
             &:hover {
-                color: darken(plum, 10%);
+                color: color-mix(in srgb,$staged, #000 20%);
             }
         }
     }
@@ -194,59 +223,59 @@
         flex-grow: .5;
         button {
             flex-basis: 25%;
-            border-radius: 0;;
+            border-radius: 0;
             font-weight: 600;
             border: 1px solid #666;
             background-color: #eee;
-            --rad: 6px;
+            $radius: calc(var(--rad)*1.5);
             &:hover {
                 background-color: darken(#eee, 5%);
             }
             &.staged {
-                background-color: plum;
+                background-color: $staged;
                 border-color: #000;
-                box-shadow: violet 0px 0px 4px inset;
+                box-shadow: $staged 0px 0px 4px inset;
             }
             &:has(~ .staged),
             &.staged ~ button {
                 opacity: .4;
             }
             &:nth-last-child(5).active {
-                background-color: greenyellow;
+                background-color: $green;
                 &:hover {
-                    background-color: darken(greenyellow, 15%);
+                    background-color: color-mix(in srgb,$green, #000 10%);;
                 }
             }
             &:nth-last-child(4).active {
-                background-color: yellow;
+                background-color: $yellow;
                 &:hover {
-                    background-color: darken(yellow, 7%);
+                    background-color: color-mix(in srgb,$yellow, #000 10%);;
                 }
             }
             &:nth-last-child(3).active {
-                background-color: orange;
+                background-color: $orange;
                 &:hover {
-                    background-color: darken(orange, 5%);
+                    background-color: color-mix(in srgb,$orange, #000 10%);;
                 }
             }
             &:nth-last-child(2).active {
-                background-color: red;
+                background-color: $red;
                 &:hover {
-                    background-color: darken(red, 5%);
+                    background-color: color-mix(in srgb,$red, #000 10%);;
                 }
             }
             &:last-child.active.active {
-                background-color: crimson;
+                background-color: $crimson;
                 color: #fff;
                 &:hover {
-                    background-color: darken(crimson, 5%);
+                    background-color: color-mix(in srgb,$crimson, #000 10%);
                 }
             }
             &:first-child {
-                border-radius: var(--rad) 0 0 var(--rad);
+                border-radius: $radius 0 0 $radius;
             }
             &:last-child {
-                border-radius: 0 var(--rad) var(--rad) 0;
+                border-radius: 0 $radius $radius 0;
             }
         }
         button:first-child:nth-last-child(5),
@@ -336,7 +365,7 @@
                 gap: 2px 1px;
             }
             button {
-                border-radius: 10px;
+                border-radius: calc($radius * 2.5);
                 height: 20px;
                 width: 20px;
             }
@@ -393,13 +422,15 @@
         transform: translate(0, -25%);
         text-align: center;
         button {
-            background-color: plum;
-            box-shadow: 0px 1px 4px rgba(0,0,0,.45);;
+            background-color: $staged;
+            box-shadow: 0px 1px 4px rgba(0,0,0,.45);
+            color: #000;
             &:last-child {
                 background-color: #eee;
+                color: #000;
             }
             &:hover {
-                background-color: darken(plum, 10%) !important;
+                background-color: color-mix(in srgb,$staged, #000 10%) !important;
             }
         }
     }
@@ -414,9 +445,9 @@
         }
     }
     button.staged {
-        background-color: plum;
+        background-color: $staged;
         &:not(:disabled):hover {
-            background-color: darken(plum, 10%);
+            background-color: color-mix(in srgb,$staged, #000 10%);;
         }
     }
     #crit-buttons {
@@ -457,17 +488,17 @@
                 background-color: darken(#eee, 5%);
             }
             &.staged {
-                background-color: plum;
+                background-color: $staged;
                 &:not(:disabled):hover {
-                    background-color: darken(plum, 10%);
+                    background-color: color-mix(in srgb,$staged, #000 10%);
                 }
             }
             &#roll-dice {
-                background-color: #dfab2d;
+                background-color: $primary;
                 border: none;
                 min-height: 48px;
                 &:not(:disabled):hover {
-                    background-color: #b48a25;
+                    background-color: $primaryHover;
                 }
             }
         }
@@ -493,11 +524,11 @@
             &.fancy {
                 font-size: 2rem;
                 line-height: 1.8rem;
-                color: #dfab2d;
+                color: $primary;
                 span {
                     font-size: .8rem;
                     line-height: 1.2rem;
-                    color: black;
+                    color: #000;
                 }
             }
         }
@@ -518,16 +549,16 @@
                 opacity: .2;
             }
             &.damage {
-                color: crimson;
+                color: $crimson;
             }
             &.minimal {
-                color: lightseagreen;
+                color: $minimal;
             }
             &.ht {
-                color: rgb(150, 31, 31);
+                color: $ht;
             }
             &.flk {
-                color: slateblue;
+                color: $flk;
                 &.flk-hit.miss {
                     opacity: 1;
                 }
@@ -563,7 +594,7 @@
     text-align: center;
     font-weight: 600;
     --h: 72px;
-    $tokenColor: lighten(#dfab2d, 40%);
+    $tokenColor: color-mix(in srgb,$primary, #fff 80%);
     .data {
         position: absolute;
         line-height: 1rem;
@@ -589,7 +620,7 @@
         calc(75% - var(--b)*cos(60deg)) calc(var(--b)*sin(60deg)),
         calc(25% + var(--b)*cos(60deg)) calc(var(--b)*sin(60deg)),
         var(--b) 50%);
-        background-color: darken($tokenColor, 20%);
+        background-color: color-mix(in srgb,$primary, #fff 60%);
         position: absolute;
         top: 0;
     }
@@ -602,7 +633,7 @@
         clip-path: polygon(50% -50%,100% 50%,50% 150%,0 50%);
         background-color: $tokenColor;
         &:hover {
-            background-color: darken($tokenColor, 5%);
+            background-color: color-mix(in srgb,$primary, #fff 70%);
         }
         &.standstill,
         &.low {
@@ -630,35 +661,35 @@
         }
         &.sprint,
         &.high {
-            $tokenColor: lighten(#dfab2d, 40%);
+            $tokenColor: color-mix(in srgb,$primary, #fff 80%);
             background-color: $tokenColor;
             .token-inner {
-                background-color: darken($tokenColor, 20%);
+                background-color: color-mix(in srgb,$primary, #fff 60%);
             }
             &:hover {
-                background-color: darken($tokenColor, 5%);
+                background-color: color-mix(in srgb,$primary, #fff 70%);
             }
         }
         &.jump,
         &.extreme,
         &.dfa {
-            $tokenColor: crimson;
+            $tokenColor: $crimson;
             background-color: $tokenColor;
             color: #fff;
             .token-inner {
-                background-color: darken($tokenColor, 20%);
+                background-color: color-mix(in srgb,$tokenColor, #000 30%);
             }
             &:hover {
-                background-color: darken($tokenColor, 5%);
+                background-color: color-mix(in srgb,$tokenColor, #000 10%);
             }
         }
         &.immobile {
             cursor: not-allowed;
-            color: #fff;
-            $tokenColor: crimson;
+            $tokenColor: $crimson;
             background-color: $tokenColor;
+            color: #fff;
             .token-inner {
-                background-color: darken($tokenColor, 20%);
+                background-color: color-mix(in srgb,$tokenColor, #000 30%);
             }
         }
         &.hull.down {

@@ -85,7 +85,8 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
       })
     };
 
-    showFormationBonus = ( bonus: IFormationBonus ): void => {
+    showFormationBonus = (e: React.FormEvent<HTMLAnchorElement>, bonus: IFormationBonus ): void => {
+      e.preventDefault();
       this.setState({
         showFormationBonus: bonus,
       })
@@ -364,8 +365,8 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
                   {group.getName(groupIndex + 1)}
                   </h2>
                   {group.formationBonus! && group.formationBonus!.Name !== "None" ?(
-                      <div onClick={() => this.showFormationBonus(group.formationBonus!)}><strong>Formation Type</strong>:&nbsp;
-                      {group.formationBonus!.Name}</div>
+                      <a href="/" onClick={(e) => this.showFormationBonus(e, group.formationBonus!)}><strong>Formation Type</strong>:&nbsp;
+                      {group.formationBonus!.Name}</a>
                   ) : null
                   }
                   
