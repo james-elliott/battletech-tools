@@ -376,26 +376,23 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
                     <>
                         <text x="144" y={critLineStart} textAnchor="end" className='crit-label'>ENGINE</text>
 
-                        {this.props.asUnit.engineHits.map( (ehValue, ehIndex) => {
-                            let fillColor = this.props.inPlay && this.props.asUnit?.roundEngineHits[ehIndex] ? this.roundDotColor : "rgb(255,255,255)";
-                            let strokeColor = this.props.inPlay && this.props.asUnit?.roundEngineHits[ehIndex] ? this.roundStrokeColor : "rgb(0,0,0)";
-                            if( this.props.inPlay && ehValue ) {
-                                fillColor = this.props.asUnit?.roundEngineHits[ehIndex] ? this.roundActiveColor : this.activeDotColor;
-                            }
-                            return (
-                                <React.Fragment key={ehIndex}>
-                                    <circle
-                                        cx={161 + (this.buttonRadius * 1.8 + 1) * ehIndex}
-                                        cy={critLineStart - 27 + this.buttonRadius + 4}
-                                        r={this.buttonRadius - 3}
-                                        fill={fillColor}
-                                        stroke="rgb(0,0,0)"
-                                        strokeWidth={2}
-                                    ></circle>
-                                </React.Fragment>
-                            )
-                        })}
-
+                            <circle
+                                cx={161}
+                                cy={critLineStart - 27 + this.buttonRadius + 4}
+                                r={this.buttonRadius - 3}
+                                fill={"rgb(255,255,255)"}
+                                stroke="rgb(0,0,0)"
+                                strokeWidth={2}
+                            ></circle>
+                            <circle
+                                cx={161 + (this.buttonRadius * 1.8 + 1)}
+                                cy={critLineStart - 27 + this.buttonRadius + 4}
+                                r={this.buttonRadius - 3}
+                                fill={"rgb(255,255,255)"}
+                                stroke="rgb(0,0,0)"
+                                strokeWidth={2}
+                            ></circle>
+        
                         <text x={151 + (this.buttonRadius * 1.8)*2} y={critLineStart} textAnchor="start" className='crit-description'>{this.props.asUnit.type.toLowerCase() === 'cv' ||  this.props.asUnit.type.toLowerCase() === 'sv' ? "½ MV and Damage" : "+1 Heat/Firing Weapons"}</text>
                         {critLineStart += critLineHeight}
                     </>
@@ -457,25 +454,40 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
                 )}
 
                 <text x="144" y={critLineStart} textAnchor="end" className='crit-label'>WEAPONS</text>
-                {this.props.asUnit.weaponHits.map( (whValue, whIndex) => {
-                            let fillColor = this.props.inPlay && this.props.asUnit?.roundWeaponHits[whIndex] ? this.roundDotColor : "rgb(255,255,255)";
-                            let strokeColor = this.props.inPlay && this.props.asUnit?.roundWeaponHits[whIndex] ? this.roundStrokeColor : "rgb(0,0,0)";
-                            if( whValue && this.props.inPlay ) {
-                                fillColor = this.props.inPlay && this.props.asUnit?.roundWeaponHits[whIndex] ? this.roundActiveColor : this.activeDotColor;
-                            }
-                            return (
-                                <React.Fragment key={whIndex}>
-                                    <circle
-                                        cx={161 + (this.buttonRadius * 1.8 + 1) * whIndex}
-                                        cy={critLineStart - 27 + this.buttonRadius + 4}
-                                        r={this.buttonRadius - 3}
-                                        fill={fillColor}
-                                        stroke="rgb(0,0,0)"
-                                        strokeWidth={2}
-                                    ></circle>
-                                </React.Fragment>
-                            )
-                })}
+
+                    <circle
+                        cx={161}
+                        cy={critLineStart - 27 + this.buttonRadius + 4}
+                        r={this.buttonRadius - 3}
+                        fill={"rgb(255,255,255)"}
+                        stroke="rgb(0,0,0)"
+                        strokeWidth={2}
+                    ></circle>
+                    <circle
+                        cx={161 + (this.buttonRadius * 1.8 + 1)}
+                        cy={critLineStart - 27 + this.buttonRadius + 4}
+                        r={this.buttonRadius - 3}
+                        fill={"rgb(255,255,255)"}
+                        stroke="rgb(0,0,0)"
+                        strokeWidth={2}
+                    ></circle>
+                    <circle
+                        cx={161 + (this.buttonRadius * 1.8 + 1) * 2}
+                        cy={critLineStart - 27 + this.buttonRadius + 4}
+                        r={this.buttonRadius - 3}
+                        fill={"rgb(255,255,255)"}
+                        stroke="rgb(0,0,0)"
+                        strokeWidth={2}
+                    ></circle>
+                    <circle
+                        cx={161 + (this.buttonRadius * 1.8 + 1) * 3}
+                        cy={critLineStart - 27 + this.buttonRadius + 4}
+                        r={this.buttonRadius - 3}
+                        fill={"rgb(255,255,255)"}
+                        stroke="rgb(0,0,0)"
+                        strokeWidth={2}
+                    ></circle>
+
                 <text x={153 + (this.buttonRadius * 1.8)*4} y={critLineStart} textAnchor="start" textRendering={"optimizeLegibility"} className='crit-description'>-1 Damage Each</text>
                 {critLineStart += critLineHeight}
 
@@ -538,6 +550,8 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
                     baseColor='rgb(35,31,32)'
                     altColor='rgb(105,106,108)'
                 />
+
+                <text x="-450" y="1020" transform="rotate(-90)" fontSize="15" fill="rgb(0,0,0)">©2018 The Topps Company. All rights reserved.</text>
 
                 </svg>
             </>

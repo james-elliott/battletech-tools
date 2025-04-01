@@ -192,6 +192,12 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
       });
     }
 
+    setUITheme = ( event: React.FormEvent<HTMLSelectElement>): void => {
+      let appSettingsHome = this.props.appGlobals.appSettings;
+      appSettingsHome.uiTheme = event.currentTarget.value;
+      this.props.appGlobals.saveAppSettings( appSettingsHome );
+    }
+
     setAlphaStrikeMeasurementsInHexes = ( event: React.FormEvent<HTMLInputElement>): void => {
       let appSettingsHome = this.props.appGlobals.appSettings;
       appSettingsHome.alphaStrikeMeasurementsInHexes = event.currentTarget.checked;
@@ -288,31 +294,46 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
   onClose={this.closeModal}
 >
 
-  <InputCheckbox
-    label='Display Measurements in Hexes'
-    checked={this.props.appGlobals.appSettings.alphaStrikeMeasurementsInHexes}
-    onChange={this.setAlphaStrikeMeasurementsInHexes}
-  />
 
-  <label>
-    Damage Calculations:
-    <select
-      value={this.props.appGlobals.appSettings.alphaStrikeVariableDamage}
-      onChange={this.setAlphaStrikeVariableDamage}
-    >
-      <option value="">Standard (one roll, full damage)</option>
-      <option value="damage">Multiple Damage Rolls</option>
-      <option value="attack">Multiple Attack Rolls</option>
-    </select>
-    <div className='small-text'>Choose between standard and variable damage rules.</div>
-  </label>
+    <label>
+      App Theme:
+      <select
+        value={this.props.appGlobals.appSettings.uiTheme}
+        onChange={this.setUITheme}
+      >
+        <option value="">Default</option>
+        <option value="desaturated">Desaturated</option>
+        <option value="retro">Retro</option>
+      </select>
+    </label>
 
-  <InputCheckbox
-    label='Use AI Mode'
-    checked={this.props.appGlobals.appSettings.alphaStrikeAIMode}
-    onChange={this.setAlphaStrikeAIMode}
-    description="This will allow you to generate behaviors for units based on Brym's OpFor."
-  />
+    <InputCheckbox
+      label='Display Measurements in Hexes'
+      checked={this.props.appGlobals.appSettings.alphaStrikeMeasurementsInHexes}
+      onChange={this.setAlphaStrikeMeasurementsInHexes}
+    />
+
+    <label>
+      Damage Calculations:
+      <select
+        value={this.props.appGlobals.appSettings.alphaStrikeVariableDamage}
+        onChange={this.setAlphaStrikeVariableDamage}
+      >
+        <option value="">Standard (one roll, full damage)</option>
+        <option value="damage">Multiple Damage Rolls</option>
+        <option value="attack">Multiple Attack Rolls</option>
+      </select>
+      <div className='small-text'>Choose between standard and variable damage rules.</div>
+    </label>
+
+    <InputCheckbox
+      label='Use AI Mode'
+      checked={this.props.appGlobals.appSettings.alphaStrikeAIMode}
+      onChange={this.setAlphaStrikeAIMode}
+      description="This will allow you to generate behaviors for units based on Brym's OpFor."
+    />
+
+
   
 </StandardModal>
 ) : null }

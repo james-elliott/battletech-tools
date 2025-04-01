@@ -1,3 +1,9 @@
+$primary: #dfab2d;
+
+.desaturated {
+    $primary: blue;
+}
+
 footer {
     padding: 12px;
 }
@@ -9,7 +15,7 @@ body:has(.play-bar) {
 .play-bar {
     padding: 6px 12px;
     align-items: stretch;
-    background-color: #dfab2d;
+    background-color: $primary;
     position: fixed;
     top: 0;
     z-index: 101;

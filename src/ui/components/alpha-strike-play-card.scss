@@ -515,13 +515,22 @@
             line-height: 1.25rem;
             // height: 1.25rem;
             &.miss {
-                opacity: .3;
+                opacity: .2;
             }
             &.damage {
                 color: crimson;
             }
             &.minimal {
                 color: lightseagreen;
+            }
+            &.ht {
+                color: rgb(150, 31, 31);
+            }
+            &.flk {
+                color: slateblue;
+                &.flk-hit.miss {
+                    opacity: 1;
+                }
             }
             svg {
                 vertical-align: baseline;
@@ -538,7 +547,7 @@
             > .column {
                 flex-shrink: 1;
             }
-            &.single-roll .die:not(.minimal) {
+            &.single-roll .die {
                 font-size: 3rem;
                 line-height: 3rem;
             }
