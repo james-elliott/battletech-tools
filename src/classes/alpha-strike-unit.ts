@@ -1448,7 +1448,7 @@ export class AlphaStrikeUnit {
                     damage += 1;
                 }
                 if (this.hasPilotAbility('Fist Fire')) {
-                    damage += 1;
+                    damage += Math.ceil(this.damage.short/2);
                 }
                 if (this.hasPilotAbility('Zweihander')) {
                     damage += 1;

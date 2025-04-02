@@ -439,6 +439,15 @@ export default class AlphaStrikeUnitCard extends React.Component<IAlphaStrikeUni
             let roll2 = Math.ceil(Math.random()*6);
 
             let roll = roll1 + roll2;
+            if (this.props.asUnit.hasAbility('ARS')) {
+                roll += -1;
+            }
+            if (this.props.asUnit.move[0].type.toLowerCase() === 'v' || this.props.asUnit.move[0].type.toLowerCase() === 'g') {
+                roll += 2;
+            } else if (this.props.asUnit.move[0].type.toLowerCase().indexOf('w') > -1 || this.props.asUnit.move[0].type.toLowerCase() === 'h') {
+                roll += 1;
+            }
+
             if (roll > 11) {
                 this._toggleVehicle12(false);
                 result = 'Unit Immobilized';
@@ -1584,12 +1593,18 @@ export class AlphaStrikeAttackOverlay extends React.Component<AlphaStrikeAttackO
                 }
                 if (!SPACrit
                     &&
+                    this.props.attack.type === 'weapon'
+                    &&
                     (this.props.unit.hasPilotAbility('Marksman') || this.props.unit.hasPilotAbility('Sharpshooter'))
                     &&
                     (this.props.unit.moveToken.type === 'standstill' || this.props.unit.moveToken.type === 'hull down')
                     &&
                     hit.roll1 + hit.roll2 > this.targetNumber + 2
                 ) {
+                    this.crits += 1;
+                    SPACrit = true;
+                }
+                if (!SPACrit && this.props.attack.type === 'physical' && this.props.unit.hasPilotAbility('Swordsman') && !this.state.swordsman) {
                     this.crits += 1;
                     SPACrit = true;
                 }
