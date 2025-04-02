@@ -938,9 +938,11 @@ export class AlphaStrikeUnit {
         // Find the ability
         for(let abi of this.abilities) {
             if (abi.toLowerCase().indexOf(ability.toLowerCase()) > -1) {
+                // This should fix TUR with specials to only return TUR values.
+                let abilityString = abi.split(',')[0];
                 // Get its value for this range
                 let regex = new RegExp(String.raw`((?<=${ability}.*)(\d\*?))`, "gi");
-                let matches = abi.match(regex);
+                let matches = abilityString.match(regex);
                 if (matches && range < matches.length) {
                     result.minimal = matches[range].indexOf('*') > -1;
                     result.damage = parseInt(matches[range]);
