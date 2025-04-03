@@ -264,7 +264,6 @@ export class AlphaStrikeUnit {
     };
 
     public currentHeat: number = 0;
-    public currentHeat: number = 0;
     public currentArmor: boolean[] = [];
     public currentStructure: boolean[] = [];
     public engineHits: number = 0;
@@ -1703,15 +1702,10 @@ export class AlphaStrikeUnit {
         for( let pointCounter = 0; pointCounter < numberOfPoints; pointCounter++ ) {
             for( let armorCounter = 0; armorCounter < this.roundArmor.length; armorCounter++ ) {
                 if( this.roundArmor[armorCounter] === false && this.currentArmor[armorCounter] === false ) {
-            for( let armorCounter = 0; armorCounter < this.roundArmor.length; armorCounter++ ) {
-                if( this.roundArmor[armorCounter] === false && this.currentArmor[armorCounter] === false ) {
                     if( leftOverPoints > 0 ) {
-                        this.roundArmor[armorCounter] = true;
                         this.roundArmor[armorCounter] = true;
                         leftOverPoints--;
                     }
-                } else if ( this.roundArmor[armorCounter] === true && this.currentArmor[armorCounter] === true ) {
-                    this.roundArmor[armorCounter] = false;
                 } else if ( this.roundArmor[armorCounter] === true && this.currentArmor[armorCounter] === true ) {
                     this.roundArmor[armorCounter] = false;
                 }
@@ -1720,7 +1714,6 @@ export class AlphaStrikeUnit {
             for( let structureCounter = 0; structureCounter < this.roundStructure.length; structureCounter++ ) {
                 if( this.roundStructure[structureCounter] === false && this.currentStructure[structureCounter] === false ) {
                     if( leftOverPoints > 0 ) {
-                        this.roundStructure[structureCounter] = true;
                         this.roundStructure[structureCounter] = true;
                         leftOverPoints--;
                     } 
