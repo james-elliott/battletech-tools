@@ -193,12 +193,6 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
       });
     }
 
-    setUITheme = ( event: React.FormEvent<HTMLSelectElement>): void => {
-      let appSettingsHome = this.props.appGlobals.appSettings;
-      appSettingsHome.uiTheme = event.currentTarget.value;
-      this.props.appGlobals.saveAppSettings( appSettingsHome );
-    }
-
     setAlphaStrikeMeasurementsInHexes = ( event: React.FormEvent<HTMLInputElement>): void => {
       let appSettingsHome = this.props.appGlobals.appSettings;
       appSettingsHome.alphaStrikeMeasurementsInHexes = event.currentTarget.checked;
@@ -215,6 +209,28 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
       let appSettingsHome = this.props.appGlobals.appSettings;
       appSettingsHome.alphaStrikeVariableDamage = event.currentTarget.value;
       this.props.appGlobals.saveAppSettings( appSettingsHome );
+    }
+
+    setAlphaStrikeCombatRolls = ( event: React.FormEvent<HTMLInputElement>): void => {
+      let appSettingsHome = this.props.appGlobals.appSettings;
+      appSettingsHome.alphaStrikeCombatRolls = event.currentTarget.checked;
+      this.props.appGlobals.saveAppSettings( appSettingsHome );
+
+      // Get rid of any move tokens.
+      if (this.props.appGlobals.currentASForce && !appSettingsHome.alphaStrikeCombatRolls) {
+        for (let group of this.props.appGlobals.currentASForce.groups) {
+          for( let unit of group.members ) {
+              unit.moveToken = {
+                move: 0,
+                currentMove: 0,
+                currentSprint: 0,
+                type: '',
+                tmm: 0,
+              }
+          }
+        }
+        this.props.appGlobals.saveCurrentASForce( this.props.appGlobals.currentASForce );
+      }
     }
 
     render = (): JSX.Element => {
@@ -295,23 +311,17 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
   onClose={this.closeModal}
 >
 
-
-    <label>
-      App Theme:
-      <select
-        value={this.props.appGlobals.appSettings.uiTheme}
-        onChange={this.setUITheme}
-      >
-        <option value="">Default</option>
-        <option value="desaturated">Desaturated</option>
-        <option value="retro">Retro</option>
-      </select>
-    </label>
-
     <InputCheckbox
       label='Display Measurements in Hexes'
       checked={this.props.appGlobals.appSettings.alphaStrikeMeasurementsInHexes}
       onChange={this.setAlphaStrikeMeasurementsInHexes}
+    />
+
+    <InputCheckbox
+      label='Enable Combat Rolls & Movement Tokens'
+      checked={this.props.appGlobals.appSettings.alphaStrikeCombatRolls}
+      onChange={this.setAlphaStrikeCombatRolls}
+      description='This will add interactive movement tokens, buttons to roll critical hits, and enable attack buttons.'
     />
 
     <label>
@@ -319,19 +329,20 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
       <select
         value={this.props.appGlobals.appSettings.alphaStrikeVariableDamage}
         onChange={this.setAlphaStrikeVariableDamage}
+        disabled={!this.props.appGlobals.appSettings.alphaStrikeCombatRolls}
       >
         <option value="">Standard (one roll, full damage)</option>
         <option value="damage">Multiple Damage Rolls</option>
         <option value="attack">Multiple Attack Rolls</option>
       </select>
-      <div className='small-text'>Choose between standard and variable damage rules.</div>
+      <div className='small-text'>Choose between standard and variable damage rules for combat rolls.</div>
     </label>
 
     <InputCheckbox
-      label='Use AI Mode'
+      label='Enable generated behaviors'
       checked={this.props.appGlobals.appSettings.alphaStrikeAIMode}
       onChange={this.setAlphaStrikeAIMode}
-      description="This will allow you to generate behaviors for units based on Brym's OpFor."
+      description="Adds a button to generate behaviors based on Brym's OpFor for units."
     />
 
 

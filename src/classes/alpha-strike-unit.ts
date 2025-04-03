@@ -561,8 +561,9 @@ export class AlphaStrikeUnit {
             this.vehicleMotive12 = incomingMechData.vehicleMotive12;
         }
 
-        if( incomingMechData.mpControlHits )
-        this.mpControlHits = incomingMechData.mpControlHits;
+        if( incomingMechData.mpControlHits ) {
+            this.mpControlHits = incomingMechData.mpControlHits;
+        }
 
         if( incomingMechData.weaponHits )
             this.weaponHits = incomingMechData.weaponHits;
@@ -949,6 +950,18 @@ export class AlphaStrikeUnit {
                 }
             }
         }
+
+        // Update special results with weapon hits.
+        for(let name of ['flk', 'tur','srm','lrm','if','rear','ht','art','ac','iatm','msl','narc']) {
+            if (ability.toLowerCase().indexOf(name) > -1) {
+                result.damage = result.damage - this.weaponHits;
+                if (result.damage < 0) {
+                    result.minimal = false;
+                }
+            }
+        }
+        
+
         return result;
     }
 
@@ -1179,8 +1192,11 @@ export class AlphaStrikeUnit {
             this.roundVehicleMotive11 = this.vehicleMotive11;
         }
 
-        if( typeof( this.mpControlHits ) !== "number"  || this.maxMPHits === 0  ) {
+        if( typeof( this.mpControlHits ) !== "number" ) {
             this.mpControlHits = 0;
+        }
+
+        if (this.maxMPHits === 0) {
             this.maxMPHits = 0;
             if(
                 ( this.type && this.type.toLowerCase() === "bm" )
@@ -1312,6 +1328,10 @@ export class AlphaStrikeUnit {
                 }
             } else if (( this.type && this.type.trim().toLowerCase() === "sv" ) || ( this.type && this.type.trim().toLowerCase() === "cv" )) {
                 // Vehicle Motive Crit effects
+                if (this.engineHits > 0) {
+                    this.move[moveC].currentMove = Math.floor( this.move[moveC].currentMove / 2 );
+                    this.move[moveC].tmm = Math.floor(this.move[moveC].tmm / 2);
+                }
 
                 for( let count = 0; count < this.vehicleMotive11; count++) {
                     let half = Math.floor( this.move[moveC].currentMove / 2 );
@@ -1456,6 +1476,8 @@ export class AlphaStrikeUnit {
                 if (this.hasPilotAbility('Melee Master')) {
                     damage += 1;
                 }
+                let disabled = this.moveToken.type !== 'ground' && this.moveToken.type !== 'standstill' && this.moveToken.type !== 'jump';
+                disabled = this.immobile ? this.currentHeat > 3 : disabled;
                 this.attacks.push(
                     {
                         name: name,
@@ -1464,7 +1486,7 @@ export class AlphaStrikeUnit {
                         minimal: false,
                         toHit: this.getCurrentToHit(0, 'physical'),
                         range: 0,
-                        disabled: this.moveToken.type !== 'ground' && this.moveToken.type !== 'standstill' && this.moveToken.type !== 'jump',
+                        disabled: disabled,
                     }
                 );
             }
@@ -1507,7 +1529,7 @@ export class AlphaStrikeUnit {
                 minimal: damage.minimal,
                 toHit: this.getCurrentToHit(0),
                 range: 0,
-                disabled: this.moveToken.type === 'sprint' || this.moveToken.type === '' || this.moveToken.type === 'charge' || this.moveToken.type === 'dfa' || (damage.value < 1 && !damage.minimal),
+                disabled: damage.disabled,
             });
             damage = this.getCurrentDamage(1);
             this.attacks.push({
@@ -1517,7 +1539,7 @@ export class AlphaStrikeUnit {
                 minimal: damage.minimal,
                 toHit: this.getCurrentToHit(1),
                 range: 1,
-                disabled: this.moveToken.type === 'sprint' || this.moveToken.type === '' || this.moveToken.type === 'charge' || this.moveToken.type === 'dfa' || (damage.value < 1 && !damage.minimal),
+                disabled: damage.disabled,
             });
             damage = this.getCurrentDamage(2);
             this.attacks.push({
@@ -1527,7 +1549,7 @@ export class AlphaStrikeUnit {
                 minimal: damage.minimal,
                 toHit: this.getCurrentToHit(2),
                 range: 2,
-                disabled: this.moveToken.type === 'sprint' || this.moveToken.type === '' || this.moveToken.type === 'charge' || this.moveToken.type === 'dfa' || (damage.value < 1 && !damage.minimal && this.getAbilityValues('ART').damage < 0),
+                disabled: damage.disabled,
             });
             damage = this.getCurrentDamage(3);
             this.attacks.push({
@@ -1537,7 +1559,7 @@ export class AlphaStrikeUnit {
                 minimal: damage.minimal,
                 toHit: this.getCurrentToHit(3),
                 range: 3,
-                disabled: this.moveToken.type === 'sprint' || this.moveToken.type === '' || this.moveToken.type === 'charge' || this.moveToken.type === 'dfa' || (damage.value < 1 && !damage.minimal),
+                disabled: damage.disabled,
         });
 
         if (this.getAbilityValues('BOMB').damage > -1) {
@@ -1772,6 +1794,7 @@ export class AlphaStrikeUnit {
             value: this.damage[rangeString] ? this.damage[rangeString] : 0,
             // @ts-ignore
             minimal: this.damage[rangeString+'Minimal'] ? true : false,
+            disabled: false,
         }
 
         // Reduce from weapon hits
@@ -1844,6 +1867,23 @@ export class AlphaStrikeUnit {
             damage.minimal = true;
         }
 
+        if(this.moveToken.type === 'sprint' || this.moveToken.type === 'charge' || this.moveToken.type === 'dfa') {
+            damage.disabled = true;
+        }
+        if (!this.immobile && this.moveToken.type === '') {
+            damage.disabled = true;
+        }
+        if (damage.value < 1 && !damage.minimal) {
+            if (range === 2 && this.getAbilityValues('ART').damage > 0) {
+
+            } else {
+                damage.disabled = true;
+            }
+        }
+        if (this.currentHeat > 3) {
+            damage.disabled = true;
+        }
+
         return damage;
     }
 
@@ -1852,7 +1892,7 @@ export class AlphaStrikeUnit {
 
         // Check Attacker Movement
         if (!this.isInfantry) {
-            if (this.moveToken.type === "standstill" || (this.hullDown && this.moveToken.type === 'hull down')) {
+            if (this.moveToken.type === "standstill" || this.immobile || (this.hullDown && this.moveToken.type === 'hull down')) {
                 toHit -= 1;
             } else if (this.moveToken.type === "jump" || this.moveToken.type === 'dfa') {
                 toHit += this.hasPilotAbility('Jumping Jack') ? 1 : 2;

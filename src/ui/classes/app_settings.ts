@@ -17,6 +17,7 @@ export class AppSettings {
     alphaStrikeSearchTerm: string = "";
     alphaStrikeVariableDamage: string = "";
     alphaStrikeAIMode: boolean = false;
+    alphaStrikeCombatRolls: boolean = false;
     alphaStrikeSearchRules: string = "";
     alphaStrikeSearchTech: string = "";
     alphaStrikeSearchRole: string = "";
