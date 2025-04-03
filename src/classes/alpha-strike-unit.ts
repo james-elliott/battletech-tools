@@ -1196,7 +1196,6 @@ export class AlphaStrikeUnit {
         }
 
         if (this.maxMPHits === 0) {
-            this.maxMPHits = 0;
             if(
                 ( this.type && this.type.toLowerCase() === "bm" )
                     ||
