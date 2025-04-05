@@ -1116,7 +1116,6 @@ export class AlphaStrikeUnit {
         if( typeof( this.currentArmor ) === "undefined" || this.currentArmor.length === 0 ) {
             this.currentArmor = [];
             for( let armorCount = 0; armorCount < this.armor; armorCount++) {
-            for( let armorCount = 0; armorCount < this.armor; armorCount++) {
                 this.currentArmor.push( false );
             }
         }
@@ -1125,7 +1124,6 @@ export class AlphaStrikeUnit {
             this.roundArmor = [];
             for( let armorCount = 0; armorCount < this.armor; armorCount++) {
                 this.roundArmor.push( false );
-            }
             }
         }
 
@@ -1139,7 +1137,6 @@ export class AlphaStrikeUnit {
         if( typeof( this.currentStructure ) === "undefined" || this.currentStructure.length === 0 ) {
             this.currentStructure = [];
             for( let structureCount = 0; structureCount < this.structure; structureCount++) {
-            for( let structureCount = 0; structureCount < this.structure; structureCount++) {
                 this.currentStructure.push( false );
             }
         }
@@ -1148,7 +1145,6 @@ export class AlphaStrikeUnit {
             this.roundStructure = [];
             for( let structureCount = 0; structureCount < this.structure; structureCount++) {
                 this.roundStructure.push( false );
-            }
             }
         }
 

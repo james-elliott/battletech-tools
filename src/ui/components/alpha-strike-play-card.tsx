@@ -516,6 +516,7 @@ export default class AlphaStrikeUnitCard extends React.Component<IAlphaStrikeUni
     ): JSX.Element[] => {
         let dots: JSX.Element[] = []
         if (this.props.asUnit) {
+            console.log(this.props.asUnit);
             let currentDots: boolean[] = [];
             let roundDots: boolean[] = [];
             if (target === 'structure') {
