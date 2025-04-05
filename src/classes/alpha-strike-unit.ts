@@ -1113,7 +1113,7 @@ export class AlphaStrikeUnit {
             this.currentPoints = this.basePoints;
         }
 
-        if( typeof( this.currentArmor ) === "undefined" || this.currentArmor.length === 0 ) {
+        if( typeof( this.currentArmor ) === "undefined" || this.currentArmor.length === 0 || this.currentArmor.length > this.armor ) {
             this.currentArmor = [];
             for( let armorCount = 0; armorCount < this.armor; armorCount++) {
                 this.currentArmor.push( false );
@@ -1127,24 +1127,10 @@ export class AlphaStrikeUnit {
             }
         }
 
-        if( typeof( this.roundArmor ) === "undefined" || this.roundArmor.length !== this.currentArmor.length ) {
-            this.roundArmor = [];
-            for( let armorCount = 0; armorCount < this.armor; armorCount++) {
-                this.roundArmor.push( false );
-            }
-        }
-
-        if( typeof( this.currentStructure ) === "undefined" || this.currentStructure.length === 0 ) {
+        if( typeof( this.currentStructure ) === "undefined" || this.currentStructure.length === 0 || this.currentStructure.length > this.armor ) {
             this.currentStructure = [];
             for( let structureCount = 0; structureCount < this.structure; structureCount++) {
                 this.currentStructure.push( false );
-            }
-        }
-
-        if( typeof( this.roundStructure ) === "undefined" || this.roundStructure.length !== this.currentStructure.length ) {
-            this.roundStructure = [];
-            for( let structureCount = 0; structureCount < this.structure; structureCount++) {
-                this.roundStructure.push( false );
             }
         }
 
