@@ -1,17 +1,17 @@
 {
   "files": {
     "main.css": "/battletech-tools/static/css/main.70eae6b0.css",
-    "main.js": "/battletech-tools/static/js/main.e98fee11.js",
+    "main.js": "/battletech-tools/static/js/main.61b391e5.js",
     "static/media/QTEurotype.otf": "/battletech-tools/static/media/QTEurotype.0b62515ee4c0b1601d57.otf",
     "static/media/DotMatrixRegular.woff": "/battletech-tools/static/media/DotMatrixRegular.2285cb056455fb192a60.woff",
     "static/media/DotMatrixRegular.woff2": "/battletech-tools/static/media/DotMatrixRegular.edd8046edf3a33902e07.woff2",
     "index.html": "/battletech-tools/index.html",
     "static/media/index.cjs": "/battletech-tools/static/media/index.f6d03137e8c9dd0de04c.cjs",
     "main.70eae6b0.css.map": "/battletech-tools/static/css/main.70eae6b0.css.map",
-    "main.e98fee11.js.map": "/battletech-tools/static/js/main.e98fee11.js.map"
+    "main.61b391e5.js.map": "/battletech-tools/static/js/main.61b391e5.js.map"
   },
   "entrypoints": [
     "static/css/main.70eae6b0.css",
-    "static/js/main.e98fee11.js"
+    "static/js/main.61b391e5.js"
   ]
 }
