@@ -222,7 +222,7 @@ export const CONST_AS_PILOT_ABILITIES: IASPilotAbility[] = [
     ability: "Marksman",
     cost: 2,
     asce_page: 97,
-    summary: ["If unit attacks while stationary, may score extra critical after delivering 1 damage"],
+    summary: ["If unit attacks while stationary, may score extra critical after delivering half damage with a minimum of 1 damage"],
 },
 {
     id: 33,

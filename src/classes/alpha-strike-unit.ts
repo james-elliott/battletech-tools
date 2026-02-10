@@ -1852,12 +1852,6 @@ export class AlphaStrikeUnit {
                     }
                 }
             }
-
-            // Half damage for unit with Marksman SPA that did not move
-            if (this.hasPilotAbility('Marksman')) {
-                damage.value = Math.floor(damage.value/2);
-                damage.value = damage.value < 1 ? 1 : damage.value;
-            }
         }
         
         // Check for minimal damage
