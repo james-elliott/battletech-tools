@@ -902,7 +902,7 @@ export class AlphaStrikeUnit {
                 return true;
             }
 
-            if( this.roundVehicleMotive12 ) {
+            if( this.roundVehicleMotive12 !== this.vehicleMotive12 ) {
                 return true;
             }
         }

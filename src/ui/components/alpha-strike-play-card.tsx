@@ -1403,7 +1403,7 @@ export default class AlphaStrikeUnitCard extends React.Component<IAlphaStrikeUni
                     </div>
                 ) : null }
 
-                {this.state.showAttackOverlay && this.props.asUnit.moveToken.type !== '' ? (
+                {this.state.showAttackOverlay && (this.props.asUnit.moveToken.type !== '' || this.props.asUnit.immobile) ? (
                     <AlphaStrikeAttackOverlay
                         appGlobals={this.props.appGlobals}
                         unit={this.props.asUnit}
