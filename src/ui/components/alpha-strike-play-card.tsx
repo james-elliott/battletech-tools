@@ -1487,6 +1487,7 @@ export class AlphaStrikeAttackOverlay extends React.Component<AlphaStrikeAttackO
             tailing: false,
             swordsman: false,
             streetFighter: false,
+            marksman: false,
             bombs: {
                 max: this.props.attack.type === 'bomb' && this.props.unit ? this.props.unit.getAbilityValues('BOMB').damage : 0,
                 using: 1,
@@ -1549,6 +1550,9 @@ export class AlphaStrikeAttackOverlay extends React.Component<AlphaStrikeAttackO
             damage += this.state.narc ? 1: 0;
             damage += this.state.tailing ? 1 : 0;
             damage += this.state.swordsman ? 1 : 0;
+            if (this.state.marksman) {
+                damage = Math.floor(damage/2) > 1 ? Math.floor(damage/2) : 1;
+            }
 
             if (this.state.bombs.max > 0) {
                 damage = this.state.bombs.using;
@@ -1594,7 +1598,7 @@ export class AlphaStrikeAttackOverlay extends React.Component<AlphaStrikeAttackO
                     }
                 }
                 // Check for crits
-                if (!rollCrit && hit.roll1 + hit.roll2 === 12) {
+                if (!rollCrit && hit.roll1 + hit.roll2 === 12 && index < this.maxDamage) {
                     this.crits += 1;
                     rollCrit = true;
                 }
@@ -1602,11 +1606,12 @@ export class AlphaStrikeAttackOverlay extends React.Component<AlphaStrikeAttackO
                     &&
                     this.props.attack.type === 'weapon'
                     &&
-                    (this.props.unit.hasPilotAbility('Marksman') || this.props.unit.hasPilotAbility('Sharpshooter'))
+                    (this.props.unit.hasPilotAbility('Marksman') && this.state.marksman || this.props.unit.hasPilotAbility('Sharpshooter'))
                     &&
-                    (this.props.unit.moveToken.type === 'standstill' || this.props.unit.moveToken.type === 'hull down')
+                    (this.props.unit.moveToken.type === 'standstill' || this.props.unit.moveToken.type === 'hull down' || this.props.unit.immobile)
                     &&
                     hit.roll1 + hit.roll2 > this.targetNumber + 2
+                    && index < this.maxDamage
                 ) {
                     this.crits += 1;
                     SPACrit = true;
@@ -1903,6 +1908,12 @@ export class AlphaStrikeAttackOverlay extends React.Component<AlphaStrikeAttackO
         });
     }
 
+    private _toggleMarksman = (): void => {
+        this.setState({
+            marksman: !this.state.marksman,
+        });
+    }
+
     private _setBombs( count: number ) {
         this.setState({
             bombs: {
@@ -2000,6 +2011,10 @@ export class AlphaStrikeAttackOverlay extends React.Component<AlphaStrikeAttackO
                 }
                 if (this.props.unit.hasPilotAbility('Street Fighter')) {
                     options.push(<button key='streetFighter' className={this.state.streetFighter ? 'staged' : ''} onClick={() => this._toggleStreetFighter()}>Street Fighter</button>);
+                }
+            } else {
+                if (this.props.unit.hasPilotAbility('Marksman')) {
+                    options.push(<button key='marksman' className={this.state.marksman ? 'staged' : ''} disabled={!(this.props.unit.moveToken.type === 'standstill' || this.props.unit.immobile || this.props.unit.moveToken.type === 'hull down' )} title={!(this.props.unit.moveToken.type === 'standstill' || this.props.unit.immobile || this.props.unit.moveToken.type === 'hull down' ) ? 'Marksman can only be used when a unit has not moved this round.' : ''} onClick={() => this._toggleMarksman()}>Marksman</button>);
                 }
             }
         }
@@ -2385,6 +2400,7 @@ interface AlphaStrikeAttackOverlayState {
     tailing: boolean;
     swordsman: boolean;
     streetFighter: boolean;
+    marksman: boolean;
     multiTasker: number;
 }
 
