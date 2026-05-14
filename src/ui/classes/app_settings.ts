@@ -4,6 +4,7 @@ import { ESaveDataMode } from "../../dataSaves";
 export class AppSettings {
     developerMenu: boolean = false;
     alphaStrikeMeasurementsInHexes: boolean = false;
+    alphaStrikeForcePackVisibility: boolean = true;
     uiTheme: string = "";
     equipmentFilter: string = "";
     installEquipCategory: string = "";
